@@ -1,0 +1,23 @@
+export const ROUTES = {
+  ROOT: '/',
+  LOGIN: '/login',
+  REGISTER: '/register',
+  FORGOT_PASSWORD: '/forgot-password',
+  RESET_PASSWORD: '/reset-password/:token',
+  VERIFY_EMAIL: '/verify-email/:token',
+  VERIFY_PHONE: '/verify-phone',
+  CHAT: '/chat',
+  CHAT_CONVERSATION: '/chat/:id',
+  PROFILE: '/profile',
+  PROFILE_USER: '/profile/:username',
+  SETTINGS: '/settings',
+  SETTINGS_ACCOUNT: '/settings/account',
+  SETTINGS_PRIVACY: '/settings/privacy',
+  SETTINGS_NOTIFICATIONS: '/settings/notifications',
+  SETTINGS_SECURITY: '/settings/security',
+  PROFILE_EDIT: '/settings/profile',
+  NOT_FOUND: '*',
+} as const;
+
+export type RouteKey = keyof typeof ROUTES;
+export type RoutePath = (typeof ROUTES)[RouteKey];
