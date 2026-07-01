@@ -22,8 +22,8 @@ dist-ssr/
 .env.staging
 *.local
 
-# Uploads (temporary server files)
-uploads/
+# Uploads (temporary server files — runtime only, not source code)
+/uploads/
 
 # TypeScript build info
 *.tsbuildinfo
