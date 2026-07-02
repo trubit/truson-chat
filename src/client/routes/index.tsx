@@ -6,8 +6,16 @@ export const ROUTES = {
   RESET_PASSWORD: '/reset-password/:token',
   VERIFY_EMAIL: '/verify-email/:token',
   VERIFY_PHONE: '/verify-phone',
+  // Chat
   CHAT: '/chat',
   CHAT_CONVERSATION: '/chat/:id',
+  // Social — Phase 4
+  CONTACTS: '/contacts',
+  FRIENDS: '/friends',
+  DISCOVERY: '/discovery',
+  BLOCKING: '/blocking',
+  PRIVACY_SETTINGS: '/privacy',
+  // Profile & settings
   PROFILE: '/profile',
   PROFILE_USER: '/profile/:username',
   SETTINGS: '/settings',
@@ -16,6 +24,10 @@ export const ROUTES = {
   SETTINGS_NOTIFICATIONS: '/settings/notifications',
   SETTINGS_SECURITY: '/settings/security',
   PROFILE_EDIT: '/settings/profile',
+  // Admin
+  ADMIN: '/admin',
+  ADMIN_USERS: '/admin/users',
+  ADMIN_SYSTEM: '/admin/system',
   NOT_FOUND: '*',
 } as const;
 

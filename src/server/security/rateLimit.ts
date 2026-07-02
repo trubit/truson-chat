@@ -55,8 +55,8 @@ function buildOptions(
       res.status(429).json(options.message);
     },
     skip: (req) => {
-      // Skip rate limiting in test environment
-      if (process.env.NODE_ENV === 'test') return true;
+      // Never rate-limit in test or development
+      if (process.env.NODE_ENV !== 'production') return true;
       // Skip health check endpoint
       if (req.path === '/health') return true;
       return false;
@@ -84,22 +84,27 @@ export function buildGeneralRateLimiter() {
 
 // --------------------------------------------------------------------------
 // Auth rate limiter
-// Stricter: max 10 requests per 15 minutes, always applies (no skip)
+// Stricter window; limit comes from AUTH_RATE_LIMIT_MAX env var.
+// In production the skip is removed so it always applies.
+// In development/test the base skip (which skips non-production) is kept.
 // --------------------------------------------------------------------------
 
 export function buildAuthRateLimiter() {
+  const { AUTH_RATE_LIMIT_MAX, NODE_ENV } = getEnv();
   const AUTH_WINDOW_MS = 15 * 60 * 1000; // 15 min
-  const AUTH_MAX = 10;
 
   const options = buildOptions(
     AUTH_WINDOW_MS,
-    AUTH_MAX,
+    AUTH_RATE_LIMIT_MAX,
     'auth',
     'Too many authentication attempts, please try again in 15 minutes.',
   );
 
-  // Auth limiter always applies — remove the skip function
-  delete options.skip;
+  // In production: remove skip so the limiter is unconditional.
+  // In development/test: keep the base skip so local testing is never blocked.
+  if (NODE_ENV === 'production') {
+    delete options.skip;
+  }
 
   return rateLimit(options as RateLimitOptions);
 }

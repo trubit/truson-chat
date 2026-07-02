@@ -20,9 +20,12 @@ export interface ServerToClientEvents {
   'typing:stop': (payload: { conversationId: string; userId: string }) => void;
   'presence:online': (payload: { userId: string }) => void;
   'presence:offline': (payload: { userId: string; lastSeen: string }) => void;
+  'presence:updated': (payload: PresenceUpdateEvent) => void;
   'conversation:created': (conversation: Conversation) => void;
   'conversation:updated': (conversation: Partial<Conversation> & { _id: string }) => void;
   'notification:new': (notification: { title: string; body: string; data?: Record<string, unknown> }) => void;
+  'friend:request_received': (payload: FriendRequestReceivedEvent) => void;
+  'friend:request_accepted': (payload: FriendRequestAcceptedEvent) => void;
   error: (payload: { message: string; code?: string }) => void;
 }
 
@@ -36,4 +39,40 @@ export interface ClientToServerEvents {
   'typing:start': (payload: { conversationId: string }) => void;
   'typing:stop': (payload: { conversationId: string }) => void;
   'presence:update': (payload: { status: 'online' | 'away' }) => void;
+  'presence:set_status': (payload: SetStatusEvent) => void;
+  'friend:notify_request': (payload: { recipientId: string }) => void;
+}
+
+// === PRESENCE EVENT TYPES ===
+
+export interface PresenceUpdateEvent {
+  userId: string;
+  status: 'online' | 'offline' | 'away' | 'busy' | 'invisible';
+  customStatus?: string;
+  statusMessage?: string;
+}
+
+export interface SetStatusEvent {
+  status: 'online' | 'offline' | 'away' | 'busy' | 'invisible';
+  customStatus?: string;
+  statusMessage?: string;
+}
+
+// === FRIEND EVENT TYPES ===
+
+export interface FriendRequestReceivedEvent {
+  senderId: string;
+  senderUsername?: string;
+  senderDisplayName?: string;
+}
+
+export interface FriendRequestAcceptedEvent {
+  friendId: string;
+  friendUsername?: string;
+}
+
+// === BLOCKING EVENT TYPES ===
+
+export interface UserBlockedEvent {
+  blockedId: string;
 }

@@ -56,6 +56,7 @@ const envSchema = z.object({
   COOKIE_SECURE: z.string().transform((v) => v === 'true').default(false),
   COOKIE_SAME_SITE: z.enum(['strict', 'lax', 'none']).default('strict'),
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().default(10),
+  ADMIN_EMAIL: z.union([z.string().email(), z.literal('')]).default(''),
   OTP_EXPIRY_MINUTES: z.coerce.number().int().default(10),
   PASSWORD_RESET_EXPIRY_MINUTES: z.coerce.number().int().default(30),
   EMAIL_VERIFY_EXPIRY_HOURS: z.coerce.number().int().default(24),

@@ -13,6 +13,8 @@ module.exports = {
     {
       displayName: 'server',
       testEnvironment: 'node',
+      // Limit parallelism so MongoMemoryServer instances don't race each other.
+      maxWorkers: 2,
       testMatch: ['<rootDir>/src/server/**/*.test.ts'],
       transform: {
         '^.+\\.tsx?$': [

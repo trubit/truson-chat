@@ -26,12 +26,12 @@ export const PROFILE_KEYS = {
 
 interface ProfileApiResponse {
   success: boolean;
-  data: { profile: ProfileResponse };
+  data: ProfileResponse;
 }
 
 interface PreferencesApiResponse {
   success: boolean;
-  data: { preferences: PreferencesResponse };
+  data: PreferencesResponse;
 }
 
 // ---------------------------------------------------------------------------
@@ -45,8 +45,8 @@ export function useGetOwnProfile() {
     queryKey: PROFILE_KEYS.me,
     queryFn: async () => {
       const response = await apiService.get<ProfileApiResponse>('/profile/me');
-      setProfile(response.data.profile);
-      return response.data.profile;
+      setProfile(response.data);
+      return response.data;
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -63,7 +63,7 @@ export function useGetProfile(userId: string) {
       const response = await apiService.get<ProfileApiResponse>(
         `/profile/${userId}`,
       );
-      return response.data.profile;
+      return response.data;
     },
     enabled: Boolean(userId),
     staleTime: 5 * 60 * 1000,
@@ -82,7 +82,7 @@ export function useUpdateProfile() {
     mutationFn: (data: UpdateProfileInput) =>
       apiService.patch<ProfileApiResponse>('/profile', data),
     onSuccess: (response) => {
-      setProfile(response.data.profile);
+      setProfile(response.data);
       queryClient.invalidateQueries({ queryKey: PROFILE_KEYS.me });
     },
   });
@@ -105,7 +105,7 @@ export function useUploadAvatar() {
       });
     },
     onSuccess: (response) => {
-      setProfile(response.data.profile);
+      setProfile(response.data);
       queryClient.invalidateQueries({ queryKey: PROFILE_KEYS.me });
     },
   });
@@ -118,7 +118,7 @@ export function useRemoveAvatar() {
   return useMutation({
     mutationFn: () => apiService.del<ProfileApiResponse>('/profile/avatar'),
     onSuccess: (response) => {
-      setProfile(response.data.profile);
+      setProfile(response.data);
       queryClient.invalidateQueries({ queryKey: PROFILE_KEYS.me });
     },
   });
@@ -141,7 +141,7 @@ export function useUploadCoverImage() {
       });
     },
     onSuccess: (response) => {
-      setProfile(response.data.profile);
+      setProfile(response.data);
       queryClient.invalidateQueries({ queryKey: PROFILE_KEYS.me });
     },
   });
@@ -154,7 +154,7 @@ export function useRemoveCoverImage() {
   return useMutation({
     mutationFn: () => apiService.del<ProfileApiResponse>('/profile/cover'),
     onSuccess: (response) => {
-      setProfile(response.data.profile);
+      setProfile(response.data);
       queryClient.invalidateQueries({ queryKey: PROFILE_KEYS.me });
     },
   });
@@ -172,7 +172,7 @@ export function useUpdatePrivacy() {
     mutationFn: (data: UpdatePrivacyInput) =>
       apiService.patch<ProfileApiResponse>('/profile/privacy', data),
     onSuccess: (response) => {
-      setProfile(response.data.profile);
+      setProfile(response.data);
       queryClient.invalidateQueries({ queryKey: PROFILE_KEYS.me });
     },
   });
@@ -190,8 +190,8 @@ export function useGetPreferences() {
     queryFn: async () => {
       const response =
         await apiService.get<PreferencesApiResponse>('/profile/preferences');
-      setPreferences(response.data.preferences);
-      return response.data.preferences;
+      setPreferences(response.data);
+      return response.data;
     },
     staleTime: 10 * 60 * 1000,
   });
@@ -205,7 +205,7 @@ export function useUpdatePreferences() {
     mutationFn: (data: UpdatePreferencesInput) =>
       apiService.patch<PreferencesApiResponse>('/profile/preferences', data),
     onSuccess: (response) => {
-      setPreferences(response.data.preferences);
+      setPreferences(response.data);
       queryClient.invalidateQueries({ queryKey: PROFILE_KEYS.preferences });
     },
   });

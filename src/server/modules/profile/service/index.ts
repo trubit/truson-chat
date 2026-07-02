@@ -27,6 +27,7 @@ function isCloudinaryConfigured(): boolean {
   );
 }
 
+
 function toProfileResponse(profile: IProfile): ProfileResponse {
   const response: ProfileResponse = {
     id: profile._id.toString(),

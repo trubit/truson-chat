@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmit": true
+  },
+  "include": [
+    "src/server/database/models/BlockedUser.ts",
+    "src/server/database/models/MutedUser.ts",
+    "src/server/database/models/Presence.ts",
+    "src/server/database/models/PrivacySetting.ts",
+    "src/server/database/models/ContactSyncLog.ts",
+    "src/server/modules/blocking",
+    "src/server/modules/presence",
+    "src/server/modules/privacy",
+    "src/server/modules/discovery",
+    "src/types"
+  ],
+  "exclude": ["node_modules", "dist", "**/__tests__/**", "**/*.test.ts"]
+}
