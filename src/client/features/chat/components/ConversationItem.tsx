@@ -2,18 +2,18 @@ import { Box, Avatar, Typography, Badge } from '@mui/material';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
 import type { ConversationWithMeta } from '@/store/conversationStore';
+import { usePresenceStore } from '@/store/presenceStore';
 
 const C = {
-  panel: '#080C18',
-  panelHdr: '#0B1022',
-  border: 'rgba(139,92,246,0.12)',
-  accent: '#9B6DFF',
-  accentGlow: 'rgba(155,109,255,0.18)',
-  accentDark: '#7C3AED',
-  txt1: '#F1F5F9',
-  txt2: '#94A3B8',
-  txt3: '#475569',
-  badge: '#10B981',
+  panel:     '#111B21',
+  panelHdr:  '#1F2C34',
+  border:    'rgba(134,150,160,0.15)',
+  accent:    '#10C4A0',
+  accentDark:'#0D9E80',
+  txt1:      '#E9EDEF',
+  txt2:      '#8696A0',
+  txt3:      '#567390',
+  badge:     '#10C4A0',
 } as const;
 
 function formatTime(timestamp: string): string {
@@ -47,10 +47,23 @@ function getConversationName(
 ): string {
   if (conv.metadata.name) return conv.metadata.name;
   if (conv.type === 'direct') {
-    // For direct conversations, the name is the other participant
-    return `User ${conv.participants?.find((p) => p !== currentUserId) ?? ''}`;
+    const otherId = conv.participants?.find((p) => p !== currentUserId);
+    const profile = conv.memberProfiles?.find((p) => p.userId === otherId);
+    return profile?.displayName ?? profile?.username ?? 'Unknown';
   }
   return 'Conversation';
+}
+
+function getConversationAvatar(
+  conv: ConversationWithMeta,
+  currentUserId: string,
+): string | undefined {
+  if (conv.metadata.avatar?.url) return conv.metadata.avatar.url;
+  if (conv.type === 'direct') {
+    const otherId = conv.participants?.find((p) => p !== currentUserId);
+    return conv.memberProfiles?.find((p) => p.userId === otherId)?.avatar;
+  }
+  return undefined;
 }
 
 function getAvatarLetter(name: string): string {
@@ -71,6 +84,7 @@ export default function ConversationItem({
   currentUserId,
 }: ConversationItemProps) {
   const name = getConversationName(conversation, currentUserId);
+  const avatarSrc = getConversationAvatar(conversation, currentUserId);
   const preview = getLastMessagePreview(conversation);
   const timeStr = conversation.lastMessage?.timestamp
     ? formatTime(conversation.lastMessage.timestamp)
@@ -79,6 +93,15 @@ export default function ConversationItem({
       : '';
 
   const hasUnread = conversation.unreadCount > 0;
+
+  // For direct conversations, show online indicator for the other participant
+  const presences = usePresenceStore((s) => s.presences);
+  const otherUserId = conversation.type === 'direct'
+    ? conversation.participants?.find((p) => p !== currentUserId)
+    : undefined;
+  const isOnline = otherUserId
+    ? presences[otherUserId]?.status === 'online'
+    : false;
 
   return (
     <Box
@@ -92,10 +115,10 @@ export default function ConversationItem({
         cursor: 'pointer',
         position: 'relative',
         transition: 'background 0.15s',
-        bgcolor: isActive ? 'rgba(155,109,255,0.1)' : 'transparent',
+        bgcolor: isActive ? 'rgba(16,196,160,0.1)' : 'transparent',
         '&:hover': {
           bgcolor: isActive
-            ? 'rgba(155,109,255,0.12)'
+            ? 'rgba(16,196,160,0.13)'
             : 'rgba(255,255,255,0.03)',
         },
         ...(isActive && {
@@ -112,19 +135,37 @@ export default function ConversationItem({
         }),
       }}
     >
-      {/* Avatar */}
-      <Avatar
-        sx={{
-          width: 42,
-          height: 42,
-          fontSize: 16,
-          fontWeight: 700,
-          flexShrink: 0,
-          background: `linear-gradient(135deg, ${C.accentDark} 0%, ${C.accent} 100%)`,
-        }}
-      >
-        {getAvatarLetter(name)}
-      </Avatar>
+      {/* Avatar with online indicator */}
+      <Box sx={{ position: 'relative', flexShrink: 0 }}>
+        <Avatar
+          src={avatarSrc}
+          alt={name}
+          sx={{
+            width: 42,
+            height: 42,
+            fontSize: 16,
+            fontWeight: 700,
+            background: `linear-gradient(135deg, ${C.accentDark} 0%, ${C.accent} 100%)`,
+          }}
+        >
+          {getAvatarLetter(name)}
+        </Avatar>
+        {isOnline && (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 1,
+              right: 1,
+              width: 10,
+              height: 10,
+              borderRadius: '50%',
+              bgcolor: C.badge,
+              border: '2px solid #111B21',
+              boxShadow: `0 0 6px ${C.badge}`,
+            }}
+          />
+        )}
+      </Box>
 
       {/* Content */}
       <Box sx={{ flex: 1, minWidth: 0 }}>

@@ -164,6 +164,8 @@ export async function start(): Promise<void> {
     const [major] = redisVersion.split('.').map(Number);
     if ((major ?? 0) >= 5) {
       initQueues();
+      const { startMediaWorker } = await import('./workers/media.worker.js');
+      startMediaWorker();
     } else {
       logger.warn(
         `Redis ${redisVersion} is too old for BullMQ (requires 5.0+) — background jobs disabled. ` +

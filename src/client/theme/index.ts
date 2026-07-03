@@ -41,10 +41,10 @@ const baseShape = {
   borderRadius: 12,
 };
 
-const INPUT_BG_DARK   = 'rgba(255,255,255,0.045)';
+const INPUT_BG_DARK   = 'rgba(255,255,255,0.04)';
 const INPUT_BG_LIGHT  = 'rgba(0,0,0,0.028)';
-const AUTOFILL_BG_DARK  = '#1c1c38';
-const AUTOFILL_BG_LIGHT = '#f3f0ff';
+const AUTOFILL_BG_DARK  = '#0D1B29';
+const AUTOFILL_BG_LIGHT = '#EAF9F5';
 
 const baseComponents = (mode: 'light' | 'dark') => ({
   MuiCssBaseline: {
@@ -56,11 +56,11 @@ const baseComponents = (mode: 'light' | 'dark') => ({
       '::-webkit-scrollbar': { width: 6, height: 6 },
       '::-webkit-scrollbar-track': { background: 'transparent' },
       '::-webkit-scrollbar-thumb': {
-        background: mode === 'light' ? '#dee2e6' : '#2d3748',
+        background: mode === 'light' ? '#C0D0DF' : '#1C3045',
         borderRadius: 3,
       },
       '::-webkit-scrollbar-thumb:hover': {
-        background: mode === 'light' ? '#6c757d' : '#4a5568',
+        background: mode === 'light' ? '#8FA8BD' : '#243C55',
       },
       /* Override browser autofill teal/yellow injection */
       'input:-webkit-autofill': {
@@ -102,7 +102,7 @@ const baseComponents = (mode: 'light' | 'dark') => ({
         borderRadius: 12,
       },
       contained: {
-        '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 4px 12px rgba(108,99,255,0.35)' },
+        '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 4px 12px rgba(16,196,160,0.35)' },
         '&:active': { transform: 'translateY(0)' },
       },
       outlined: {
@@ -130,31 +130,30 @@ const baseComponents = (mode: 'light' | 'dark') => ({
           '&:hover:not(.Mui-disabled)': {
             backgroundColor: mode === 'dark' ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.045)',
             '& fieldset': {
-              borderColor: mode === 'dark' ? 'rgba(108,99,255,0.5)' : 'rgba(108,99,255,0.38)',
+              borderColor: mode === 'dark' ? 'rgba(16,196,160,0.5)' : 'rgba(16,196,160,0.38)',
             },
           },
           '&.Mui-focused': {
-            backgroundColor: mode === 'dark' ? 'rgba(108,99,255,0.05)' : 'rgba(108,99,255,0.025)',
+            backgroundColor: mode === 'dark' ? 'rgba(16,196,160,0.04)' : 'rgba(16,196,160,0.025)',
             boxShadow: mode === 'dark'
-              ? '0 0 0 3px rgba(108,99,255,0.18), 0 4px 20px rgba(108,99,255,0.08)'
-              : '0 0 0 3px rgba(108,99,255,0.12), 0 4px 16px rgba(108,99,255,0.06)',
+              ? '0 0 0 3px rgba(16,196,160,0.18), 0 4px 20px rgba(16,196,160,0.06)'
+              : '0 0 0 3px rgba(16,196,160,0.12), 0 4px 16px rgba(16,196,160,0.06)',
             '& fieldset': {
               borderWidth: 1.5,
-              borderColor: '#6c63ff',
+              borderColor: '#10C4A0',
             },
           },
           '&.Mui-disabled': {
             opacity: 0.55,
           },
-          /* Tint the start adornment icon on focus */
           '&.Mui-focused .MuiInputAdornment-positionStart .MuiSvgIcon-root': {
-            color: '#6c63ff',
+            color: '#10C4A0',
           },
         },
         '& .MuiInputLabel-outlined': {
           fontSize: '0.9rem',
           fontWeight: 500,
-          '&.Mui-focused': { color: '#6c63ff' },
+          '&.Mui-focused': { color: '#10C4A0' },
         },
         '& .MuiInputBase-input': {
           fontSize: '0.9375rem',
@@ -170,7 +169,7 @@ const baseComponents = (mode: 'light' | 'dark') => ({
     styleOverrides: {
       root: {
         borderRadius: 16,
-        border: `1px solid ${mode === 'light' ? '#e9ecef' : '#2d3748'}`,
+        border: `1px solid ${mode === 'light' ? 'rgba(13,27,41,0.12)' : 'rgba(143,168,189,0.13)'}`,
         transition: 'box-shadow 0.2s ease',
         '&:hover': {
           boxShadow: mode === 'light'
@@ -208,8 +207,8 @@ const baseComponents = (mode: 'light' | 'dark') => ({
         fontSize: '0.875rem',
       },
       colorDefault: {
-        backgroundColor: mode === 'light' ? '#e9ecef' : '#2d3748',
-        color: mode === 'light' ? '#495057' : '#adb5bd',
+        backgroundColor: mode === 'light' ? '#D4E0EC' : '#1C3045',
+        color: mode === 'light' ? '#3A5570' : '#8FA8BD',
       },
     },
   },
@@ -253,7 +252,7 @@ const baseComponents = (mode: 'light' | 'dark') => ({
   MuiDivider: {
     styleOverrides: {
       root: {
-        borderColor: mode === 'light' ? '#e9ecef' : '#2d3748',
+        borderColor: mode === 'light' ? 'rgba(13,27,41,0.12)' : 'rgba(143,168,189,0.13)',
       },
     },
   },
@@ -263,41 +262,41 @@ export const lightTheme: Theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#6c63ff',
-      light: '#8b84ff',
-      dark: '#5a52d5',
+      main: '#10C4A0',
+      light: '#3DD4B8',
+      dark: '#0D9E80',
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#03dac6',
-      light: '#4dede0',
-      dark: '#00b3a4',
-      contrastText: '#000000',
+      main: '#E87830',
+      light: '#EE9A5C',
+      dark: '#C96020',
+      contrastText: '#ffffff',
     },
     background: {
-      default: '#f8f9fa',
+      default: '#F0F4F8',
       paper: '#ffffff',
     },
     text: {
-      primary: '#212529',
-      secondary: '#6c757d',
-      disabled: '#adb5bd',
+      primary: '#0D1B29',
+      secondary: '#3A5570',
+      disabled: '#8FA8BD',
     },
-    divider: '#e9ecef',
+    divider: 'rgba(13,27,41,0.12)',
     error: { main: '#dc3545', light: '#f1707b', dark: '#b02a37' },
     warning: { main: '#ffc107', light: '#ffcd38', dark: '#d39e00' },
     info: { main: '#0dcaf0', light: '#3fd5f4', dark: '#0aa2c0' },
     success: { main: '#198754', light: '#2fb774', dark: '#146c43' },
     neutral: {
-      main: '#6c757d',
-      light: '#adb5bd',
-      dark: '#495057',
+      main: '#567390',
+      light: '#8FA8BD',
+      dark: '#3A5570',
       contrastText: '#ffffff',
     },
     action: {
-      hover: 'rgba(108,99,255,0.06)',
-      selected: 'rgba(108,99,255,0.1)',
-      focus: 'rgba(108,99,255,0.12)',
+      hover: 'rgba(16,196,160,0.06)',
+      selected: 'rgba(16,196,160,0.1)',
+      focus: 'rgba(16,196,160,0.12)',
     },
   },
   typography: baseTypography,
@@ -309,41 +308,41 @@ export const darkTheme: Theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#6c63ff',
-      light: '#8b84ff',
-      dark: '#5a52d5',
+      main: '#10C4A0',
+      light: '#3DD4B8',
+      dark: '#0D9E80',
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#03dac6',
-      light: '#4dede0',
-      dark: '#00b3a4',
-      contrastText: '#000000',
+      main: '#E87830',
+      light: '#EE9A5C',
+      dark: '#C96020',
+      contrastText: '#ffffff',
     },
     background: {
-      default: '#1a1a2e',
-      paper: '#16213e',
+      default: '#07101C',
+      paper: '#0D1B29',
     },
     text: {
-      primary: '#e9ecef',
-      secondary: '#adb5bd',
-      disabled: '#6c757d',
+      primary: '#E8EFF5',
+      secondary: '#8FA8BD',
+      disabled: '#567390',
     },
-    divider: '#2d3748',
-    error: { main: '#f1707b', light: '#f5949c', dark: '#dc3545' },
-    warning: { main: '#ffcd38', light: '#ffd760', dark: '#ffc107' },
-    info: { main: '#3fd5f4', light: '#6fdef7', dark: '#0dcaf0' },
-    success: { main: '#2fb774', light: '#57c98f', dark: '#198754' },
+    divider: 'rgba(143,168,189,0.13)',
+    error: { main: '#EF4444', light: '#F87171', dark: '#DC2626' },
+    warning: { main: '#EAB308', light: '#FDE047', dark: '#CA8A04' },
+    info: { main: '#38BDF8', light: '#7DD3FC', dark: '#0284C7' },
+    success: { main: '#22C55E', light: '#4ADE80', dark: '#16A34A' },
     neutral: {
-      main: '#adb5bd',
-      light: '#ced4da',
-      dark: '#6c757d',
-      contrastText: '#212529',
+      main: '#8FA8BD',
+      light: '#C0D0DF',
+      dark: '#567390',
+      contrastText: '#0D1B29',
     },
     action: {
-      hover: 'rgba(108,99,255,0.1)',
-      selected: 'rgba(108,99,255,0.16)',
-      focus: 'rgba(108,99,255,0.18)',
+      hover: 'rgba(16,196,160,0.08)',
+      selected: 'rgba(16,196,160,0.14)',
+      focus: 'rgba(16,196,160,0.16)',
     },
   },
   typography: baseTypography,

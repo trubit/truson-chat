@@ -44,6 +44,7 @@ interface MessageActions {
   ) => void;
   addPending: (tempId: string) => void;
   removePending: (tempId: string) => void;
+  markMessagesRead: (conversationId: string, upToMessageId: string, myUserId: string) => void;
   clearConversation: (conversationId: string) => void;
   reset: () => void;
 }
@@ -195,6 +196,22 @@ export const useMessageStore = create<MessageStore>()((set) => ({
       const next = new Set(state.pending);
       next.delete(tempId);
       return { pending: next };
+    }),
+
+  markMessagesRead: (conversationId, upToMessageId, myUserId) =>
+    set((state) => {
+      const msgs = state.messages[conversationId];
+      if (!msgs) return {};
+      const cutoff = msgs.findIndex((m) => m._id === upToMessageId);
+      const limit = cutoff >= 0 ? cutoff : msgs.length - 1;
+      let changed = false;
+      const updated = msgs.map((m, i) => {
+        if (i > limit || m.senderId !== myUserId || m.status === 'read') return m;
+        changed = true;
+        return { ...m, status: 'read' as const };
+      });
+      if (!changed) return {};
+      return { messages: { ...state.messages, [conversationId]: updated } };
     }),
 
   clearConversation: (conversationId) =>

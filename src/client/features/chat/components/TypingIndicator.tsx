@@ -6,6 +6,8 @@ const C = {
   txt2: '#94A3B8',
 } as const;
 
+const EMPTY_ARRAY: string[] = [];
+
 interface TypingIndicatorProps {
   conversationId: string;
   currentUserId: string;
@@ -15,7 +17,7 @@ export default function TypingIndicator({
   conversationId,
   currentUserId,
 }: TypingIndicatorProps) {
-  const typing = useTypingStore((s) => s.typing[conversationId] ?? []);
+  const typing = useTypingStore((s) => s.typing[conversationId] ?? EMPTY_ARRAY);
   const others = typing.filter((uid) => uid !== currentUserId);
 
   if (others.length === 0) return null;

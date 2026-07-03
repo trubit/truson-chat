@@ -64,3 +64,15 @@ export type { IConversationMember, MemberRole } from './ConversationMember.js';
 
 export { MessageModel } from './Message.js';
 export type { IMessage, MsgType, MsgStatus, IMessageReaction, IReadReceipt, IDeliveryReceipt, IMessageMedia, IEditEntry } from './Message.js';
+
+export { MediaFileModel } from './MediaFile.js';
+export type { IMediaFile, MediaFileType, MediaFileStatus } from './MediaFile.js';
+
+export { StickerPackModel } from './StickerPack.js';
+export type { IStickerPack, ISticker } from './StickerPack.js';
+
+export { SharedContactModel } from './SharedContact.js';
+export type { ISharedContact, IContactPhone, IContactEmail } from './SharedContact.js';
+
+export { SharedLocationModel } from './SharedLocation.js';
+export type { ISharedLocation } from './SharedLocation.js';

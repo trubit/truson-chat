@@ -9,6 +9,7 @@ export type MsgTypeValues =
   | 'image'
   | 'video'
   | 'audio'
+  | 'voice_note'
   | 'file'
   | 'sticker'
   | 'gif'
@@ -23,6 +24,7 @@ export interface SendMessageDto {
   content: string;
   replyTo?: string;
   mentions?: string[];
+  media?: IMessageMedia[];
 }
 
 export interface EditMessageDto {

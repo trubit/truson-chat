@@ -85,7 +85,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
           position: 'sticky',
           top: 0,
           flexShrink: 0,
-          background: 'linear-gradient(155deg, #0d1b2a 0%, #0f2437 30%, #0b3430 65%, #063a26 100%)',
+          background: 'linear-gradient(155deg, #07101C 0%, #0D1B29 30%, #0A2020 65%, #071A16 100%)',
           overflow: 'hidden',
         }}
       >
@@ -95,9 +95,9 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             position: 'absolute',
             inset: 0,
             background: `
-              radial-gradient(ellipse at 20% 10%,  rgba(108,99,255,0.20) 0%, transparent 55%),
-              radial-gradient(ellipse at 80% 90%,  rgba(37,211,102,0.14) 0%, transparent 55%),
-              radial-gradient(ellipse at 55% 50%,  rgba(3,218,198,0.07)  0%, transparent 65%)
+              radial-gradient(ellipse at 20% 10%,  rgba(16,196,160,0.22) 0%, transparent 55%),
+              radial-gradient(ellipse at 80% 90%,  rgba(232,120,48,0.12) 0%, transparent 55%),
+              radial-gradient(ellipse at 55% 50%,  rgba(16,196,160,0.07) 0%, transparent 65%)
             `,
           }}
         />
@@ -135,11 +135,11 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
                 width: 44,
                 height: 44,
                 borderRadius: 2,
-                background: 'linear-gradient(135deg, #6c63ff 0%, #03dac6 100%)',
+                background: 'linear-gradient(135deg, #10C4A0 0%, #0D9E80 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 0 0 10px rgba(108,99,255,0.12), 0 4px 20px rgba(108,99,255,0.35)',
+                boxShadow: '0 0 0 10px rgba(16,196,160,0.14), 0 4px 20px rgba(16,196,160,0.35)',
               }}
             >
               <ForumIcon sx={{ color: '#fff', fontSize: 22 }} />
@@ -166,7 +166,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             Stay close with
             <br />
             everyone you{' '}
-            <Box component="span" sx={{ color: '#25D366' }}>
+            <Box component="span" sx={{ color: '#10C4A0' }}>
               love
             </Box>
           </Typography>
@@ -247,8 +247,8 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             pointerEvents: 'none',
             zIndex: 0,
             background: `
-              radial-gradient(ellipse at 70% 20%, rgba(108,99,255,0.09) 0%, transparent 55%),
-              radial-gradient(ellipse at 30% 80%, rgba(3,218,198,0.05) 0%, transparent 50%)
+              radial-gradient(ellipse at 70% 20%, rgba(16,196,160,0.07) 0%, transparent 55%),
+              radial-gradient(ellipse at 30% 80%, rgba(232,120,48,0.05) 0%, transparent 50%)
             `,
           }}
         />
@@ -263,7 +263,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             py: 2.5,
             position: 'relative',
             zIndex: 1,
-            background: 'linear-gradient(135deg, #0d1b2a 0%, #063a26 100%)',
+            background: 'linear-gradient(135deg, #07101C 0%, #071A16 100%)',
           }}
         >
           <Box
@@ -271,11 +271,11 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               width: 36,
               height: 36,
               borderRadius: 1.5,
-              background: 'linear-gradient(135deg, #6c63ff, #03dac6)',
+              background: 'linear-gradient(135deg, #10C4A0, #0D9E80)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 2px 12px rgba(108,99,255,0.4)',
+              boxShadow: '0 2px 12px rgba(16,196,160,0.4)',
             }}
           >
             <ForumIcon sx={{ color: '#fff', fontSize: 18 }} />
@@ -311,13 +311,13 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
                   : 'rgba(255,255,255,0.85)',
               border: (theme) =>
                 theme.palette.mode === 'dark'
-                  ? '1px solid rgba(255,255,255,0.07)'
-                  : '1px solid rgba(108,99,255,0.1)',
+                  ? '1px solid rgba(143,168,189,0.13)'
+                  : '1px solid rgba(16,196,160,0.15)',
               backdropFilter: 'blur(20px)',
               boxShadow: (theme) =>
                 theme.palette.mode === 'dark'
-                  ? '0 8px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(108,99,255,0.06)'
-                  : '0 8px 48px rgba(108,99,255,0.1), 0 2px 16px rgba(0,0,0,0.06)',
+                  ? '0 8px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(16,196,160,0.06)'
+                  : '0 8px 48px rgba(16,196,160,0.1), 0 2px 16px rgba(0,0,0,0.06)',
               px: { xs: 3, sm: 5 },
               py: { xs: 4, sm: 5 },
             }}

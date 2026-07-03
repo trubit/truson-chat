@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -17,18 +17,18 @@ import { useAuthStore } from '@/store/authStore';
 import { useConversationStore } from '@/store/conversationStore';
 import { useConversations } from '../queries/index';
 import ConversationItem from './ConversationItem';
+import NewConversationDialog from './NewConversationDialog';
 
 const C = {
-  panel: '#080C18',
-  panelHdr: '#0B1022',
-  border: 'rgba(139,92,246,0.12)',
-  accent: '#9B6DFF',
-  accentGlow: 'rgba(155,109,255,0.18)',
-  teal: '#22D3EE',
-  txt1: '#F1F5F9',
-  txt2: '#94A3B8',
-  txt3: '#475569',
-  searchBg: 'rgba(139,92,246,0.07)',
+  panel:     '#111B21',
+  panelHdr:  '#1F2C34',
+  border:    'rgba(134,150,160,0.15)',
+  accent:    '#10C4A0',
+  accentGlow:'rgba(16,196,160,0.14)',
+  txt1:      '#E9EDEF',
+  txt2:      '#8696A0',
+  txt3:      '#567390',
+  searchBg:  'rgba(16,196,160,0.06)',
 } as const;
 
 interface ConversationListProps {
@@ -42,9 +42,12 @@ export default function ConversationList({
 }: ConversationListProps) {
   const [tab, setTab] = useState(0);
   const [search, setSearch] = useState('');
+  const [newChatOpen, setNewChatOpen] = useState(false);
+  const openNewChat = useCallback(() => setNewChatOpen(true), []);
 
   const user = useAuthStore((s) => s.user);
-  const { conversations, orderedIds } = useConversationStore();
+  const conversations = useConversationStore((s) => s.conversations);
+  const orderedIds = useConversationStore((s) => s.orderedIds);
   const { isLoading } = useConversations();
 
   const allConvs = useMemo(
@@ -108,6 +111,7 @@ export default function ConversationList({
           <Tooltip title="New conversation">
             <IconButton
               size="small"
+              onClick={openNewChat}
               sx={{
                 color: C.txt2,
                 borderRadius: '10px',
@@ -215,7 +219,7 @@ export default function ConversationList({
                 width: 56,
                 height: 56,
                 borderRadius: '50%',
-                background: `linear-gradient(135deg, ${alpha(C.accent, 0.14)} 0%, ${alpha(C.teal, 0.08)} 100%)`,
+                background: `linear-gradient(135deg, ${alpha(C.accent, 0.14)} 0%, ${alpha(C.accent, 0.06)} 100%)`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -254,6 +258,10 @@ export default function ConversationList({
           )
         )}
       </Box>
+
+      {newChatOpen && (
+        <NewConversationDialog open={true} onClose={() => setNewChatOpen(false)} />
+      )}
     </Box>
   );
 }

@@ -7,7 +7,7 @@ import mongoose, { Schema, type Document, type Model } from 'mongoose';
 export type MsgType =
   | 'text' | 'image' | 'video' | 'audio' | 'file'
   | 'sticker' | 'gif' | 'location' | 'contact'
-  | 'system' | 'call_ended';
+  | 'voice_note' | 'system' | 'call_ended';
 
 export type MsgStatus = 'sent' | 'delivered' | 'read' | 'deleted';
 
@@ -37,6 +37,7 @@ export interface IMessageMedia {
   duration?:  number;
   thumbnail?: string;
   name?:      string;
+  waveform?:  number[];
 }
 
 export interface IEditEntry {
@@ -106,6 +107,7 @@ const mediaSchema = new Schema<IMessageMedia>(
     duration:  Number,
     thumbnail: String,
     name:      String,
+    waveform:  [{ type: Number }],
   },
   { _id: false },
 );
@@ -128,7 +130,7 @@ const messageSchema = new Schema<IMessage>(
     senderId:       { type: Schema.Types.ObjectId, ref: 'User',         required: true },
     type:           {
       type: String,
-      enum: ['text','image','video','audio','file','sticker','gif','location','contact','system','call_ended'],
+      enum: ['text','image','video','audio','file','sticker','gif','location','contact','voice_note','system','call_ended'],
       default: 'text',
     },
     content:     { type: String, default: '', maxlength: 10_000 },

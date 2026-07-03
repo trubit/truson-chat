@@ -44,6 +44,7 @@ export class MessageController {
         content: string;
         replyTo?: string;
         mentions?: string[];
+        media?: import('../../../database/models/Message.js').IMessageMedia[];
       };
       const data = await messageService.sendMessage(userId, {
         conversationId: dto.conversationId,
@@ -51,6 +52,7 @@ export class MessageController {
         content: dto.content,
         replyTo: dto.replyTo,
         mentions: dto.mentions,
+        media: dto.media,
       });
       res.status(201).json({ success: true, data });
     } catch (err) {

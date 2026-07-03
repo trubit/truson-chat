@@ -121,6 +121,7 @@ export class MessageService {
       content: dto.content,
       replyTo: dto.replyTo,
       mentions: dto.mentions,
+      media: dto.media,
     });
 
     // Update conversation lastMessage snapshot

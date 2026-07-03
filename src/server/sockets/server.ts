@@ -165,12 +165,16 @@ export async function setupSocketServer(
       lastSeen: null,
     });
 
-    // Set user online when socket connects
+    // Set user online and broadcast to all connected clients
     try {
       const presenceRepo = new PresenceRepository();
       const presenceService = new PresenceService(presenceRepo);
       void presenceService.setUserOnline(socket.data.userId);
     } catch { /* graceful */ }
+    socket.broadcast.emit('presence:updated', {
+      userId: socket.data.userId,
+      status: 'online',
+    });
 
     socket.on('disconnect', async () => {
       // Broadcast offline status after disconnect
@@ -266,6 +270,7 @@ export async function setupSocketServer(
             content: payload.content,
             replyTo: payload.replyTo,
             mentions: payload.mentions,
+            media: payload.media as import('../database/models/Message.js').IMessageMedia[] | undefined,
           });
           // Emit to all members of the conversation
           chat
@@ -454,6 +459,27 @@ export async function setupSocketServer(
         }
       },
     );
+
+    // Media events
+    socket.on('media:upload_complete', async (payload: {
+      conversationId: string;
+      mediaId:        string;
+      type:           string;
+    }) => {
+      try {
+        socket.to(`conversation:${payload.conversationId}`).emit('media:uploaded', {
+          conversationId: payload.conversationId,
+          mediaId:        payload.mediaId,
+          type:           payload.type,
+          uploaderId:     userId,
+        });
+      } catch (err) {
+        logger.error('media:upload_complete error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    });
   });
 
   // ── /calls namespace ──────────────────────────────────────────────────────

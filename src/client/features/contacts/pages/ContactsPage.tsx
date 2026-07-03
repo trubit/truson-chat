@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Paper, TextField, InputAdornment,
   Avatar, Chip, IconButton, Button, CircularProgress,
@@ -9,13 +10,24 @@ import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ChatIcon from '@mui/icons-material/Chat';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { useContacts, useToggleFavorite, useContactSearch } from '../queries/index';
+import { useCreateConversation } from '@/features/chat/queries/index';
+import { ROUTES } from '@/routes/index';
 import type { IContactWithUser } from '@shared/types/social';
 
 function ContactItem({ contact }: { contact: IContactWithUser }) {
+  const navigate = useNavigate();
   const toggle = useToggleFavorite();
+  const createConversation = useCreateConversation();
   const initials = contact.displayName.charAt(0).toUpperCase();
+
+  const handleMessage = () => {
+    createConversation.mutate(contact.contactUserId, {
+      onSuccess: (res) => navigate(`${ROUTES.CHAT}/${res.data._id}`),
+    });
+  };
 
   return (
     <ListItem alignItems="flex-start" divider>
@@ -47,7 +59,19 @@ function ContactItem({ contact }: { contact: IContactWithUser }) {
           </Typography>
         }
       />
-      <ListItemSecondaryAction>
+      <ListItemSecondaryAction sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Tooltip title="Message">
+          <IconButton
+            size="small"
+            onClick={handleMessage}
+            disabled={createConversation.isPending}
+            aria-label="Send message"
+          >
+            {createConversation.isPending
+              ? <CircularProgress size={16} />
+              : <ChatIcon fontSize="small" color="primary" />}
+          </IconButton>
+        </Tooltip>
         <Tooltip title={contact.isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
           <IconButton
             edge="end"

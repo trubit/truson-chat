@@ -1,6 +1,6 @@
-import type { MediaAsset, PublicUser } from './user.js';
+import type { PublicUser } from './user.js';
 
-export type MessageType =
+type NewType =
   | 'text'
   | 'image'
   | 'video'
@@ -11,19 +11,26 @@ export type MessageType =
   | 'location'
   | 'contact'
   | 'poll'
+  | 'voice_note'
   | 'system'
   | 'call_ended';
 
+export type MessageType = NewType;
+
 export type MessageStatus = 'sent' | 'delivered' | 'read' | 'deleted';
 
-export interface MessageMedia extends MediaAsset {
-  type: string;
-  size: number;
+export interface MessageMedia {
+  url: string;
+  publicId?: string;
+  mimeType?: string;
+  type?: string;
+  size?: number;
   duration?: number;
   width?: number;
   height?: number;
   thumbnail?: string;
   originalName?: string;
+  waveform?: number[];
 }
 
 export interface MessageReaction {
@@ -61,7 +68,7 @@ export interface SendMessagePayload {
   content: string;
   replyTo?: string;
   mentions?: string[];
-  media?: string[];
+  media?: MessageMedia[];
 }
 
 export interface EditMessagePayload {

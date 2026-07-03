@@ -1,4 +1,5 @@
 import { useState, type SyntheticEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box, Typography, Paper, Tabs, Tab, Avatar, Button,
   CircularProgress, List, ListItem, ListItemAvatar,
@@ -6,16 +7,28 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import ChatIcon from '@mui/icons-material/Chat';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import {
   useFriends, useReceivedRequests, useSentRequests,
   useAcceptFriendRequest, useRejectFriendRequest,
   useCancelFriendRequest, useRemoveFriend,
 } from '../queries/index';
+import { useCreateConversation } from '@/features/chat/queries/index';
+import { ROUTES } from '@/routes/index';
 import type { IFriendData, IFriendRequestData } from '@shared/types/social';
 
 function FriendItem({ friend }: { friend: IFriendData }) {
+  const navigate = useNavigate();
   const remove = useRemoveFriend();
+  const createConversation = useCreateConversation();
+
+  const handleMessage = () => {
+    createConversation.mutate(friend.friendId, {
+      onSuccess: (res) => navigate(`${ROUTES.CHAT}/${res.data._id}`),
+    });
+  };
+
   return (
     <ListItem divider>
       <ListItemAvatar>
@@ -27,7 +40,16 @@ function FriendItem({ friend }: { friend: IFriendData }) {
         primary={<Typography variant="body1" sx={{ fontWeight: 600 }}>{friend.displayName}</Typography>}
         secondary={<Typography variant="caption" color="text.secondary">@{friend.username}</Typography>}
       />
-      <ListItemSecondaryAction>
+      <ListItemSecondaryAction sx={{ display: 'flex', gap: 1 }}>
+        <Button
+          size="small"
+          variant="contained"
+          startIcon={createConversation.isPending ? <CircularProgress size={14} color="inherit" /> : <ChatIcon />}
+          onClick={handleMessage}
+          disabled={createConversation.isPending}
+        >
+          Message
+        </Button>
         <Button
           size="small"
           color="error"

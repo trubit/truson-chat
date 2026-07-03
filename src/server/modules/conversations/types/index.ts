@@ -26,6 +26,13 @@ export interface ConversationListQuery {
   archived?: boolean;
 }
 
+export interface MemberProfile {
+  userId: string;
+  displayName: string;
+  username: string;
+  avatar?: string;
+}
+
 export interface ConversationResponse {
   _id: string;
   type: string;
@@ -55,4 +62,6 @@ export interface ConversationResponse {
   isMuted: boolean;
   muteUntil?: string;
   myRole: string;
+  // participant display info
+  memberProfiles: MemberProfile[];
 }

@@ -1,12 +1,14 @@
 import mongoose from 'mongoose';
 import { AppError } from '../../../middlewares/errorHandler.js';
 import { BlockedUserModel } from '../../../database/models/BlockedUser.js';
+import { UserModel, ProfileModel } from '../../../database/models/index.js';
 import type { IConversation } from '../../../database/models/Conversation.js';
 import type { IConversationMember } from '../../../database/models/ConversationMember.js';
 import { ConversationRepository } from '../repository/index.js';
 import type {
   ConversationListQuery,
   ConversationResponse,
+  MemberProfile,
   MuteConversationDto,
 } from '../types/index.js';
 
@@ -17,6 +19,7 @@ import type {
 function toResponse(
   conv: IConversation,
   member: IConversationMember,
+  memberProfiles: MemberProfile[] = [],
 ): ConversationResponse {
   return {
     _id: conv._id.toString(),
@@ -54,7 +57,41 @@ function toResponse(
     isMuted: member.isMuted,
     muteUntil: member.muteUntil?.toISOString(),
     myRole: member.role,
+    memberProfiles,
   };
+}
+
+async function fetchMemberProfiles(participantIds: string[]): Promise<MemberProfile[]> {
+  if (participantIds.length === 0) return [];
+  const objectIds = participantIds.map((id) => new mongoose.Types.ObjectId(id));
+
+  // Get usernames from User model
+  const users = await UserModel.find(
+    { _id: { $in: objectIds } },
+    { _id: 1, username: 1 },
+  ).lean().exec();
+
+  // Get display names + avatars from Profile model
+  const profiles = await ProfileModel.find(
+    { userId: { $in: objectIds } },
+    { userId: 1, displayName: 1, 'avatar.url': 1 },
+  ).lean().exec();
+
+  const usernameMap = new Map(users.map((u) => [u._id.toString(), u.username]));
+  const profileMap = new Map(
+    profiles.map((p) => [p.userId.toString(), p]),
+  );
+
+  return participantIds.map((id) => {
+    const username = usernameMap.get(id) ?? 'unknown';
+    const profile = profileMap.get(id);
+    return {
+      userId: id,
+      displayName: profile?.displayName ?? username,
+      username,
+      avatar: profile?.avatar?.url,
+    };
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -122,7 +159,10 @@ export class ConversationService {
       throw new AppError('Conversation not found', 404, 'NOT_FOUND');
     }
 
-    return toResponse(conversation, member);
+    const profiles = await fetchMemberProfiles(
+      conversation.participants.map((p) => p.toString()),
+    );
+    return toResponse(conversation, member, profiles);
   }
 
   async getConversation(
@@ -143,7 +183,10 @@ export class ConversationService {
       throw new AppError('Conversation not found', 404, 'NOT_FOUND');
     }
 
-    return toResponse(conversation, member);
+    const profiles = await fetchMemberProfiles(
+      conversation.participants.map((p) => p.toString()),
+    );
+    return toResponse(conversation, member, profiles);
   }
 
   async getConversations(
@@ -164,7 +207,19 @@ export class ConversationService {
       limit,
     });
 
-    const responses = conversations.map(({ conv, member }) => toResponse(conv, member));
+    // Batch-fetch all unique participant profiles
+    const allParticipantIds = [
+      ...new Set(conversations.flatMap(({ conv }) => conv.participants.map((p) => p.toString()))),
+    ];
+    const profiles = await fetchMemberProfiles(allParticipantIds);
+    const profileMap = new Map(profiles.map((p) => [p.userId, p]));
+
+    const responses = conversations.map(({ conv, member }) => {
+      const convProfiles = conv.participants
+        .map((p) => profileMap.get(p.toString()))
+        .filter((p): p is MemberProfile => p !== undefined);
+      return toResponse(conv, member, convProfiles);
+    });
 
     return {
       conversations: responses,

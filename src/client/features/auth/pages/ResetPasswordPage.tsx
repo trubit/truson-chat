@@ -29,15 +29,12 @@ const PASSWORD_COMPLEXITY =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).+$/;
 
 function extractErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
   if (typeof error === 'object' && error !== null && 'response' in error) {
     const axiosError = error as { response?: { data?: { message?: string; error?: string } } };
-    return (
-      axiosError.response?.data?.message ??
-      axiosError.response?.data?.error ??
-      'Failed to reset password. The link may have expired.'
-    );
+    const msg = axiosError.response?.data?.message ?? axiosError.response?.data?.error;
+    if (msg) return msg;
   }
+  if (error instanceof Error) return error.message;
   return 'Failed to reset password. The link may have expired.';
 }
 

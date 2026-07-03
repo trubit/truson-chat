@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Box, Typography, Paper, TextField, InputAdornment,
   Avatar, Button, CircularProgress, Grid, Card,
@@ -13,12 +14,57 @@ import { useAddContact } from '@/features/contacts/queries/index';
 import type { DiscoveredUser } from '@shared/types/social';
 
 function UserCard({ user }: { user: DiscoveredUser }) {
+  const queryClient = useQueryClient();
   const sendRequest = useSendFriendRequest();
-  const addContact = useAddContact();
+  const addContact  = useAddContact();
 
-  const initials = user.displayName.charAt(0).toUpperCase();
-  const canAddFriend = !user.isFriend && !user.pendingRequest;
-  const canAddContact = !user.isContact;
+  // Local optimistic state so the UI updates immediately on click
+  const [friendSent,    setFriendSent]    = useState(user.pendingRequest === 'sent');
+  const [contactAdded,  setContactAdded]  = useState(user.isContact);
+  const [friendError,   setFriendError]   = useState('');
+  const [contactError,  setContactError]  = useState('');
+
+  const initials      = user.displayName.charAt(0).toUpperCase();
+  const isFriend      = user.isFriend;
+  const canAddFriend  = !isFriend && !friendSent && user.pendingRequest !== 'received';
+  const canAddContact = !isFriend && !contactAdded;
+
+  const handleAddFriend = () => {
+    setFriendError('');
+    setFriendSent(true);
+    sendRequest.mutate(
+      { userId: user.id },
+      {
+        onSuccess: () => {
+          // Refresh search so server-side flags sync
+          void queryClient.invalidateQueries({ queryKey: ['discovery', 'search'] });
+        },
+        onError: (err: unknown) => {
+          setFriendSent(false);
+          const msg = err instanceof Error ? err.message : 'Failed to send request';
+          setFriendError(msg);
+        },
+      },
+    );
+  };
+
+  const handleAddContact = () => {
+    setContactError('');
+    setContactAdded(true);
+    addContact.mutate(
+      { userId: user.id },
+      {
+        onSuccess: () => {
+          void queryClient.invalidateQueries({ queryKey: ['discovery', 'search'] });
+        },
+        onError: (err: unknown) => {
+          setContactAdded(false);
+          const msg = err instanceof Error ? err.message : 'Failed to add contact';
+          setContactError(msg);
+        },
+      },
+    );
+  };
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 2 }}>
@@ -40,33 +86,36 @@ function UserCard({ user }: { user: DiscoveredUser }) {
           </Typography>
         )}
         <Box sx={{ mt: 1, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-          {user.isFriend && <Chip label="Friend" size="small" color="primary" icon={<CheckIcon />} />}
-          {user.isContact && <Chip label="Contact" size="small" variant="outlined" />}
-          {user.pendingRequest === 'sent' && <Chip label="Request sent" size="small" color="info" />}
+          {isFriend           && <Chip label="Friend"           size="small" color="primary" icon={<CheckIcon />} />}
+          {contactAdded       && <Chip label="Contact"          size="small" variant="outlined" />}
+          {friendSent         && <Chip label="Request sent"     size="small" color="info" />}
           {user.pendingRequest === 'received' && <Chip label="Wants to connect" size="small" color="success" />}
           {user.mutualFriendCount > 0 && (
             <Chip label={`${user.mutualFriendCount} mutual`} size="small" variant="outlined" />
           )}
         </Box>
+        {friendError  && <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>{friendError}</Typography>}
+        {contactError && <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>{contactError}</Typography>}
       </CardContent>
       <CardActions sx={{ px: 2, pb: 2, gap: 1 }}>
         {canAddFriend && (
           <Button
             size="small"
             variant="contained"
-            startIcon={<PersonAddIcon />}
-            onClick={() => sendRequest.mutate({ userId: user.id })}
+            startIcon={sendRequest.isPending ? <CircularProgress size={14} color="inherit" /> : <PersonAddIcon />}
+            onClick={handleAddFriend}
             disabled={sendRequest.isPending}
             fullWidth
           >
             Add friend
           </Button>
         )}
-        {canAddContact && !user.isFriend && (
+        {canAddContact && (
           <Button
             size="small"
             variant="outlined"
-            onClick={() => addContact.mutate({ userId: user.id })}
+            startIcon={addContact.isPending ? <CircularProgress size={14} color="inherit" /> : undefined}
+            onClick={handleAddContact}
             disabled={addContact.isPending}
             fullWidth
           >
@@ -79,7 +128,9 @@ function UserCard({ user }: { user: DiscoveredUser }) {
 }
 
 export default function DiscoveryPage() {
-  const [query, setQuery] = useState('');
+  const [rawQuery, setRawQuery] = useState('');
+  // Strip leading @ so users can type "@username" or "username" interchangeably
+  const query = rawQuery.startsWith('@') ? rawQuery.slice(1) : rawQuery;
 
   const { data: searchData, isFetching } = useSearchUsers({ q: query }, query.length >= 2);
   const { data: suggestions = [] } = useSuggestions(12);
@@ -87,7 +138,7 @@ export default function DiscoveryPage() {
   const clearRecent = useClearRecentSearches();
 
   const searchResults = searchData?.users ?? [];
-  const showResults = query.length >= 2;
+  const showResults = rawQuery.length >= 2;
 
   return (
     <Box sx={{ maxWidth: 900, mx: 'auto', p: { xs: 1.5, sm: 2.5 } }}>
@@ -99,8 +150,8 @@ export default function DiscoveryPage() {
           fullWidth
           size="small"
           placeholder="Search by name or username…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={rawQuery}
+          onChange={(e) => setRawQuery(e.target.value)}
           slotProps={{
             input: {
               startAdornment: (
@@ -120,7 +171,7 @@ export default function DiscoveryPage() {
             Results
           </Typography>
           {searchResults.length === 0 && !isFetching && (
-            <Alert severity="info">No users found for &ldquo;{query}&rdquo;.</Alert>
+            <Alert severity="info">No users found for &ldquo;{rawQuery}&rdquo;.</Alert>
           )}
           <Grid container spacing={2}>
             {searchResults.map((user) => (
@@ -149,7 +200,7 @@ export default function DiscoveryPage() {
                 key={r.userId}
                 avatar={<Avatar src={r.avatar}>{r.displayName.charAt(0)}</Avatar>}
                 label={r.displayName}
-                onClick={() => setQuery(r.username)}
+                onClick={() => setRawQuery(r.username)}
                 clickable
               />
             ))}

@@ -67,10 +67,16 @@ const AUDIO_MIME_TYPES = new Set([
   'audio/mp3',
   'audio/ogg',
   'audio/wav',
+  'audio/wave',
+  'audio/x-wav',
   'audio/webm',
   'audio/aac',
+  'audio/x-aac',
   'audio/flac',
   'audio/x-m4a',
+  'audio/mp4',   // M4A files reported by Chrome
+  'audio/opus',
+  'audio/x-ms-wma',
 ]);
 
 const DOCUMENT_MIME_TYPES = new Set([

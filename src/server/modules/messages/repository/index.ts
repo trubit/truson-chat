@@ -18,6 +18,7 @@ export class MessageRepository {
     content: string;
     replyTo?: string;
     mentions?: string[];
+    media?: import('../../../database/models/Message.js').IMessageMedia[];
   }): Promise<IMessage> {
     const doc = await MessageModel.create({
       conversationId: new mongoose.Types.ObjectId(data.conversationId),
@@ -30,6 +31,7 @@ export class MessageRepository {
       mentions: (data.mentions ?? []).map(
         (id) => new mongoose.Types.ObjectId(id),
       ),
+      media: data.media ?? [],
       status: 'sent',
     });
     return doc;

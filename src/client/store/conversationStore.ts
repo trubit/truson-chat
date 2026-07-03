@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 import type { Conversation } from '@shared/types';
 
+export interface MemberProfile {
+  userId: string;
+  displayName: string;
+  username: string;
+  avatar?: string;
+}
+
 // Extended conversation with membership data from API
 export interface ConversationWithMeta extends Conversation {
   unreadCount: number;
@@ -8,6 +15,7 @@ export interface ConversationWithMeta extends Conversation {
   isArchived: boolean;
   isMuted: boolean;
   myRole: string;
+  memberProfiles?: MemberProfile[];
 }
 
 interface ConversationState {

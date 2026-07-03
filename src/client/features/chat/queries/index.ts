@@ -109,20 +109,23 @@ export function useMessages(conversationId: string | null) {
       >(url);
       const msgs = res.data.messages;
       const hasMore = res.data.hasMore;
-      const cursor = msgs[msgs.length - 1]?._id;
+      // Server already returns messages in ascending order (oldest first).
+      // Use the oldest message ID as the cursor for "load more older" pages.
+      const cursor = msgs[0]?._id;
 
       if (!pageParam) {
-        // First page — set in store (reversed for display: oldest first)
-        setMessages(conversationId!, [...msgs].reverse(), hasMore, cursor);
+        // First page — store as-is (already oldest-first)
+        setMessages(conversationId!, msgs, hasMore, cursor);
       } else {
-        // Subsequent pages (older messages) — prepend reversed
-        prependMessages(conversationId!, [...msgs].reverse(), hasMore, cursor);
+        // Older-message page — prepend before existing messages
+        prependMessages(conversationId!, msgs, hasMore, cursor);
       }
       return res.data;
     },
     getNextPageParam: (lastPage) => {
       if (!lastPage.hasMore) return undefined;
-      return lastPage.messages[lastPage.messages.length - 1]?._id;
+      // Pass the OLDEST message ID so the next page fetches messages before it
+      return lastPage.messages[0]?._id;
     },
     initialPageParam: undefined as string | undefined,
     enabled: Boolean(conversationId),

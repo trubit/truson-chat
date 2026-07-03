@@ -30,15 +30,12 @@ interface LoginFormValues {
 }
 
 function extractErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
   if (typeof error === 'object' && error !== null && 'response' in error) {
     const axiosError = error as { response?: { data?: { message?: string; error?: string } } };
-    return (
-      axiosError.response?.data?.message ??
-      axiosError.response?.data?.error ??
-      'Login failed. Please try again.'
-    );
+    const msg = axiosError.response?.data?.message ?? axiosError.response?.data?.error;
+    if (msg) return msg;
   }
+  if (error instanceof Error) return error.message;
   return 'Login failed. Please try again.';
 }
 
@@ -209,11 +206,11 @@ export default function LoginPage() {
               letterSpacing: '0.02em',
               background: isLoading
                 ? undefined
-                : 'linear-gradient(135deg, #6c63ff 0%, #5a52d5 100%)',
-              boxShadow: '0 4px 20px rgba(108,99,255,0.35)',
+                : 'linear-gradient(135deg, #10C4A0 0%, #0D9E80 100%)',
+              boxShadow: '0 4px 20px rgba(16,196,160,0.35)',
               '&:hover': {
-                background: 'linear-gradient(135deg, #5a52d5 0%, #4a42c5 100%)',
-                boxShadow: '0 6px 28px rgba(108,99,255,0.45)',
+                background: 'linear-gradient(135deg, #0D9E80 0%, #0A8068 100%)',
+                boxShadow: '0 6px 28px rgba(16,196,160,0.45)',
                 transform: 'translateY(-1px)',
               },
               '&:active': { transform: 'translateY(0)' },
