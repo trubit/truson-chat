@@ -26,6 +26,8 @@ import { useAuthStore }         from '@/store/authStore';
 import { useConversationStore } from '@/store/conversationStore';
 import { useMessageStore }      from '@/store/messageStore';
 import { usePresenceStore }     from '@/store/presenceStore';
+import { useSocketStore }       from '@/store';
+import { getChatSocket }        from '../hooks/useChatSocket';
 import { useMessages }          from '../queries/index';
 import MessageBubble   from './MessageBubble';
 import MessageComposer from './MessageComposer';
@@ -122,6 +124,14 @@ export default function ChatWindow({
   const initialConvRef       = useRef<string>('');
 
   const { isLoading, fetchNextPage, hasNextPage } = useMessages(conversationId);
+  const isConnected = useSocketStore((s) => s.isConnected);
+
+  // ── Ensure this socket is in the conversation room (handles new DMs created after connect) ──
+  useEffect(() => {
+    const socket = getChatSocket();
+    if (!socket || !conversationId) return;
+    socket.emit('conversation:join', { conversationId });
+  }, [conversationId, isConnected]);
 
   // ── Reset per-conversation state ──────────────────────────────────────────
   useEffect(() => {
@@ -207,7 +217,25 @@ export default function ChatWindow({
   // ── Message actions ───────────────────────────────────────────────────────
   const handleSend = useCallback(
     async (content: string, replyToId?: string, media?: MessageMedia[], type?: string) => {
-      await sendMessage({ conversationId, type: (type ?? 'text') as import('@shared/types').MessageType, content, replyTo: replyToId, media });
+      const result = await sendMessage({
+        conversationId,
+        type: (type ?? 'text') as import('@shared/types').MessageType,
+        content,
+        replyTo: replyToId,
+        media,
+      });
+      // Immediately add to store from the callback so the sender always sees
+      // their message without waiting for the socket room broadcast echo.
+      if (result.success && result.message) {
+        useMessageStore.getState().appendMessage(result.message);
+        useConversationStore.getState().updateLastMessage(result.message.conversationId, {
+          messageId: result.message._id,
+          content:   result.message.content,
+          senderId:  result.message.senderId,
+          type:      result.message.type,
+          timestamp: result.message.createdAt,
+        });
+      }
       setReplyTo(null);
     },
     [conversationId, sendMessage],

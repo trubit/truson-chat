@@ -3,6 +3,7 @@
 import multer, { type FileFilterCallback } from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { randomBytes } from 'crypto';
 import type { Request } from 'express';
 import { getEnv } from '../config/env.js';
 
@@ -29,9 +30,8 @@ function createDiskStorage(subdir: string) {
       cb(null, dir);
     },
     filename: (_req, file, cb) => {
-      // <timestamp>-<random>.<ext>  — avoids name collisions
       const ext = path.extname(file.originalname).toLowerCase();
-      const name = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+      const name = `${Date.now()}-${randomBytes(8).toString('hex')}${ext}`;
       cb(null, name);
     },
   });

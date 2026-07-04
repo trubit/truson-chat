@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Outlet, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet, useMatch } from 'react-router-dom';
 import {
   Box, Avatar, Tooltip, Typography,
   IconButton, Divider,
   useMediaQuery, useTheme, Drawer, alpha,
 } from '@mui/material';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import GroupsIcon from '@mui/icons-material/Groups';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import ExploreIcon from '@mui/icons-material/Explore';
+import Diversity3Icon from '@mui/icons-material/Diversity3';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import BlockIcon from '@mui/icons-material/Block';
@@ -19,6 +21,7 @@ import { useLogout } from '@/features/auth/queries';
 import { ROUTES } from '@/routes/index';
 import ShieldIcon from '@mui/icons-material/Shield';
 import ConversationList from '@/features/chat/components/ConversationList';
+import { useChatSocket } from '@/features/chat/hooks/useChatSocket';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
 
@@ -57,10 +60,12 @@ const C = {
 // ─── Nav items ─────────────────────────────────────────────────────────────────
 
 const PRIMARY_NAV = [
-  { label: 'Chats',    icon: <ChatBubbleIcon sx={{ fontSize: 21 }} />,    path: ROUTES.CHAT },
-  { label: 'Contacts', icon: <PeopleAltIcon sx={{ fontSize: 21 }} />,     path: ROUTES.CONTACTS },
-  { label: 'Friends',  icon: <PersonAddAlt1Icon sx={{ fontSize: 21 }} />, path: ROUTES.FRIENDS },
-  { label: 'Discover', icon: <ExploreIcon sx={{ fontSize: 21 }} />,       path: ROUTES.DISCOVERY },
+  { label: 'Chats',       icon: <ChatBubbleIcon sx={{ fontSize: 21 }} />,    path: ROUTES.CHAT },
+  { label: 'Groups',      icon: <GroupsIcon sx={{ fontSize: 21 }} />,        path: ROUTES.GROUPS },
+  { label: 'Communities', icon: <Diversity3Icon sx={{ fontSize: 21 }} />,    path: ROUTES.COMMUNITIES },
+  { label: 'Contacts',    icon: <PeopleAltIcon sx={{ fontSize: 21 }} />,     path: ROUTES.CONTACTS },
+  { label: 'Friends',     icon: <PersonAddAlt1Icon sx={{ fontSize: 21 }} />, path: ROUTES.FRIENDS },
+  { label: 'Discover',    icon: <ExploreIcon sx={{ fontSize: 21 }} />,       path: ROUTES.DISCOVERY },
 ];
 
 const SECONDARY_NAV = [
@@ -186,13 +191,19 @@ function IconStrip({ onNav }: { onNav: (p: string) => void }) {
 // ─── Chat list panel wrapper (uses real ConversationList) ─────────────────────
 
 function ChatListPanel() {
-  const navigate = useNavigate();
-  const { id: activeId } = useParams<{ id?: string }>();
+  const navigate    = useNavigate();
+  const convMatch   = useMatch('/chat/:id');
+  const groupMatch  = useMatch('/chat/g/:groupId');
+
+  // Active id: conversation id as-is, group id prefixed with "g:" so GroupRow can match
+  const activeId =
+    convMatch?.params.id ??
+    (groupMatch?.params.groupId ? `g:${groupMatch.params.groupId}` : null);
 
   return (
     <ConversationList
       onConversationSelect={(convId) => navigate(`${ROUTES.CHAT}/${convId}`)}
-      activeId={activeId ?? null}
+      activeId={activeId}
     />
   );
 }
@@ -251,7 +262,7 @@ function DesktopLayout() {
   const location = useLocation();
 
   const isChat = location.pathname === ROUTES.CHAT || location.pathname.startsWith(ROUTES.CHAT + '/');
-  const hasConversation = location.pathname.startsWith(ROUTES.CHAT + '/');
+  const hasConversation = location.pathname.startsWith(ROUTES.CHAT + '/') && location.pathname !== ROUTES.CHAT;
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden', bgcolor: C.main }}>
@@ -390,6 +401,7 @@ function MobileLayout() {
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
 export default function AppLayout() {
+  useChatSocket(); // keep socket connected + DM event listeners alive across all pages
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   return isMobile ? <MobileLayout /> : <DesktopLayout />;

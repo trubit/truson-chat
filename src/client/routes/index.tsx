@@ -9,6 +9,7 @@ export const ROUTES = {
   // Chat
   CHAT: '/chat',
   CHAT_CONVERSATION: '/chat/:id',
+  CHAT_GROUP: '/chat/g/:groupId',
   // Social — Phase 4
   CONTACTS: '/contacts',
   FRIENDS: '/friends',
@@ -24,6 +25,11 @@ export const ROUTES = {
   SETTINGS_NOTIFICATIONS: '/settings/notifications',
   SETTINGS_SECURITY: '/settings/security',
   PROFILE_EDIT: '/settings/profile',
+  // Phase 7 — Groups, Communities, Channels
+  GROUPS:          '/groups',
+  GROUP:           '/groups/:groupId',
+  COMMUNITIES:     '/communities',
+  COMMUNITY:       '/communities/:communityId',
   // Admin
   ADMIN: '/admin',
   ADMIN_USERS: '/admin/users',

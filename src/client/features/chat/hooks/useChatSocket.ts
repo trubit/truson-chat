@@ -7,7 +7,9 @@ import { useConversationStore, type ConversationWithMeta } from '@/store/convers
 import { useMessageStore } from '@/store/messageStore';
 import { usePresenceStore } from '@/store/presenceStore';
 import { useTypingStore } from '@/store/typingStore';
+import { useGroupStore } from '@/store/groupStore';
 import type { Message, SendMessagePayload } from '@shared/types';
+import type { GroupMessage } from '@shared/types';
 import type { PresenceStatus } from '@shared/types/social';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL as string;
@@ -164,6 +166,20 @@ export function useChatSocket() {
       }
     };
 
+    // Global group message handler — keeps the conversation list updated for all groups
+    // even when the user is not currently viewing a specific group chat.
+    // useGroupSocket (inside GroupWindow) handles upsertMessage for the active group;
+    // this handler covers everything else: lastMessageAt sort order + unread badge.
+    const onGroupMessageNew = (msg: GroupMessage) => {
+      const gs = useGroupStore.getState();
+      gs.updateLastMessage(msg.groupId, msg.createdAt);
+      const myId = useAuthStore.getState().user?._id;
+      const isViewingGroup = window.location.pathname.endsWith(`/chat/g/${msg.groupId}`);
+      if (myId && msg.senderId !== myId && !isViewingGroup) {
+        gs.incrementUnread(msg.groupId);
+      }
+    };
+
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('connect_error', onConnectError);
@@ -179,6 +195,7 @@ export function useChatSocket() {
     socket.on('user:online', onUserOnline);
     socket.on('user:offline', onUserOffline);
     socket.on('presence:updated', onPresenceUpdated);
+    socket.on('group:message:new', onGroupMessageNew);
 
     if (!socket.connected) {
       useSocketStore.getState().setConnecting(true);
@@ -201,6 +218,7 @@ export function useChatSocket() {
       socket.off('user:online', onUserOnline);
       socket.off('user:offline', onUserOffline);
       socket.off('presence:updated', onPresenceUpdated);
+      socket.off('group:message:new', onGroupMessageNew);
     };
   }, [isAuthenticated, accessToken]);
 
@@ -272,6 +290,10 @@ export function useChatSocket() {
   );
 
   return { sendMessage, sendTypingStart, sendTypingStop, sendRead, sendDeleteMessage, sendReactToMessage };
+}
+
+export function getChatSocket() {
+  return chatSocketInstance;
 }
 
 export function disconnectChatSocket() {

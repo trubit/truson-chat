@@ -616,8 +616,9 @@ export class AuthService {
   async sendPhoneOtp(userId: string, phone: string): Promise<void> {
     const env = getEnv();
 
-    // Generate 6-digit OTP
-    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    // Generate cryptographically secure 6-digit OTP
+    const { randomInt } = await import('crypto');
+    const otp = String(randomInt(100000, 1000000));
 
     const redisKey = `phone_otp:${userId}:${phone}`;
     const ttlSeconds = env.OTP_EXPIRY_MINUTES * 60;
@@ -625,10 +626,13 @@ export class AuthService {
     await redisClient.set(redisKey, otp, 'EX', ttlSeconds);
 
     if (env.NODE_ENV !== 'production') {
-      logger.info('Phone OTP (dev mode)', { userId, phone, otp });
+      logger.info('Phone OTP (dev only)', { userId, phone: phone.replace(/\d(?=\d{4})/g, '*') });
+      logger.debug('Phone OTP value', { otp });
     } else {
-      // In production, integrate with an SMS provider here (e.g. Twilio)
-      logger.info('Phone OTP requested', { userId, phone });
+      if (!env.SMTP_USER) {
+        throw new AppError('SMS provider not configured', 503, 'SERVICE_UNAVAILABLE');
+      }
+      logger.info('Phone OTP requested', { userId });
     }
   }
 

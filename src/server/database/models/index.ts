@@ -76,3 +76,52 @@ export type { ISharedContact, IContactPhone, IContactEmail } from './SharedConta
 
 export { SharedLocationModel } from './SharedLocation.js';
 export type { ISharedLocation } from './SharedLocation.js';
+
+// ---------------------------------------------------------------------------
+// Phase 7 — Groups, Communities, Channels
+// ---------------------------------------------------------------------------
+
+export { GroupModel } from './Group.js';
+export type { IGroup, IGroupSettings, GroupType, GroupStatus, InvitePermission, MessagePermission } from './Group.js';
+
+export { GroupMemberModel } from './GroupMember.js';
+export type { IGroupMember, GroupMemberRole } from './GroupMember.js';
+
+export { GroupRoleModel, ALL_GROUP_PERMISSIONS, DEFAULT_MEMBER_PERMISSIONS } from './GroupRole.js';
+export type { IGroupRole, GroupPermission } from './GroupRole.js';
+
+export { GroupBanModel } from './GroupBan.js';
+export type { IGroupBan } from './GroupBan.js';
+
+export { GroupMuteModel } from './GroupMute.js';
+export type { IGroupMute } from './GroupMute.js';
+
+export { GroupInvitationModel } from './GroupInvitation.js';
+export type { IGroupInvitation, InvitationStatus, InvitationType } from './GroupInvitation.js';
+
+export { GroupJoinRequestModel } from './GroupJoinRequest.js';
+export type { IGroupJoinRequest, JoinRequestStatus } from './GroupJoinRequest.js';
+
+export { GroupMessageModel } from './GroupMessage.js';
+export type { IGroupMessage, IGroupMessageMedia, IGroupMessageReaction, IGroupMention, GroupMsgType, GroupMsgStatus } from './GroupMessage.js';
+
+export { GroupMessageReadModel } from './GroupMessageRead.js';
+export type { IGroupMessageRead } from './GroupMessageRead.js';
+
+export { CommunityModel } from './Community.js';
+export type { ICommunity, ICommunitySettings, ICommunityAvatar, CommunityType, CommunityStatus } from './Community.js';
+
+export { CommunityMemberModel } from './CommunityMember.js';
+export type { ICommunityMember, CommunityMemberRole } from './CommunityMember.js';
+
+export { CommunityGroupModel } from './CommunityGroup.js';
+export type { ICommunityGroup } from './CommunityGroup.js';
+
+export { ChannelModel } from './Channel.js';
+export type { IChannel, IChannelPermissionOverride, ChannelType, ChannelStatus } from './Channel.js';
+
+export { ChannelMemberModel } from './ChannelMember.js';
+export type { IChannelMember } from './ChannelMember.js';
+
+export { AnnouncementModel } from './Announcement.js';
+export type { IAnnouncement, IAnnouncementAttachment, AnnouncementScope, AnnouncementStatus } from './Announcement.js';

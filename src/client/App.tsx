@@ -52,7 +52,15 @@ const AdminSystem    = lazy(() => import('./features/admin/pages/AdminSystem'));
 // Chat (Phase 5 real-time messaging)
 // ---------------------------------------------------------------------------
 
-const ChatPage = lazy(() => import('./features/chat/pages/ChatPage'));
+const ChatPage      = lazy(() => import('./features/chat/pages/ChatPage'));
+const GroupChatPage = lazy(() => import('./features/groups/pages/GroupChatPage'));
+
+// ---------------------------------------------------------------------------
+// Phase 7 — Groups & Communities
+// ---------------------------------------------------------------------------
+
+const GroupsPage      = lazy(() => import('./features/groups/pages/GroupsPage'));
+const CommunitiesPage = lazy(() => import('./features/groups/pages/CommunitiesPage'));
 
 function NotFoundPage() {
   return (
@@ -100,6 +108,13 @@ export default function App() {
               {/* Chat */}
               <Route path={ROUTES.CHAT} element={<ChatPage />} />
               <Route path={ROUTES.CHAT_CONVERSATION} element={<ChatPage />} />
+              <Route path={ROUTES.CHAT_GROUP} element={<GroupChatPage />} />
+
+              {/* Phase 7 — Groups & Communities */}
+              <Route path={ROUTES.GROUPS}      element={<GroupsPage />} />
+              <Route path={ROUTES.GROUP}       element={<GroupsPage />} />
+              <Route path={ROUTES.COMMUNITIES} element={<CommunitiesPage />} />
+              <Route path={ROUTES.COMMUNITY}   element={<CommunitiesPage />} />
 
               {/* Phase 4 — social */}
               <Route path={ROUTES.CONTACTS} element={<ContactsPage />} />

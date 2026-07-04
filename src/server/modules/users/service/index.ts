@@ -1,6 +1,7 @@
 import { ProfileModel } from '../../../database/models/Profile.js';
 import { AppError } from '../../../middlewares/errorHandler.js';
 import { logger } from '../../../logger/index.js';
+import { USER_ROLES } from '../../../../shared/constants/roles.js';
 import type { PaginationMeta } from '../../../../shared/types/api.js';
 import type {
   UserListQuery,
@@ -70,7 +71,7 @@ export class UsersService {
       throw new AppError('User not found', 404, 'USER_NOT_FOUND');
     }
 
-    if (requesterRole === 'admin') {
+    if (requesterRole === USER_ROLES.ADMIN) {
       return toAdminUserView(user);
     }
 
@@ -87,7 +88,7 @@ export class UsersService {
     requesterRole: string,
     query: UserListQuery,
   ): Promise<{ users: AdminUserView[]; meta: PaginationMeta }> {
-    if (requesterRole !== 'admin') {
+    if (requesterRole !== USER_ROLES.ADMIN) {
       throw new AppError('Access denied', 403, 'FORBIDDEN');
     }
 
@@ -118,7 +119,7 @@ export class UsersService {
     ua: string,
   ): Promise<AdminUserView> {
     // Authorization: non-admin can only update their own account
-    if (requesterRole !== 'admin' && requesterId !== targetId) {
+    if (requesterRole !== USER_ROLES.ADMIN && requesterId !== targetId) {
       throw new AppError('Access denied', 403, 'FORBIDDEN');
     }
 
@@ -185,7 +186,7 @@ export class UsersService {
     ua: string,
   ): Promise<void> {
     // Authorization: non-admin can only delete their own account
-    if (requesterRole !== 'admin' && requesterId !== targetId) {
+    if (requesterRole !== USER_ROLES.ADMIN && requesterId !== targetId) {
       throw new AppError('Access denied', 403, 'FORBIDDEN');
     }
 

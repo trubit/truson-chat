@@ -6,15 +6,8 @@ import { getEnv } from '../config/env.js';
 // --------------------------------------------------------------------------
 
 function getAllowedOrigins(): string[] {
-  const { CLIENT_URL, NODE_ENV } = getEnv();
-  const origins = [CLIENT_URL];
-
-  // In development, also allow the default Vite dev server port
-  if (NODE_ENV === 'development') {
-    origins.push('http://localhost:5173', 'http://127.0.0.1:5173');
-  }
-
-  return origins;
+  const { CLIENT_URL } = getEnv();
+  return [CLIENT_URL];
 }
 
 // --------------------------------------------------------------------------

@@ -44,9 +44,9 @@ jest.mock('../../../config/env.js', () => ({
 let mongod: MongoMemoryServer;
 
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
+  mongod = await MongoMemoryServer.create({ instance: { launchTimeout: 60000 } });
   await mongoose.connect(mongod.getUri());
-});
+}, 70000);
 
 afterAll(async () => {
   await mongoose.disconnect();

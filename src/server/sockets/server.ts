@@ -9,10 +9,15 @@ import { getEnv } from '../config/env.js';
 import { logger } from '../logger/index.js';
 import { redisClient } from '../redis/connection.js';
 import { ConversationMemberModel } from '../database/models/ConversationMember.js';
+import { GroupMemberModel } from '../database/models/GroupMember.js';
 import { PresenceRepository } from '../modules/presence/repository/index.js';
 import { PresenceService } from '../modules/presence/service/index.js';
 import { messageService } from '../modules/messages/service/index.js';
+import { groupService }   from '../modules/groups/service/index.js';
 import type { SendMessagePayload } from '../../shared/types/message.js';
+import type {
+  SendGroupMessagePayload, EditGroupMessagePayload, DeleteGroupMessagePayload, ReactGroupMessagePayload,
+} from '../../shared/types/group.js';
 
 // ---------------------------------------------------------------------------
 // Augment Socket.IO SocketData so handlers receive typed user fields
@@ -236,7 +241,7 @@ export async function setupSocketServer(
     // 1. Join personal room
     void socket.join(`user:${userId}`);
 
-    // 2. Join all active conversation rooms
+    // 2. Join all active conversation rooms + group rooms
     (async () => {
       try {
         const members = await ConversationMemberModel.find({
@@ -250,6 +255,21 @@ export async function setupSocketServer(
         }
       } catch (err) {
         logger.error('Failed to join conversation rooms on connect', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+
+      try {
+        const groupMembers = await GroupMemberModel.find({
+          userId: new mongoose.Types.ObjectId(userId),
+          status: 'active',
+        }).select('groupId').lean();
+        for (const gm of groupMembers) {
+          void socket.join(`group:${gm.groupId.toString()}`);
+        }
+      } catch (err) {
+        logger.error('Failed to join group rooms on connect', {
           userId,
           error: err instanceof Error ? err.message : String(err),
         });
@@ -479,6 +499,153 @@ export async function setupSocketServer(
           error: err instanceof Error ? err.message : String(err),
         });
       }
+    });
+
+    // ── Explicit conversation room join (handles new conversations created after socket connect) ─
+
+    socket.on('conversation:join', async (payload: { conversationId: string }, callback) => {
+      try {
+        const member = await ConversationMemberModel.findOne({
+          conversationId: new mongoose.Types.ObjectId(payload.conversationId),
+          userId:         new mongoose.Types.ObjectId(userId),
+          leftAt:         null,
+        }).lean();
+        if (!member) { callback?.({ success: false, error: 'Not a member' }); return; }
+        await socket.join(`conversation:${payload.conversationId}`);
+        callback?.({ success: true });
+      } catch (err) {
+        logger.error('conversation:join error', { userId, error: err instanceof Error ? err.message : String(err) });
+        callback?.({ success: false, error: 'Failed to join conversation room' });
+      }
+    });
+
+    // ── Group event handlers ──────────────────────────────────────────────────
+
+    socket.on('group:join', async (payload: { groupId: string }, callback) => {
+      try {
+        const m = await import('../database/models/GroupMember.js');
+        const member = await m.GroupMemberModel.findOne({
+          groupId: new mongoose.Types.ObjectId(payload.groupId),
+          userId:  new mongoose.Types.ObjectId(userId),
+          status:  'active',
+        }).lean();
+        if (!member) { callback?.({ success: false, error: 'Not a member' }); return; }
+        await socket.join(`group:${payload.groupId}`);
+        callback?.({ success: true });
+      } catch (err) {
+        logger.error('group:join error', { userId, error: err instanceof Error ? err.message : String(err) });
+        callback?.({ success: false, error: 'Failed to join group room' });
+      }
+    });
+
+    socket.on('group:leave', async (payload: { groupId: string }, callback) => {
+      await socket.leave(`group:${payload.groupId}`);
+      callback?.({ success: true });
+    });
+
+    socket.on('group:message:send', async (payload: SendGroupMessagePayload, callback) => {
+      try {
+        const msg = await groupService.sendMessage(userId, payload);
+        chat.to(`group:${payload.groupId}`).emit('group:message:new', msg);
+        if (payload.channelId) {
+          chat.to(`channel:${payload.channelId}`).emit('group:message:new', msg);
+        }
+        callback?.({ success: true, message: msg });
+      } catch (err) {
+        logger.error('group:message:send error', { userId, error: err instanceof Error ? err.message : String(err) });
+        callback?.({ success: false, error: err instanceof Error ? err.message : 'Error sending message' });
+      }
+    });
+
+    socket.on('group:message:edit', async (payload: EditGroupMessagePayload, callback) => {
+      try {
+        const msg = await groupService.editMessage(userId, payload.messageId, payload.content);
+        chat.to(`group:${msg.groupId}`).emit('group:message:updated', {
+          _id: msg._id, groupId: msg.groupId, content: msg.content, isEdited: msg.isEdited, editedAt: msg.editedAt,
+        });
+        callback?.({ success: true });
+      } catch (err) {
+        logger.error('group:message:edit error', { userId, error: err instanceof Error ? err.message : String(err) });
+        callback?.({ success: false, error: err instanceof Error ? err.message : 'Error editing message' });
+      }
+    });
+
+    socket.on('group:message:delete', async (payload: DeleteGroupMessagePayload, callback) => {
+      try {
+        const msg = await groupService.deleteMessage(userId, payload.messageId);
+        chat.to(`group:${msg.groupId}`).emit('group:message:deleted', {
+          messageId: msg._id, groupId: msg.groupId, deletedBy: userId,
+        });
+        callback?.({ success: true });
+      } catch (err) {
+        logger.error('group:message:delete error', { userId, error: err instanceof Error ? err.message : String(err) });
+        callback?.({ success: false, error: err instanceof Error ? err.message : 'Error deleting message' });
+      }
+    });
+
+    socket.on('group:message:react', async (payload: ReactGroupMessagePayload, callback) => {
+      try {
+        const result = await groupService.reactToMessage(userId, payload.messageId, payload.emoji);
+        chat.to(`group:${payload.groupId}`).emit('group:message:reaction', {
+          messageId: payload.messageId,
+          groupId:   payload.groupId,
+          emoji:     payload.emoji,
+          userId,
+          action:    result.action,
+          count:     result.count,
+        });
+        callback?.({ success: true });
+      } catch (err) {
+        logger.error('group:message:react error', { userId, error: err instanceof Error ? err.message : String(err) });
+        callback?.({ success: false, error: err instanceof Error ? err.message : 'Error reacting' });
+      }
+    });
+
+    socket.on('group:message:read', async (payload: { groupId: string; lastMessageId: string }) => {
+      try {
+        await groupService.markRead(userId, payload.groupId, payload.lastMessageId);
+        socket.to(`group:${payload.groupId}`).emit('group:message:read', {
+          groupId: payload.groupId, userId, lastMessageId: payload.lastMessageId, lastReadAt: new Date().toISOString(),
+        });
+      } catch (err) {
+        logger.error('group:message:read error', { userId, error: err instanceof Error ? err.message : String(err) });
+      }
+    });
+
+    socket.on('group:typing:start', async (payload: { groupId: string; channelId?: string }) => {
+      try {
+        const room = payload.channelId ? `channel:${payload.channelId}` : `group:${payload.groupId}`;
+        const key  = `g-typing:${payload.channelId ?? payload.groupId}:${userId}`;
+        await redisClient.setex(key, 8, '1');
+        socket.to(room).emit('group:typing:start', { groupId: payload.groupId, channelId: payload.channelId, userId, displayName: '' });
+      } catch (err) {
+        logger.error('group:typing:start error', { userId, error: err instanceof Error ? err.message : String(err) });
+      }
+    });
+
+    socket.on('group:typing:stop', async (payload: { groupId: string; channelId?: string }) => {
+      try {
+        const room = payload.channelId ? `channel:${payload.channelId}` : `group:${payload.groupId}`;
+        const key  = `g-typing:${payload.channelId ?? payload.groupId}:${userId}`;
+        await redisClient.del(key);
+        socket.to(room).emit('group:typing:stop', { groupId: payload.groupId, channelId: payload.channelId, userId });
+      } catch (err) {
+        logger.error('group:typing:stop error', { userId, error: err instanceof Error ? err.message : String(err) });
+      }
+    });
+
+    socket.on('channel:join', async (payload: { channelId: string }, callback) => {
+      try {
+        await socket.join(`channel:${payload.channelId}`);
+        callback?.({ success: true });
+      } catch (err) {
+        callback?.({ success: false, error: 'Failed to join channel room' });
+      }
+    });
+
+    socket.on('channel:leave', async (payload: { channelId: string }, callback) => {
+      await socket.leave(`channel:${payload.channelId}`);
+      callback?.({ success: true });
     });
   });
 

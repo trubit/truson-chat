@@ -187,8 +187,8 @@ export async function start(): Promise<void> {
         port: env.PORT,
         env: env.NODE_ENV,
         version: env.APP_VERSION,
-        health: `http://localhost:${env.PORT}/health`,
-        api: `http://localhost:${env.PORT}/api/v1`,
+        health: `/health`,
+        api: `/api/v1`,
       });
 
       // Signal PM2 cluster mode that the process is ready

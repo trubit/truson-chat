@@ -91,7 +91,7 @@ let mongod: MongoMemoryServer;
 let service: MediaService;
 
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
+  mongod = await MongoMemoryServer.create({ instance: { launchTimeout: 60000 } });
   await mongoose.connect(mongod.getUri());
   service = new MediaService(new MediaRepository());
 });

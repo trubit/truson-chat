@@ -29,3 +29,7 @@ export { useStickerStore } from './stickerStore';
 export type { StickerItem, StickerPack } from './stickerStore';
 export { useGifStore } from './gifStore';
 export type { GifItem } from './gifStore';
+export { useGroupStore } from './groupStore';
+export { useCommunityStore } from './communityStore';
+export { useChannelStore } from './channelStore';
+export { useAnnouncementStore } from './announcementStore';

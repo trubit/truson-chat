@@ -7,12 +7,6 @@ import { getMediaQueue } from '../../../queues/index.js';
 import { logger } from '../../../logger/index.js';
 import type { VoiceNoteResponse } from '../types/index.js';
 
-function generatePlaceholderWaveform(seed = 50): number[] {
-  return Array.from({ length: seed }, (_, i) =>
-    Math.max(0.1, Math.min(1.0, 0.3 + 0.5 * Math.sin(i * 0.3) + 0.2 * Math.sin(i * 0.7))),
-  );
-}
-
 export class VoiceNoteService {
   async uploadVoiceNote(
     userId: string,
@@ -34,8 +28,6 @@ export class VoiceNoteService {
       throw new AppError('Failed to upload voice note. Please try again.', 500, 'UPLOAD_FAILED');
     }
 
-    const waveform = generatePlaceholderWaveform(50);
-
     const createData: Record<string, unknown> = {
       uploaderId:   new mongoose.Types.ObjectId(userId),
       type:         'voice_note',
@@ -47,7 +39,7 @@ export class VoiceNoteService {
       size:         file.size,
       originalName: file.originalname,
       duration:     cloudResult.duration,
-      waveform,
+      waveform:     [],
       status:       'ready',
     };
 
@@ -72,7 +64,7 @@ export class VoiceNoteService {
       mimeType:  mediaFile.mimeType,
       size:      mediaFile.size,
       duration:  mediaFile.duration,
-      waveform:  mediaFile.waveform ?? waveform,
+      waveform:  mediaFile.waveform ?? [],
       status:    mediaFile.status,
       createdAt: mediaFile.createdAt.toISOString(),
     };
