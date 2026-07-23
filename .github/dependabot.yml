@@ -1,0 +1,84 @@
+version: 2
+
+updates:
+  # ── npm dependencies ───────────────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: UTC
+    # Maximum open PRs at once to avoid PR flood
+    open-pull-requests-limit: 10
+    # Group minor/patch updates to reduce review noise
+    groups:
+      dev-tools:
+        patterns:
+          - '@types/*'
+          - 'eslint*'
+          - 'typescript-eslint'
+          - 'prettier'
+          - 'tsx'
+          - 'nodemon'
+          - 'husky'
+          - 'lint-staged'
+          - 'concurrently'
+        update-types:
+          - minor
+          - patch
+      testing:
+        patterns:
+          - 'jest'
+          - 'ts-jest'
+          - '@jest/*'
+          - '@testing-library/*'
+          - 'supertest'
+          - 'msw'
+          - '*playwright*'
+          - '@playwright/*'
+          - 'mongodb-memory-server'
+          - 'ioredis-mock'
+          - 'identity-obj-proxy'
+        update-types:
+          - minor
+          - patch
+      ui-libs:
+        patterns:
+          - '@mui/*'
+          - '@emotion/*'
+          - 'react-bootstrap'
+          - 'bootstrap'
+          - 'react-hook-form'
+          - 'react-hot-toast'
+          - 'react-dropzone'
+          - 'react-player'
+          - 'react-image-crop'
+          - 'react-virtuoso'
+          - 'recharts'
+        update-types:
+          - minor
+          - patch
+    # Never auto-update major versions — review those manually
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
+    # Assign to the repository owner for review
+    assignees:
+      - Ezika-trust-chidi
+    commit-message:
+      prefix: 'chore(deps)'
+      include: scope
+
+  # ── GitHub Actions versions ────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: UTC
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'ci(actions)'

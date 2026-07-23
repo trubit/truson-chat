@@ -18,18 +18,18 @@ jest.mock('../../../services/cloudinary.js', () => ({
       _uploadCallCount++;
       const id = `test${_uploadCallCount}`;
       return Promise.resolve({
-        url:          `https://res.cloudinary.com/test/image/upload/${id}.jpg`,
-        secureUrl:    `https://res.cloudinary.com/test/image/upload/${id}.jpg`,
-        publicId:     `truson/users/user1/images/${id}`,
+        url: `https://res.cloudinary.com/test/image/upload/${id}.jpg`,
+        secureUrl: `https://res.cloudinary.com/test/image/upload/${id}.jpg`,
+        publicId: `linkora/users/user1/images/${id}`,
         resourceType: 'image',
-        format:       'jpg',
-        width:        800,
-        height:       600,
-        bytes:        12345,
+        format: 'jpg',
+        width: 800,
+        height: 600,
+        bytes: 12345,
         thumbnailUrl: `https://res.cloudinary.com/test/image/upload/w_400,h_400/${id}.webp`,
       });
     }),
-    delete:          jest.fn().mockResolvedValue(undefined),
+    delete: jest.fn().mockResolvedValue(undefined),
     getThumbnailUrl: jest.fn().mockReturnValue('https://res.cloudinary.com/test/thumb.webp'),
   },
 }));
@@ -45,18 +45,18 @@ jest.mock('../../../queues/index.js', () => ({
 jest.mock('fs', () => ({
   ...jest.requireActual('fs'),
   existsSync: jest.fn().mockReturnValue(false),
-  unlinkSync:  jest.fn(),
+  unlinkSync: jest.fn(),
 }));
 
 // Mock env
 jest.mock('../../../config/env.js', () => ({
   getEnv: jest.fn().mockReturnValue({
     CLOUDINARY_CLOUD_NAME: 'testcloud',
-    CLOUDINARY_API_KEY:    'testkey',
+    CLOUDINARY_API_KEY: 'testkey',
     CLOUDINARY_API_SECRET: 'testsecret',
-    UPLOAD_DIR:            './uploads',
-    NODE_ENV:              'test',
-    TENOR_API_KEY:         undefined,
+    UPLOAD_DIR: './uploads',
+    NODE_ENV: 'test',
+    TENOR_API_KEY: undefined,
   }),
 }));
 
@@ -66,16 +66,16 @@ jest.mock('../../../config/env.js', () => ({
 
 function makeMockFile(overrides: Partial<Express.Multer.File> = {}): Express.Multer.File {
   return {
-    fieldname:    'file',
+    fieldname: 'file',
     originalname: 'test-image.jpg',
-    encoding:     '7bit',
-    mimetype:     'image/jpeg',
-    size:         12345,
-    path:         path.join('/tmp', 'test-image.jpg'),
-    destination:  '/tmp',
-    filename:     'test-image.jpg',
-    buffer:       Buffer.alloc(0),
-    stream:       null as unknown as fs.ReadStream,
+    encoding: '7bit',
+    mimetype: 'image/jpeg',
+    size: 12345,
+    path: path.join('/tmp', 'test-image.jpg'),
+    destination: '/tmp',
+    filename: 'test-image.jpg',
+    buffer: Buffer.alloc(0),
+    stream: null as unknown as fs.ReadStream,
     ...overrides,
   };
 }
@@ -94,7 +94,7 @@ beforeAll(async () => {
   mongod = await MongoMemoryServer.create({ instance: { launchTimeout: 60000 } });
   await mongoose.connect(mongod.getUri());
   service = new MediaService(new MediaRepository());
-});
+}, 90000);
 
 afterAll(async () => {
   await mongoose.disconnect();
@@ -116,14 +116,14 @@ describe('MediaService.uploadFile', () => {
     const result = await service.uploadFile(USER_ID, file, { conversationId: CONV_ID });
 
     expect(result).toMatchObject({
-      mimeType:     'image/jpeg',
-      size:         12345,
+      mimeType: 'image/jpeg',
+      size: 12345,
       originalName: 'test-image.jpg',
-      type:         'image',
-      status:       'ready',
+      type: 'image',
+      status: 'ready',
     });
     expect(result.url).toContain('res.cloudinary.com');
-    expect(result.publicId).toContain('truson/users/user1/images/');
+    expect(result.publicId).toContain('linkora/users/user1/images/');
     expect(result._id).toBeDefined();
     expect(result.createdAt).toBeDefined();
   });
@@ -148,7 +148,7 @@ describe('MediaService.uploadFile', () => {
 
     const file = makeMockFile();
     await expect(service.uploadFile(USER_ID, file, {})).rejects.toMatchObject({
-      code:       'UPLOAD_FAILED',
+      code: 'UPLOAD_FAILED',
       statusCode: 500,
     });
   });
@@ -181,7 +181,7 @@ describe('MediaService.getMedia', () => {
   it('should throw NOT_FOUND for non-existent media', async () => {
     const fakeId = new mongoose.Types.ObjectId().toString();
     await expect(service.getMedia(USER_ID, fakeId)).rejects.toMatchObject({
-      code:       'NOT_FOUND',
+      code: 'NOT_FOUND',
       statusCode: 404,
     });
   });
@@ -192,7 +192,7 @@ describe('MediaService.getMedia', () => {
     const otherUser = new mongoose.Types.ObjectId().toString();
 
     await expect(service.getMedia(otherUser, uploaded._id)).rejects.toMatchObject({
-      code:       'FORBIDDEN',
+      code: 'FORBIDDEN',
       statusCode: 403,
     });
   });
@@ -203,7 +203,7 @@ describe('MediaService.getMedia', () => {
     await MediaFileModel.findByIdAndUpdate(uploaded._id, { deletedAt: new Date() });
 
     await expect(service.getMedia(USER_ID, uploaded._id)).rejects.toMatchObject({
-      code:       'NOT_FOUND',
+      code: 'NOT_FOUND',
       statusCode: 404,
     });
   });
@@ -228,7 +228,7 @@ describe('MediaService.deleteMedia', () => {
   it('should throw NOT_FOUND when deleting non-existent media', async () => {
     const fakeId = new mongoose.Types.ObjectId().toString();
     await expect(service.deleteMedia(USER_ID, fakeId)).rejects.toMatchObject({
-      code:       'NOT_FOUND',
+      code: 'NOT_FOUND',
       statusCode: 404,
     });
   });
@@ -239,7 +239,7 @@ describe('MediaService.deleteMedia', () => {
     const otherUser = new mongoose.Types.ObjectId().toString();
 
     await expect(service.deleteMedia(otherUser, uploaded._id)).rejects.toMatchObject({
-      code:       'FORBIDDEN',
+      code: 'FORBIDDEN',
       statusCode: 403,
     });
   });
@@ -259,8 +259,8 @@ describe('MediaService.getConversationMedia', () => {
 
     const result = await service.getConversationMedia(USER_ID, {
       conversationId: CONV_ID,
-      page:           1,
-      limit:          10,
+      page: 1,
+      limit: 10,
     });
 
     expect(result.total).toBe(3);
@@ -273,8 +273,8 @@ describe('MediaService.getConversationMedia', () => {
     const otherConvId = new mongoose.Types.ObjectId().toString();
     const result = await service.getConversationMedia(USER_ID, {
       conversationId: otherConvId,
-      page:           1,
-      limit:          10,
+      page: 1,
+      limit: 10,
     });
 
     expect(result.total).toBe(0);
@@ -282,8 +282,10 @@ describe('MediaService.getConversationMedia', () => {
   });
 
   it('should throw VALIDATION_ERROR when conversationId is missing', async () => {
-    await expect(service.getConversationMedia(USER_ID, { page: 1, limit: 10 })).rejects.toMatchObject({
-      code:       'VALIDATION_ERROR',
+    await expect(
+      service.getConversationMedia(USER_ID, { page: 1, limit: 10 }),
+    ).rejects.toMatchObject({
+      code: 'VALIDATION_ERROR',
       statusCode: 400,
     });
   });
@@ -297,8 +299,8 @@ describe('MediaService.getConversationMedia', () => {
 
     const page1 = await service.getConversationMedia(USER_ID, {
       conversationId: CONV_ID,
-      page:           1,
-      limit:          2,
+      page: 1,
+      limit: 2,
     });
 
     expect(page1.files).toHaveLength(2);

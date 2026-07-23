@@ -13,9 +13,23 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Job graph
+#
+#   lint ──────────────────────────────────────────────────────────────────┐
+#   typecheck ──────────────────────────────────────────────────────────── ├──► test ──► e2e
+#   format-check (Prettier) ────────────────────────────────────────────── ┘    build
+#   audit (npm audit --audit-level=high, non-blocking)
+#
+# Quality gates (lint + typecheck + format-check) must pass before test or
+# build starts.  E2E (Playwright) runs only after both test and build pass.
+# audit is informational and never blocks the pipeline.
+# ─────────────────────────────────────────────────────────────────────────────
+
 jobs:
+  # ── Quality gate 1 — ESLint ───────────────────────────────────────────────
   lint:
-    name: Lint
+    name: Lint (ESLint)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,7 +39,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          cache: 'npm'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -33,8 +47,9 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+  # ── Quality gate 2 — TypeScript ───────────────────────────────────────────
   typecheck:
-    name: Type check
+    name: Type Check (tsc)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -44,7 +59,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          cache: 'npm'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -52,18 +67,64 @@ jobs:
       - name: Run TypeScript compiler
         run: npm run typecheck
 
-  test:
-    name: Test
+  # ── Quality gate 3 — Prettier ─────────────────────────────────────────────
+  format-check:
+    name: Format Check (Prettier)
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Prettier format check
+        run: npm run format:check
+
+  # ── Security — npm audit ──────────────────────────────────────────────────
+  # Informational: fails on HIGH+ vulnerabilities but does not block the
+  # pipeline (continue-on-error).  Review the output in the Actions log;
+  # promote to a blocking gate once the advisory backlog is cleared.
+  audit:
+    name: Dependency Audit (npm audit)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+  # ── Test suite — Jest + code coverage ────────────────────────────────────
+  test:
+    name: Test (Jest + Coverage)
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, format-check]
     env:
       NODE_ENV: test
       # mongodb-memory-server downloads its binary to this cache dir
       MONGOMS_DOWNLOAD_DIR: /tmp/mongodb-binaries
-      # Required by env.ts validation — set safe test values here
+      # Required by env.ts — safe values for the in-memory test environment
       PORT: 3001
       CLIENT_URL: http://localhost:5173
-      MONGODB_URI: mongodb://localhost:27017/truson_chat_test
-      MONGODB_DB_NAME: truson_chat_test
+      MONGODB_URI: mongodb://localhost:27017/linkora_test
+      MONGODB_DB_NAME: linkora_test
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       REDIS_PASSWORD: test_redis_pass
@@ -78,13 +139,13 @@ jobs:
       CLOUDINARY_API_SECRET: test_api_secret
       SMTP_HOST: localhost
       SMTP_PORT: 1025
-      SMTP_SECURE: "false"
+      SMTP_SECURE: 'false'
       SMTP_USER: test@example.com
       SMTP_PASS: test_pass
-      SMTP_FROM_NAME: Truson-Chat Test
+      SMTP_FROM_NAME: Linkora Test
       SMTP_FROM_EMAIL: noreply@example.com
       LOG_LEVEL: error
-      LOG_FILE_ENABLED: "false"
+      LOG_FILE_ENABLED: 'false'
 
     steps:
       - name: Checkout
@@ -94,7 +155,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          cache: 'npm'
+          cache: npm
 
       - name: Cache mongodb-memory-server binary
         uses: actions/cache@v4
@@ -107,12 +168,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests with coverage
+        run: npm run test:coverage
 
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-${{ github.sha }}
+          path: coverage/
+          retention-days: 14
+          if-no-files-found: warn
+
+  # ── Build — server (tsc) + client (Vite) ─────────────────────────────────
   build:
-    name: Build
+    name: Build (Server + Client)
     runs-on: ubuntu-latest
+    needs: [lint, typecheck, format-check]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -121,7 +193,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-          cache: 'npm'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -136,3 +208,61 @@ jobs:
           path: dist/
           retention-days: 7
           if-no-files-found: error
+
+  # ── E2E — Playwright (Chromium only in CI) ────────────────────────────────
+  # Runs after both unit tests AND the production build pass to avoid wasting
+  # expensive Playwright runner-minutes on broken code.
+  e2e:
+    name: E2E (Playwright / Chromium)
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Install Playwright browsers (cache miss)
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright system dependencies (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: Run E2E tests (Chromium)
+        run: npx playwright test --project=chromium
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ github.sha }}
+          path: playwright-report/
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Upload Playwright test output (failures)
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-output-${{ github.sha }}
+          path: playwright-output/
+          retention-days: 7
+          if-no-files-found: ignore

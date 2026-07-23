@@ -61,5 +61,7 @@ verificationTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 // Export
 // ---------------------------------------------------------------------------
 
-export const VerificationTokenModel: Model<IVerificationToken> =
-  mongoose.model<IVerificationToken>('VerificationToken', verificationTokenSchema);
+export const VerificationTokenModel: Model<IVerificationToken> = mongoose.model<IVerificationToken>(
+  'VerificationToken',
+  verificationTokenSchema,
+);

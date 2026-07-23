@@ -1,18 +1,18 @@
-name: truson-chat-prod
+name: linkora-prod
 
 services:
   app:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    container_name: truson_app
+    container_name: linkora_app
     restart: unless-stopped
     env_file:
       - ../.env
     environment:
       NODE_ENV: production
     expose:
-      - "3001"
+      - '3001'
     depends_on:
       mongodb:
         condition: service_healthy
@@ -23,9 +23,9 @@ services:
       - app_uploads:/app/uploads
     healthcheck:
       test:
-        - "CMD"
-        - "node"
-        - "-e"
+        - 'CMD'
+        - 'node'
+        - '-e'
         - "require('http').get('http://localhost:3001/health', r => r.statusCode === 200 ? process.exit(0) : process.exit(1)).on('error', () => process.exit(1))"
       interval: 30s
       timeout: 5s
@@ -34,11 +34,11 @@ services:
 
   nginx:
     image: nginx:1.27-alpine
-    container_name: truson_nginx
+    container_name: linkora_nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     depends_on:
       app:
         condition: service_healthy
@@ -47,9 +47,9 @@ services:
       - ../dist/client:/app/dist/client:ro
       - nginx_logs:/var/log/nginx
       # SSL certificates — mount your certs here before enabling HTTPS in nginx.conf
-      - /etc/ssl/truson:/etc/nginx/ssl:ro
+      - /etc/ssl/linkora:/etc/nginx/ssl:ro
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost/health']
       interval: 30s
       timeout: 5s
       start_period: 15s
@@ -57,20 +57,20 @@ services:
 
   mongodb:
     image: mongo:8.0
-    container_name: truson_mongo
+    container_name: linkora_mongo
     restart: unless-stopped
     env_file:
       - ../.env
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGODB_DB_NAME:-truson_chat}
+      MONGO_INITDB_DATABASE: ${MONGODB_DB_NAME:-linkora}
     volumes:
       - mongo_data:/data/db
     expose:
-      - "27017"
+      - '27017'
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 15s
       timeout: 5s
       start_period: 30s
@@ -78,7 +78,7 @@ services:
 
   redis:
     image: redis:8-alpine
-    container_name: truson_redis
+    container_name: linkora_redis
     restart: unless-stopped
     env_file:
       - ../.env
@@ -92,9 +92,9 @@ services:
     volumes:
       - redis_data:/data
     expose:
-      - "6379"
+      - '6379'
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD}', 'ping']
       interval: 15s
       timeout: 3s
       start_period: 15s

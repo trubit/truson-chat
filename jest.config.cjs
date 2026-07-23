@@ -69,13 +69,18 @@ module.exports = {
         // the compiled CommonJS entry point.
         '^msw$': '<rootDir>/node_modules/msw/lib/core/index.js',
         '^msw/node$': '<rootDir>/node_modules/msw/lib/node/index.js',
-        '^@open-draft/deferred-promise$': '<rootDir>/src/client/test-utils/__mocks__/deferred-promise.cjs',
+        '^@open-draft/deferred-promise$':
+          '<rootDir>/src/client/test-utils/__mocks__/deferred-promise.cjs',
         '^msw/browser$': '<rootDir>/node_modules/msw/lib/browser/index.js',
         '^@mswjs/interceptors$': '<rootDir>/node_modules/@mswjs/interceptors/lib/node/index.cjs',
-        '^@mswjs/interceptors/ClientRequest$': '<rootDir>/node_modules/@mswjs/interceptors/lib/node/interceptors/ClientRequest/index.cjs',
-        '^@mswjs/interceptors/XMLHttpRequest$': '<rootDir>/node_modules/@mswjs/interceptors/lib/browser/interceptors/XMLHttpRequest/index.cjs',
-        '^@mswjs/interceptors/fetch$': '<rootDir>/node_modules/@mswjs/interceptors/lib/node/interceptors/fetch/index.cjs',
-        '^@mswjs/interceptors/WebSocket$': '<rootDir>/node_modules/@mswjs/interceptors/lib/browser/interceptors/WebSocket/index.cjs',
+        '^@mswjs/interceptors/ClientRequest$':
+          '<rootDir>/node_modules/@mswjs/interceptors/lib/node/interceptors/ClientRequest/index.cjs',
+        '^@mswjs/interceptors/XMLHttpRequest$':
+          '<rootDir>/node_modules/@mswjs/interceptors/lib/browser/interceptors/XMLHttpRequest/index.cjs',
+        '^@mswjs/interceptors/fetch$':
+          '<rootDir>/node_modules/@mswjs/interceptors/lib/node/interceptors/fetch/index.cjs',
+        '^@mswjs/interceptors/WebSocket$':
+          '<rootDir>/node_modules/@mswjs/interceptors/lib/browser/interceptors/WebSocket/index.cjs',
         // rettime is ESM-only (.mjs); stub it with a CJS-compatible shim so
         // msw's define-network.js can be require()'d in CommonJS Jest.
         '^rettime$': '<rootDir>/src/client/test-utils/__mocks__/rettime.cjs',
@@ -92,10 +97,7 @@ module.exports = {
         // that jsdom 20 does not provide but MSW's interceptors require.
         '<rootDir>/src/client/test-utils/fetchPolyfill.ts',
       ],
-      setupFilesAfterEnv: [
-        '@testing-library/jest-dom',
-        '<rootDir>/src/client/test-utils/setup.ts',
-      ],
+      setupFilesAfterEnv: ['@testing-library/jest-dom', '<rootDir>/src/client/test-utils/setup.ts'],
       globals: {
         'import.meta': {
           env: {
@@ -110,8 +112,10 @@ module.exports = {
     },
   ],
 
-  // Root-level timeout applies to all projects (30 s covers slow server/integration tests).
-  testTimeout: 30000,
+  // Root-level timeout applies to all projects.
+  // 60 s covers MongoMemoryServer start-up under parallel load and slow first
+  // DB writes triggered by Mongoose index building on first use.
+  testTimeout: 60000,
 
   // Suppress console output (console.log / .error / .warn) produced by the
   // application code during tests (Winston logger, rate-limit-redis init, etc.)

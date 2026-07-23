@@ -4,36 +4,36 @@ import mongoose, { Schema, type Document, type Model } from 'mongoose';
 // Types
 // ---------------------------------------------------------------------------
 
-export type ConversationType   = 'direct' | 'group';
-export type ConversationStatus = 'active'  | 'deleted';
+export type ConversationType = 'direct' | 'group';
+export type ConversationStatus = 'active' | 'deleted';
 
 export interface IConversationLastMessage {
   messageId: mongoose.Types.ObjectId;
-  senderId:  mongoose.Types.ObjectId;
-  content:   string;
-  type:      string;
-  sentAt:    Date;
+  senderId: mongoose.Types.ObjectId;
+  content: string;
+  type: string;
+  sentAt: Date;
 }
 
 export interface IConversationMetadata {
-  name?:        string;
+  name?: string;
   description?: string;
-  avatar?:      { url: string; publicId: string };
-  isReadOnly:   boolean;
+  avatar?: { url: string; publicId: string };
+  isReadOnly: boolean;
 }
 
 export interface IConversation extends Document {
-  _id:          mongoose.Types.ObjectId;
-  type:         ConversationType;
+  _id: mongoose.Types.ObjectId;
+  type: ConversationType;
   participants: mongoose.Types.ObjectId[];
-  createdBy:    mongoose.Types.ObjectId;
+  createdBy: mongoose.Types.ObjectId;
   lastMessage?: IConversationLastMessage;
   lastActivity: Date;
-  metadata:     IConversationMetadata;
-  status:       ConversationStatus;
-  deletedAt?:   Date;
-  createdAt:    Date;
-  updatedAt:    Date;
+  metadata: IConversationMetadata;
+  status: ConversationStatus;
+  deletedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // ---------------------------------------------------------------------------
@@ -43,21 +43,21 @@ export interface IConversation extends Document {
 const lastMessageSchema = new Schema<IConversationLastMessage>(
   {
     messageId: { type: Schema.Types.ObjectId, required: true },
-    senderId:  { type: Schema.Types.ObjectId, required: true },
-    content:   { type: String, default: '' },
-    type:      { type: String, default: 'text' },
-    sentAt:    { type: Date, required: true },
+    senderId: { type: Schema.Types.ObjectId, required: true },
+    content: { type: String, default: '' },
+    type: { type: String, default: 'text' },
+    sentAt: { type: Date, required: true },
   },
   { _id: false },
 );
 
 const metadataSchema = new Schema<IConversationMetadata>(
   {
-    name:        { type: String, trim: true, maxlength: 100 },
+    name: { type: String, trim: true, maxlength: 100 },
     description: { type: String, trim: true, maxlength: 300 },
     avatar: {
-      url:       { type: String },
-      publicId:  { type: String },
+      url: { type: String },
+      publicId: { type: String },
     },
     isReadOnly: { type: Boolean, default: false },
   },
@@ -70,14 +70,14 @@ const metadataSchema = new Schema<IConversationMetadata>(
 
 const conversationSchema = new Schema<IConversation>(
   {
-    type:         { type: String, enum: ['direct', 'group'], required: true },
+    type: { type: String, enum: ['direct', 'group'], required: true },
     participants: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    createdBy:    { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    lastMessage:  { type: lastMessageSchema },
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    lastMessage: { type: lastMessageSchema },
     lastActivity: { type: Date, default: Date.now },
-    metadata:     { type: metadataSchema, default: () => ({ isReadOnly: false }) },
-    status:       { type: String, enum: ['active', 'deleted'], default: 'active' },
-    deletedAt:    { type: Date },
+    metadata: { type: metadataSchema, default: () => ({ isReadOnly: false }) },
+    status: { type: String, enum: ['active', 'deleted'], default: 'active' },
+    deletedAt: { type: Date },
   },
   { timestamps: true },
 );
@@ -99,5 +99,7 @@ conversationSchema.index({ status: 1, lastActivity: -1 });
 // Export
 // ---------------------------------------------------------------------------
 
-export const ConversationModel: Model<IConversation> =
-  mongoose.model<IConversation>('Conversation', conversationSchema);
+export const ConversationModel: Model<IConversation> = mongoose.model<IConversation>(
+  'Conversation',
+  conversationSchema,
+);

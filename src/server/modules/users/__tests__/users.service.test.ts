@@ -32,12 +32,14 @@ afterEach(async () => {
 // Helpers
 // ---------------------------------------------------------------------------
 
-async function createTestUser(overrides: Partial<{
-  username: string;
-  email: string;
-  role: 'user' | 'admin' | 'business';
-  status: 'active' | 'suspended' | 'deleted' | 'pending_verification';
-}> = {}) {
+async function createTestUser(
+  overrides: Partial<{
+    username: string;
+    email: string;
+    role: 'user' | 'admin' | 'business';
+    status: 'active' | 'suspended' | 'deleted' | 'pending_verification';
+  }> = {},
+) {
   const user = await UserModel.create({
     username: overrides.username ?? 'testuser',
     email: overrides.email ?? 'test@example.com',
@@ -73,7 +75,11 @@ function makeService() {
 
 describe('UsersService.getUserById', () => {
   it('returns PublicUserProfile for a regular user requester', async () => {
-    const admin = await createTestUser({ username: 'admin1', email: 'admin@example.com', role: 'admin' });
+    const admin = await createTestUser({
+      username: 'admin1',
+      email: 'admin@example.com',
+      role: 'admin',
+    });
     const target = await createTestUser({ username: 'target1', email: 'target@example.com' });
 
     const service = makeService();
@@ -91,15 +97,15 @@ describe('UsersService.getUserById', () => {
   });
 
   it('returns AdminUserView for an admin requester', async () => {
-    const admin = await createTestUser({ username: 'admin2', email: 'admin2@example.com', role: 'admin' });
+    const admin = await createTestUser({
+      username: 'admin2',
+      email: 'admin2@example.com',
+      role: 'admin',
+    });
     const target = await createTestUser({ username: 'target2', email: 'target2@example.com' });
 
     const service = makeService();
-    const result = await service.getUserById(
-      admin._id.toString(),
-      'admin',
-      target._id.toString(),
-    );
+    const result = await service.getUserById(admin._id.toString(), 'admin', target._id.toString());
 
     expect(result).toHaveProperty('username', 'target2');
     expect(result).toHaveProperty('email', 'target2@example.com');
@@ -109,7 +115,11 @@ describe('UsersService.getUserById', () => {
   });
 
   it('throws 404 for a deleted user', async () => {
-    const admin = await createTestUser({ username: 'admin3', email: 'admin3@example.com', role: 'admin' });
+    const admin = await createTestUser({
+      username: 'admin3',
+      email: 'admin3@example.com',
+      role: 'admin',
+    });
     const deleted = await createTestUser({
       username: 'deleted1',
       email: 'deleted@example.com',
@@ -139,7 +149,11 @@ describe('UsersService.getUserById', () => {
 
 describe('UsersService.listUsers', () => {
   it('returns paginated results with correct meta for admin', async () => {
-    const admin = await createTestUser({ username: 'adminlist', email: 'adminlist@example.com', role: 'admin' });
+    const admin = await createTestUser({
+      username: 'adminlist',
+      email: 'adminlist@example.com',
+      role: 'admin',
+    });
     await createTestUser({ username: 'user1', email: 'user1@example.com' });
     await createTestUser({ username: 'user2', email: 'user2@example.com' });
 
@@ -164,7 +178,11 @@ describe('UsersService.listUsers', () => {
   });
 
   it('returns first page results with hasMore=true when there are more results', async () => {
-    const admin = await createTestUser({ username: 'adminpag', email: 'adminpag@example.com', role: 'admin' });
+    const admin = await createTestUser({
+      username: 'adminpag',
+      email: 'adminpag@example.com',
+      role: 'admin',
+    });
     for (let i = 0; i < 5; i++) {
       await createTestUser({ username: `pageuser${i}`, email: `pageuser${i}@example.com` });
     }
@@ -228,7 +246,11 @@ describe('UsersService.updateUser', () => {
   });
 
   it('allows an admin to update any user', async () => {
-    const admin = await createTestUser({ username: 'adminupd', email: 'adminupd@example.com', role: 'admin' });
+    const admin = await createTestUser({
+      username: 'adminupd',
+      email: 'adminupd@example.com',
+      role: 'admin',
+    });
     const target = await createTestUser({ username: 'targetupd', email: 'targetupd@example.com' });
 
     const service = makeService();
@@ -302,7 +324,11 @@ describe('UsersService.deleteUser', () => {
   });
 
   it('allows an admin to delete any user', async () => {
-    const admin = await createTestUser({ username: 'admindelete', email: 'admindelete@example.com', role: 'admin' });
+    const admin = await createTestUser({
+      username: 'admindelete',
+      email: 'admindelete@example.com',
+      role: 'admin',
+    });
     const target = await createTestUser({ username: 'victimuser', email: 'victim@example.com' });
 
     const service = makeService();
@@ -327,8 +353,15 @@ describe('UsersService.deleteUser', () => {
 
 describe('UsersService.updateUserStatus', () => {
   it('changes user status and creates audit log', async () => {
-    const admin = await createTestUser({ username: 'adminstat', email: 'adminstat@example.com', role: 'admin' });
-    const target = await createTestUser({ username: 'targetstat', email: 'targetstat@example.com' });
+    const admin = await createTestUser({
+      username: 'adminstat',
+      email: 'adminstat@example.com',
+      role: 'admin',
+    });
+    const target = await createTestUser({
+      username: 'targetstat',
+      email: 'targetstat@example.com',
+    });
 
     const service = makeService();
     const result = await service.updateUserStatus(
@@ -347,7 +380,11 @@ describe('UsersService.updateUserStatus', () => {
   });
 
   it('throws 404 for a non-existent target user', async () => {
-    const admin = await createTestUser({ username: 'adminstat2', email: 'adminstat2@example.com', role: 'admin' });
+    const admin = await createTestUser({
+      username: 'adminstat2',
+      email: 'adminstat2@example.com',
+      role: 'admin',
+    });
     const fakeId = new mongoose.Types.ObjectId().toString();
 
     const service = makeService();

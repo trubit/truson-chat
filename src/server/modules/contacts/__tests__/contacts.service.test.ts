@@ -131,7 +131,10 @@ describe('ContactsService.addContact', () => {
 describe('ContactsService.toggleFavorite', () => {
   it('flips isFavorite from false to true', async () => {
     const owner = await createTestUser({ username: 'favowner1', email: 'favowner1@example.com' });
-    const target = await createTestUser({ username: 'favtarget1', email: 'favtarget1@example.com' });
+    const target = await createTestUser({
+      username: 'favtarget1',
+      email: 'favtarget1@example.com',
+    });
 
     const service = makeService();
     const contact = await service.addContact(owner._id.toString(), {
@@ -144,7 +147,10 @@ describe('ContactsService.toggleFavorite', () => {
 
   it('flips isFavorite from true back to false', async () => {
     const owner = await createTestUser({ username: 'favowner2', email: 'favowner2@example.com' });
-    const target = await createTestUser({ username: 'favtarget2', email: 'favtarget2@example.com' });
+    const target = await createTestUser({
+      username: 'favtarget2',
+      email: 'favtarget2@example.com',
+    });
 
     const service = makeService();
     const contact = await service.addContact(owner._id.toString(), {
@@ -159,16 +165,20 @@ describe('ContactsService.toggleFavorite', () => {
   it('throws FORBIDDEN when a different user attempts toggle', async () => {
     const owner = await createTestUser({ username: 'favowner3', email: 'favowner3@example.com' });
     const other = await createTestUser({ username: 'other1', email: 'other1@example.com' });
-    const target = await createTestUser({ username: 'favtarget3', email: 'favtarget3@example.com' });
+    const target = await createTestUser({
+      username: 'favtarget3',
+      email: 'favtarget3@example.com',
+    });
 
     const service = makeService();
     const contact = await service.addContact(owner._id.toString(), {
       userId: target._id.toString(),
     });
 
-    await expect(
-      service.toggleFavorite(other._id.toString(), contact.id),
-    ).rejects.toMatchObject({ statusCode: 403, code: 'FORBIDDEN' });
+    await expect(service.toggleFavorite(other._id.toString(), contact.id)).rejects.toMatchObject({
+      statusCode: 403,
+      code: 'FORBIDDEN',
+    });
   });
 
   it('throws CONTACT_NOT_FOUND for a missing contact', async () => {
@@ -176,9 +186,10 @@ describe('ContactsService.toggleFavorite', () => {
     const fakeId = new mongoose.Types.ObjectId().toString();
     const service = makeService();
 
-    await expect(
-      service.toggleFavorite(user._id.toString(), fakeId),
-    ).rejects.toMatchObject({ statusCode: 404, code: 'CONTACT_NOT_FOUND' });
+    await expect(service.toggleFavorite(user._id.toString(), fakeId)).rejects.toMatchObject({
+      statusCode: 404,
+      code: 'CONTACT_NOT_FOUND',
+    });
   });
 });
 
@@ -189,16 +200,17 @@ describe('ContactsService.toggleFavorite', () => {
 describe('ContactsService.removeContact', () => {
   it('removes a contact that belongs to the requester', async () => {
     const owner = await createTestUser({ username: 'remowner1', email: 'remowner1@example.com' });
-    const target = await createTestUser({ username: 'remtarget1', email: 'remtarget1@example.com' });
+    const target = await createTestUser({
+      username: 'remtarget1',
+      email: 'remtarget1@example.com',
+    });
 
     const service = makeService();
     const contact = await service.addContact(owner._id.toString(), {
       userId: target._id.toString(),
     });
 
-    await expect(
-      service.removeContact(owner._id.toString(), contact.id),
-    ).resolves.toBeUndefined();
+    await expect(service.removeContact(owner._id.toString(), contact.id)).resolves.toBeUndefined();
 
     const found = await ContactModel.findById(contact.id).exec();
     expect(found).toBeNull();
@@ -206,17 +218,24 @@ describe('ContactsService.removeContact', () => {
 
   it('throws FORBIDDEN when a different user tries to remove', async () => {
     const owner = await createTestUser({ username: 'remowner2', email: 'remowner2@example.com' });
-    const intruder = await createTestUser({ username: 'intruder1', email: 'intruder1@example.com' });
-    const target = await createTestUser({ username: 'remtarget2', email: 'remtarget2@example.com' });
+    const intruder = await createTestUser({
+      username: 'intruder1',
+      email: 'intruder1@example.com',
+    });
+    const target = await createTestUser({
+      username: 'remtarget2',
+      email: 'remtarget2@example.com',
+    });
 
     const service = makeService();
     const contact = await service.addContact(owner._id.toString(), {
       userId: target._id.toString(),
     });
 
-    await expect(
-      service.removeContact(intruder._id.toString(), contact.id),
-    ).rejects.toMatchObject({ statusCode: 403, code: 'FORBIDDEN' });
+    await expect(service.removeContact(intruder._id.toString(), contact.id)).rejects.toMatchObject({
+      statusCode: 403,
+      code: 'FORBIDDEN',
+    });
   });
 
   it('throws CONTACT_NOT_FOUND for a non-existent ID', async () => {
@@ -224,8 +243,9 @@ describe('ContactsService.removeContact', () => {
     const fakeId = new mongoose.Types.ObjectId().toString();
     const service = makeService();
 
-    await expect(
-      service.removeContact(owner._id.toString(), fakeId),
-    ).rejects.toMatchObject({ statusCode: 404, code: 'CONTACT_NOT_FOUND' });
+    await expect(service.removeContact(owner._id.toString(), fakeId)).rejects.toMatchObject({
+      statusCode: 404,
+      code: 'CONTACT_NOT_FOUND',
+    });
   });
 });

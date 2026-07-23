@@ -13,9 +13,11 @@ function retryStrategy(times: number): number | null {
     logger.warn('Redis: max reconnect attempts reached — giving up', { attempts: times });
     return null; // null stops retrying and rejects the connect() promise
   }
-  const delay = Math.min(1000 * Math.pow(2, times - 1), 30_000);
-  logger.warn(`Redis reconnecting… attempt ${times}`, { delayMs: delay });
-  return delay;
+  // Full jitter: random in [0, cap] — prevents thundering herd on reconnect
+  const cap = Math.min(1000 * Math.pow(2, times - 1), 30_000);
+  const delayMs = Math.round(Math.random() * cap);
+  logger.warn(`Redis reconnecting… attempt ${times}`, { delayMs });
+  return delayMs;
 }
 
 // --------------------------------------------------------------------------

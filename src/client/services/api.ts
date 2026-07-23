@@ -1,8 +1,42 @@
 import axios from 'axios';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import type {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
 const BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+
+// ---------------------------------------------------------------------------
+// Client-side resilience helpers (no server imports)
+// ---------------------------------------------------------------------------
+
+function clientDelay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withClientRetry<T>(fn: () => Promise<T>, maxAttempts = 3): Promise<T> {
+  let attempt = 0;
+  for (;;) {
+    try {
+      return await fn();
+    } catch (err: unknown) {
+      attempt++;
+      const status = (err as { response?: { status: number } }).response?.status;
+      // Retry only on 5xx or network errors (no HTTP response at all)
+      // Never retry on 4xx — those are client errors
+      const isRetryable = status === undefined || status >= 500;
+      if (attempt >= maxAttempts || !isRetryable) throw err;
+      // Full jitter exponential backoff
+      const cap = Math.min(300 * Math.pow(2, attempt - 1), 8_000);
+      await clientDelay(Math.round(Math.random() * cap));
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 
 let isRefreshing = false;
 
@@ -73,9 +107,13 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      const response = await api.post<{ data: { accessToken: string } }>('/auth/refresh', {}, {
-        withCredentials: true,
-      });
+      const response = await api.post<{ data: { accessToken: string } }>(
+        '/auth/refresh',
+        {},
+        {
+          withCredentials: true,
+        },
+      );
       const { accessToken } = response.data.data;
 
       useAuthStore.getState().setToken(accessToken);
@@ -96,7 +134,7 @@ api.interceptors.response.use(
 );
 
 const request = async <T>(config: AxiosRequestConfig): Promise<T> => {
-  const response = await api.request<T>(config);
+  const response = await withClientRetry(() => api.request<T>(config));
   return response.data;
 };
 

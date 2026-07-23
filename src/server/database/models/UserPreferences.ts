@@ -116,5 +116,7 @@ userPreferencesSchema.index({ userId: 1 }, { unique: true });
 // Export
 // ---------------------------------------------------------------------------
 
-export const UserPreferencesModel: Model<IUserPreferences> =
-  mongoose.model<IUserPreferences>('UserPreferences', userPreferencesSchema);
+export const UserPreferencesModel: Model<IUserPreferences> = mongoose.model<IUserPreferences>(
+  'UserPreferences',
+  userPreferencesSchema,
+);

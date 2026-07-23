@@ -7,14 +7,5 @@
   "useTabs": false,
   "bracketSpacing": true,
   "arrowParens": "always",
-  "endOfLine": "lf",
-  "importOrder": [
-    "^react",
-    "^react-dom",
-    "^react-router",
-    "<THIRD_PARTY_MODULES>",
-    "^@shared/(.*)$",
-    "^@client/(.*)$",
-    "^[./]"
-  ]
+  "endOfLine": "lf"
 }

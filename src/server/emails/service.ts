@@ -2,6 +2,7 @@ import nodemailer, { type Transporter, type SendMailOptions } from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport/index.js';
 import { getEnv } from '../config/env.js';
 import { logger } from '../logger/index.js';
+import { withRetry, withTimeout, CircuitBreaker } from '../utils/resilience.js';
 
 // --------------------------------------------------------------------------
 // Types
@@ -19,7 +20,12 @@ export interface SendEmailOptions {
 interface EmailService {
   send(options: SendEmailOptions): Promise<void>;
   sendWelcome(to: string, name: string): Promise<void>;
-  sendPasswordReset(to: string, name: string, resetUrl: string, expiresInMinutes: number): Promise<void>;
+  sendPasswordReset(
+    to: string,
+    name: string,
+    resetUrl: string,
+    expiresInMinutes: number,
+  ): Promise<void>;
   sendVerification(to: string, name: string, verificationUrl: string): Promise<void>;
   send2FACode(to: string, name: string, code: string, expiresInMinutes: number): Promise<void>;
 }
@@ -97,10 +103,10 @@ function htmlLayout(title: string, bodyContent: string): string {
 </head>
 <body>
   <div class="container">
-    <div class="header"><h1>Truson-Chat</h1></div>
+    <div class="header"><h1>Linkora</h1></div>
     <div class="body">${bodyContent}</div>
     <div class="footer">
-      <p>You received this email because you have an account with Truson-Chat.<br/>
+      <p>You received this email because you have an account with Linkora.<br/>
       If you did not request this email, you can safely ignore it.</p>
     </div>
   </div>
@@ -113,17 +119,17 @@ function htmlLayout(title: string, bodyContent: string): string {
 // --------------------------------------------------------------------------
 
 export function welcomeEmail(name: string): { subject: string; html: string; text: string } {
-  const subject = 'Welcome to Truson-Chat!';
+  const subject = 'Welcome to Linkora!';
   const safeName = escapeHtml(name);
   const html = htmlLayout(
     subject,
     `<p>Hi ${safeName},</p>
-     <p>Welcome to <strong>Truson-Chat</strong> — your all-in-one communication platform. We're thrilled to have you on board.</p>
+     <p>Welcome to <strong>Linkora</strong> — your all-in-one communication platform. We're thrilled to have you on board.</p>
      <p>You can now start messaging, join groups, share media, and more.</p>
      <p>If you have any questions, our support team is always here to help.</p>
-     <p>See you inside,<br/><strong>The Truson-Chat Team</strong></p>`,
+     <p>See you inside,<br/><strong>The Linkora Team</strong></p>`,
   );
-  const text = `Hi ${name},\n\nWelcome to Truson-Chat! We're thrilled to have you on board.\n\nThe Truson-Chat Team`;
+  const text = `Hi ${name},\n\nWelcome to Linkora! We're thrilled to have you on board.\n\nThe Linkora Team`;
   return { subject, html, text };
 }
 
@@ -132,7 +138,7 @@ export function passwordResetEmail(
   resetUrl: string,
   expiresInMinutes: number,
 ): { subject: string; html: string; text: string } {
-  const subject = 'Reset your Truson-Chat password';
+  const subject = 'Reset your Linkora password';
   const safeName = escapeHtml(name);
   const safeResetUrl = safeUrl(resetUrl);
   const html = htmlLayout(
@@ -151,7 +157,7 @@ export function emailVerificationEmail(
   name: string,
   verificationUrl: string,
 ): { subject: string; html: string; text: string } {
-  const subject = 'Verify your Truson-Chat email address';
+  const subject = 'Verify your Linkora email address';
   const safeName = escapeHtml(name);
   const safeVerificationUrl = safeUrl(verificationUrl);
   const html = htmlLayout(
@@ -171,7 +177,7 @@ export function twoFactorEmail(
   code: string,
   expiresInMinutes: number,
 ): { subject: string; html: string; text: string } {
-  const subject = 'Your Truson-Chat verification code';
+  const subject = 'Your Linkora verification code';
   const safeName = escapeHtml(name);
   const safeCode = escapeHtml(code);
   const html = htmlLayout(
@@ -179,7 +185,7 @@ export function twoFactorEmail(
     `<p>Hi ${safeName},</p>
      <p>Use the following code to complete your sign-in. This code expires in <strong>${expiresInMinutes} minutes</strong>.</p>
      <div class="code-block">${safeCode}</div>
-     <p>Never share this code with anyone. Truson-Chat will never ask for it.</p>`,
+     <p>Never share this code with anyone. Linkora will never ask for it.</p>`,
   );
   const text = `Hi ${name},\n\nYour 2FA code is: ${code}\n\nExpires in ${expiresInMinutes} minutes. Never share this code.`;
   return { subject, html, text };
@@ -189,9 +195,21 @@ export function twoFactorEmail(
 // Email service implementation
 // --------------------------------------------------------------------------
 
+// SMTP permanent-failure codes — no point retrying these
+const PERMANENT_SMTP_CODES = ['550', '551', '552', '553', '554'];
+
+function isTransientSmtpError(err: Error): boolean {
+  return !PERMANENT_SMTP_CODES.some((code) => err.message.includes(code));
+}
+
 class EmailServiceImpl implements EmailService {
   private transporter: Transporter;
   private fromAddress: string;
+  private readonly circuitBreaker = new CircuitBreaker('smtp', {
+    failureThreshold: 5,
+    successThreshold: 2,
+    halfOpenTimeMs: 60_000,
+  });
 
   constructor() {
     this.transporter = createTransporter();
@@ -225,7 +243,32 @@ class EmailServiceImpl implements EmailService {
     };
 
     try {
-      const info = await this.transporter.sendMail(mailOptions);
+      const info = await this.circuitBreaker.execute(() =>
+        withRetry(
+          () =>
+            withTimeout(
+              () => this.transporter.sendMail(mailOptions),
+              15_000,
+              'SMTP send timed out',
+            ),
+          {
+            maxAttempts: 3,
+            baseDelayMs: 500,
+            maxDelayMs: 10_000,
+            jitter: 'full',
+            shouldRetry: isTransientSmtpError,
+            onRetry: (attempt, err, delayMs) => {
+              logger.warn('Email send retry', {
+                attempt,
+                error: err.message,
+                delayMs,
+                to: mailOptions.to,
+                subject,
+              });
+            },
+          },
+        ),
+      );
       logger.info('Email sent', {
         to: mailOptions.to,
         subject,
@@ -262,12 +305,7 @@ class EmailServiceImpl implements EmailService {
     await this.send({ to, ...template });
   }
 
-  async send2FACode(
-    to: string,
-    name: string,
-    code: string,
-    expiresInMinutes = 10,
-  ): Promise<void> {
+  async send2FACode(to: string, name: string, code: string, expiresInMinutes = 10): Promise<void> {
     const template = twoFactorEmail(name, code, expiresInMinutes);
     await this.send({ to, ...template });
   }
@@ -277,5 +315,4 @@ class EmailServiceImpl implements EmailService {
 // Singleton export
 // --------------------------------------------------------------------------
 
-export const emailService: EmailService & { verify(): Promise<void> } =
-  new EmailServiceImpl();
+export const emailService: EmailService & { verify(): Promise<void> } = new EmailServiceImpl();

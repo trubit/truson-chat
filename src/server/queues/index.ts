@@ -16,10 +16,12 @@ function getRedisConnection(): ConnectionOptions {
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
     lazyConnect: true,
-    retryStrategy: (times: number) =>
-      getEnv().NODE_ENV !== 'production' && times > 3
-        ? null
-        : Math.min(1000 * times, 30_000),
+    retryStrategy: (times: number) => {
+      if (getEnv().NODE_ENV !== 'production' && times > 3) return null;
+      // Full jitter exponential backoff — avoids stampede on Redis restart
+      const cap = Math.min(500 * Math.pow(2, times - 1), 30_000);
+      return Math.round(Math.random() * cap);
+    },
   };
 }
 
@@ -84,12 +86,12 @@ function getQueue(name: QueueName): Queue {
   return q;
 }
 
-export const getEmailQueue        = () => getQueue('email-queue');
+export const getEmailQueue = () => getQueue('email-queue');
 export const getNotificationQueue = () => getQueue('notification-queue');
-export const getMediaQueue        = () => getQueue('media-queue');
-export const getCleanupQueue      = () => getQueue('cleanup-queue');
-export const getAnalyticsQueue    = () => getQueue('analytics-queue');
-export const getAuditQueue        = () => getQueue('audit-queue');
+export const getMediaQueue = () => getQueue('media-queue');
+export const getCleanupQueue = () => getQueue('cleanup-queue');
+export const getAnalyticsQueue = () => getQueue('analytics-queue');
+export const getAuditQueue = () => getQueue('audit-queue');
 
 // --------------------------------------------------------------------------
 // Graceful shutdown

@@ -7,22 +7,22 @@ import mongoose, { Schema, type Document, type Model } from 'mongoose';
 export type MemberRole = 'owner' | 'admin' | 'member';
 
 export interface IConversationMember extends Document {
-  _id:                mongoose.Types.ObjectId;
-  conversationId:     mongoose.Types.ObjectId;
-  userId:             mongoose.Types.ObjectId;
-  role:               MemberRole;
-  joinedAt:           Date;
+  _id: mongoose.Types.ObjectId;
+  conversationId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  role: MemberRole;
+  joinedAt: Date;
   lastReadMessageId?: mongoose.Types.ObjectId;
-  lastReadAt?:        Date;
-  unreadCount:        number;
-  isMuted:            boolean;
-  muteUntil?:         Date;
-  isPinned:           boolean;
-  isArchived:         boolean;
+  lastReadAt?: Date;
+  unreadCount: number;
+  isMuted: boolean;
+  muteUntil?: Date;
+  isPinned: boolean;
+  isArchived: boolean;
   notificationsEnabled: boolean;
-  leftAt?:            Date;
-  createdAt:          Date;
-  updatedAt:          Date;
+  leftAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // ---------------------------------------------------------------------------
@@ -31,19 +31,19 @@ export interface IConversationMember extends Document {
 
 const conversationMemberSchema = new Schema<IConversationMember>(
   {
-    conversationId:     { type: Schema.Types.ObjectId, ref: 'Conversation', required: true },
-    userId:             { type: Schema.Types.ObjectId, ref: 'User',         required: true },
-    role:               { type: String, enum: ['owner', 'admin', 'member'], default: 'member' },
-    joinedAt:           { type: Date, default: Date.now },
-    lastReadMessageId:  { type: Schema.Types.ObjectId, ref: 'Message' },
-    lastReadAt:         { type: Date },
-    unreadCount:        { type: Number, default: 0, min: 0 },
-    isMuted:            { type: Boolean, default: false },
-    muteUntil:          { type: Date },
-    isPinned:           { type: Boolean, default: false },
-    isArchived:         { type: Boolean, default: false },
+    conversationId: { type: Schema.Types.ObjectId, ref: 'Conversation', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    role: { type: String, enum: ['owner', 'admin', 'member'], default: 'member' },
+    joinedAt: { type: Date, default: Date.now },
+    lastReadMessageId: { type: Schema.Types.ObjectId, ref: 'Message' },
+    lastReadAt: { type: Date },
+    unreadCount: { type: Number, default: 0, min: 0 },
+    isMuted: { type: Boolean, default: false },
+    muteUntil: { type: Date },
+    isPinned: { type: Boolean, default: false },
+    isArchived: { type: Boolean, default: false },
     notificationsEnabled: { type: Boolean, default: true },
-    leftAt:             { type: Date },
+    leftAt: { type: Date },
   },
   { timestamps: true },
 );

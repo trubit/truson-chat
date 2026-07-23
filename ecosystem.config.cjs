@@ -1,5 +1,5 @@
 /**
- * PM2 ecosystem configuration for Truson-Chat.
+ * PM2 ecosystem configuration for Linkora.
  *
  * Start:   npx pm2 start ecosystem.config.cjs --env production
  * Runtime: npx pm2-runtime ecosystem.config.cjs --env production   (Docker)
@@ -10,7 +10,7 @@
 module.exports = {
   apps: [
     {
-      name: 'truson-chat-server',
+      name: 'linkora-server',
 
       // Compiled entry point (tsconfig.server.json: rootDir=".", outDir="./dist/server")
       script: 'dist/server/src/server/app.js',
@@ -22,8 +22,8 @@ module.exports = {
       // ── Startup / shutdown behaviour ───────────────────────────────────────
       // app.ts sends process.send('ready') once the HTTP server is listening
       wait_ready: true,
-      listen_timeout: 10_000,   // ms to wait for 'ready' signal before SIGKILL
-      kill_timeout: 5_000,      // ms for graceful SIGTERM before SIGKILL
+      listen_timeout: 10_000, // ms to wait for 'ready' signal before SIGKILL
+      kill_timeout: 5_000, // ms for graceful SIGTERM before SIGKILL
 
       // ── Memory limit ───────────────────────────────────────────────────────
       max_memory_restart: '500M',
@@ -41,7 +41,7 @@ module.exports = {
       log_rotate_compress: true,
 
       // ── Misc ───────────────────────────────────────────────────────────────
-      watch: false,           // never watch files in production
+      watch: false, // never watch files in production
       autorestart: true,
       exp_backoff_restart_delay: 1000,
 

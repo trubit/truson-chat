@@ -8,6 +8,7 @@ import { logger } from '../logger/index.js';
 
 const MAX_RETRIES = 5;
 const INITIAL_RETRY_DELAY_MS = 1000;
+const MAX_RETRY_DELAY_MS = 30_000;
 
 // --------------------------------------------------------------------------
 // Connection state
@@ -91,10 +92,12 @@ function scheduleRetry(): void {
     return;
   }
 
-  const delay = INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount);
+  // Full jitter: random in [0, cap] — spreads reconnect load across replicas
+  const cap = Math.min(INITIAL_RETRY_DELAY_MS * Math.pow(2, retryCount), MAX_RETRY_DELAY_MS);
+  const delayMs = Math.round(Math.random() * cap);
   retryCount += 1;
 
-  logger.warn(`MongoDB retry ${retryCount}/${MAX_RETRIES} in ${delay}ms`);
+  logger.warn(`MongoDB retry ${retryCount}/${MAX_RETRIES} in ${delayMs}ms`);
 
   retryTimer = setTimeout(async () => {
     retryTimer = null;
@@ -103,7 +106,7 @@ function scheduleRetry(): void {
     } catch {
       // error already logged inside connectDatabase
     }
-  }, delay);
+  }, delayMs);
 }
 
 // --------------------------------------------------------------------------

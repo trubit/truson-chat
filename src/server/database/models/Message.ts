@@ -5,9 +5,18 @@ import mongoose, { Schema, type Document, type Model } from 'mongoose';
 // ---------------------------------------------------------------------------
 
 export type MsgType =
-  | 'text' | 'image' | 'video' | 'audio' | 'file'
-  | 'sticker' | 'gif' | 'location' | 'contact'
-  | 'voice_note' | 'system' | 'call_ended';
+  | 'text'
+  | 'image'
+  | 'video'
+  | 'audio'
+  | 'file'
+  | 'sticker'
+  | 'gif'
+  | 'location'
+  | 'contact'
+  | 'voice_note'
+  | 'system'
+  | 'call_ended';
 
 export type MsgStatus = 'sent' | 'delivered' | 'read' | 'deleted';
 
@@ -18,53 +27,53 @@ export interface IMessageReaction {
 }
 
 export interface IReadReceipt {
-  userId:  mongoose.Types.ObjectId;
-  readAt:  Date;
+  userId: mongoose.Types.ObjectId;
+  readAt: Date;
 }
 
 export interface IDeliveryReceipt {
-  userId:      mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   deliveredAt: Date;
 }
 
 export interface IMessageMedia {
-  url:        string;
-  publicId?:  string;
-  mimeType?:  string;
-  size?:      number;
-  width?:     number;
-  height?:    number;
-  duration?:  number;
+  url: string;
+  publicId?: string;
+  mimeType?: string;
+  size?: number;
+  width?: number;
+  height?: number;
+  duration?: number;
   thumbnail?: string;
-  name?:      string;
-  waveform?:  number[];
+  name?: string;
+  waveform?: number[];
 }
 
 export interface IEditEntry {
-  content:  string;
+  content: string;
   editedAt: Date;
 }
 
 export interface IMessage extends Document {
-  _id:            mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   conversationId: mongoose.Types.ObjectId;
-  senderId:       mongoose.Types.ObjectId;
-  type:           MsgType;
-  content:        string;
-  media:          IMessageMedia[];
-  replyTo?:       mongoose.Types.ObjectId;
-  mentions:       mongoose.Types.ObjectId[];
-  reactions:      IMessageReaction[];
-  readBy:         IReadReceipt[];
-  deliveredTo:    IDeliveryReceipt[];
-  status:         MsgStatus;
-  isEdited:       boolean;
-  editedAt?:      Date;
-  editHistory:    IEditEntry[];
-  deletedAt?:     Date;
-  deletedBy?:     mongoose.Types.ObjectId;
-  createdAt:      Date;
-  updatedAt:      Date;
+  senderId: mongoose.Types.ObjectId;
+  type: MsgType;
+  content: string;
+  media: IMessageMedia[];
+  replyTo?: mongoose.Types.ObjectId;
+  mentions: mongoose.Types.ObjectId[];
+  reactions: IMessageReaction[];
+  readBy: IReadReceipt[];
+  deliveredTo: IDeliveryReceipt[];
+  status: MsgStatus;
+  isEdited: boolean;
+  editedAt?: Date;
+  editHistory: IEditEntry[];
+  deletedAt?: Date;
+  deletedBy?: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // ---------------------------------------------------------------------------
@@ -90,7 +99,7 @@ const readReceiptSchema = new Schema<IReadReceipt>(
 
 const deliveryReceiptSchema = new Schema<IDeliveryReceipt>(
   {
-    userId:      { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     deliveredAt: { type: Date, required: true },
   },
   { _id: false },
@@ -98,23 +107,23 @@ const deliveryReceiptSchema = new Schema<IDeliveryReceipt>(
 
 const mediaSchema = new Schema<IMessageMedia>(
   {
-    url:       { type: String, required: true },
-    publicId:  String,
-    mimeType:  String,
-    size:      Number,
-    width:     Number,
-    height:    Number,
-    duration:  Number,
+    url: { type: String, required: true },
+    publicId: String,
+    mimeType: String,
+    size: Number,
+    width: Number,
+    height: Number,
+    duration: Number,
     thumbnail: String,
-    name:      String,
-    waveform:  [{ type: Number }],
+    name: String,
+    waveform: [{ type: Number }],
   },
   { _id: false },
 );
 
 const editEntrySchema = new Schema<IEditEntry>(
   {
-    content:  { type: String, required: true },
+    content: { type: String, required: true },
     editedAt: { type: Date, required: true },
   },
   { _id: false },
@@ -127,25 +136,38 @@ const editEntrySchema = new Schema<IEditEntry>(
 const messageSchema = new Schema<IMessage>(
   {
     conversationId: { type: Schema.Types.ObjectId, ref: 'Conversation', required: true },
-    senderId:       { type: Schema.Types.ObjectId, ref: 'User',         required: true },
-    type:           {
+    senderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    type: {
       type: String,
-      enum: ['text','image','video','audio','file','sticker','gif','location','contact','voice_note','system','call_ended'],
+      enum: [
+        'text',
+        'image',
+        'video',
+        'audio',
+        'file',
+        'sticker',
+        'gif',
+        'location',
+        'contact',
+        'voice_note',
+        'system',
+        'call_ended',
+      ],
       default: 'text',
     },
-    content:     { type: String, default: '', maxlength: 10_000 },
-    media:       { type: [mediaSchema], default: [] },
-    replyTo:     { type: Schema.Types.ObjectId, ref: 'Message' },
-    mentions:    [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    reactions:   { type: [reactionSchema], default: [] },
-    readBy:      { type: [readReceiptSchema], default: [] },
+    content: { type: String, default: '', maxlength: 10_000 },
+    media: { type: [mediaSchema], default: [] },
+    replyTo: { type: Schema.Types.ObjectId, ref: 'Message' },
+    mentions: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    reactions: { type: [reactionSchema], default: [] },
+    readBy: { type: [readReceiptSchema], default: [] },
     deliveredTo: { type: [deliveryReceiptSchema], default: [] },
-    status:      { type: String, enum: ['sent','delivered','read','deleted'], default: 'sent' },
-    isEdited:    { type: Boolean, default: false },
-    editedAt:    { type: Date },
+    status: { type: String, enum: ['sent', 'delivered', 'read', 'deleted'], default: 'sent' },
+    isEdited: { type: Boolean, default: false },
+    editedAt: { type: Date },
     editHistory: { type: [editEntrySchema], default: [] },
-    deletedAt:   { type: Date },
-    deletedBy:   { type: Schema.Types.ObjectId, ref: 'User' },
+    deletedAt: { type: Date },
+    deletedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true },
 );
@@ -175,5 +197,4 @@ messageSchema.index({ deletedAt: 1 });
 // Export
 // ---------------------------------------------------------------------------
 
-export const MessageModel: Model<IMessage> =
-  mongoose.model<IMessage>('Message', messageSchema);
+export const MessageModel: Model<IMessage> = mongoose.model<IMessage>('Message', messageSchema);

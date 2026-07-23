@@ -58,16 +58,16 @@ export const DEFAULT_MEMBER_PERMISSIONS: GroupPermission[] = [
 ];
 
 export interface IGroupRole extends Document {
-  _id:         mongoose.Types.ObjectId;
-  groupId:     mongoose.Types.ObjectId;
-  name:        string;
-  color?:      string;   // hex color for role badge
+  _id: mongoose.Types.ObjectId;
+  groupId: mongoose.Types.ObjectId;
+  name: string;
+  color?: string; // hex color for role badge
   permissions: GroupPermission[];
-  isDefault:   boolean;  // default role assigned to new members
-  position:    number;   // display order / hierarchy (higher = more power)
-  createdBy:   mongoose.Types.ObjectId;
-  createdAt:   Date;
-  updatedAt:   Date;
+  isDefault: boolean; // default role assigned to new members
+  position: number; // display order / hierarchy (higher = more power)
+  createdBy: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // ---------------------------------------------------------------------------
@@ -76,13 +76,13 @@ export interface IGroupRole extends Document {
 
 const groupRoleSchema = new Schema<IGroupRole>(
   {
-    groupId:     { type: Schema.Types.ObjectId, ref: 'Group', required: true },
-    name:        { type: String, required: true, trim: true, maxlength: 64 },
-    color:       { type: String, match: /^#[0-9A-Fa-f]{6}$/ },
+    groupId: { type: Schema.Types.ObjectId, ref: 'Group', required: true },
+    name: { type: String, required: true, trim: true, maxlength: 64 },
+    color: { type: String, match: /^#[0-9A-Fa-f]{6}$/ },
     permissions: [{ type: String, enum: ALL_GROUP_PERMISSIONS }],
-    isDefault:   { type: Boolean, default: false },
-    position:    { type: Number, default: 0 },
-    createdBy:   { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    isDefault: { type: Boolean, default: false },
+    position: { type: Number, default: 0 },
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true },
 );
@@ -100,5 +100,5 @@ groupRoleSchema.index({ groupId: 1, isDefault: 1 });
 // ---------------------------------------------------------------------------
 
 export const GroupRoleModel: Model<IGroupRole> =
-  mongoose.models['GroupRole'] as Model<IGroupRole> ??
+  (mongoose.models['GroupRole'] as Model<IGroupRole>) ??
   mongoose.model<IGroupRole>('GroupRole', groupRoleSchema);

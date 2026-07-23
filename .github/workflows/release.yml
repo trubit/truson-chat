@@ -1,0 +1,94 @@
+name: Release
+
+# Triggered by pushing a semantic version tag, e.g.:
+#   git tag v1.2.3 && git push origin v1.2.3
+#
+# Creates a GitHub Release with:
+#   - Auto-generated release notes from merged PR titles
+#   - Compiled dist archive (tar.gz + zip)
+#   - Pre-release flag for -alpha/-beta/-rc tags
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (full history for release notes)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run full CI quality gate
+        run: |
+          npm run lint
+          npm run typecheck
+          npm run format:check
+
+      - name: Build release artifacts
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Package dist archives
+        run: |
+          VERSION="${{ github.ref_name }}"
+          tar -czf "linkora-${VERSION}-dist.tar.gz" dist/
+          zip -r   "linkora-${VERSION}-dist.zip"    dist/
+
+      - name: Determine pre-release status
+        id: prerelease
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "$TAG" == *"-alpha"* ]] || [[ "$TAG" == *"-beta"* ]] || [[ "$TAG" == *"-rc"* ]]; then
+            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          # GitHub auto-generates notes from PR titles + labels since the
+          # previous tag.  Configure .github/release.yml for custom categories.
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ steps.prerelease.outputs.is_prerelease }}
+          files: |
+            linkora-${{ github.ref_name }}-dist.tar.gz
+            linkora-${{ github.ref_name }}-dist.zip
+          body: |
+            ## Installation
+
+            ### Docker
+            ```bash
+            docker pull ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+            ```
+
+            ### Manual
+            Download the dist archive below, unzip it, set your environment
+            variables, and run:
+            ```bash
+            node dist/server/src/server/app.js
+            ```
+            or with PM2:
+            ```bash
+            npx pm2-runtime ecosystem.config.cjs --env production
+            ```
