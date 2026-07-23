@@ -19,11 +19,7 @@ const service = new UsersService(repo);
 const controller = new UsersController(service);
 
 // GET /users/search — must be before /:id to avoid route conflict
-router.get(
-  '/search',
-  authenticate,
-  controller.searchUsers,
-);
+router.get('/search', authenticate, controller.searchUsers);
 
 // GET /users — admin only
 router.get(
@@ -35,12 +31,7 @@ router.get(
 );
 
 // GET /users/:id
-router.get(
-  '/:id',
-  authenticate,
-  validateParams(userIdParamSchema),
-  controller.getUser,
-);
+router.get('/:id', authenticate, validateParams(userIdParamSchema), controller.getUser);
 
 // PATCH /users/:id
 router.patch(
@@ -52,12 +43,7 @@ router.patch(
 );
 
 // DELETE /users/:id
-router.delete(
-  '/:id',
-  authenticate,
-  validateParams(userIdParamSchema),
-  controller.deleteUser,
-);
+router.delete('/:id', authenticate, validateParams(userIdParamSchema), controller.deleteUser);
 
 // PATCH /users/:id/status — admin only
 router.patch(

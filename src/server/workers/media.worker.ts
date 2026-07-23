@@ -7,8 +7,8 @@ import fs from 'fs';
 
 export interface MediaJobData {
   type: 'cleanup-local' | 'process-image' | 'generate-thumbnail';
-  filePath?:    string;
-  publicId?:    string;
+  filePath?: string;
+  publicId?: string;
   mediaFileId?: string;
 }
 

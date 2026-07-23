@@ -2,8 +2,12 @@ import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
-interface Props { children: ReactNode }
-interface State { error: Error | null }
+interface Props {
+  children: ReactNode;
+}
+interface State {
+  error: Error | null;
+}
 
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { error: null };

@@ -6,7 +6,11 @@ import { audioUpload } from '../../uploads/multer.js';
 const router = Router();
 router.use(authenticate);
 
-router.post('/upload', audioUpload.single('file'), voiceNoteController.upload.bind(voiceNoteController));
+router.post(
+  '/upload',
+  audioUpload.single('file'),
+  voiceNoteController.upload.bind(voiceNoteController),
+);
 router.get('/:id', voiceNoteController.getVoiceNote.bind(voiceNoteController));
 
 export default router;

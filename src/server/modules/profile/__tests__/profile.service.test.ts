@@ -13,7 +13,7 @@ import { ProfileService } from '../service/index.js';
 
 jest.mock('../../../cloudinary/index.js', () => ({
   uploadToCloudinary: jest.fn().mockResolvedValue({
-    publicId: 'truson-chat/avatars/test123',
+    publicId: 'linkora/avatars/test123',
     url: 'http://res.cloudinary.com/test/image/upload/test123',
     secureUrl: 'https://res.cloudinary.com/test/image/upload/test123',
     width: 400,
@@ -65,20 +65,22 @@ afterEach(async () => {
 // Helpers
 // ---------------------------------------------------------------------------
 
-async function createTestProfile(overrides: Partial<{
-  userId: mongoose.Types.ObjectId;
-  displayName: string;
-  bio: string;
-  location: string;
-  website: string;
-  statusMessage: string;
-  privacySettings: Partial<{
-    profileVisibility: 'everyone' | 'contacts' | 'nobody';
-    lastSeenVisibility: 'everyone' | 'contacts' | 'nobody';
-    profilePhotoVisibility: 'everyone' | 'contacts' | 'nobody';
-    aboutVisibility: 'everyone' | 'contacts' | 'nobody';
-  }>;
-}> = {}) {
+async function createTestProfile(
+  overrides: Partial<{
+    userId: mongoose.Types.ObjectId;
+    displayName: string;
+    bio: string;
+    location: string;
+    website: string;
+    statusMessage: string;
+    privacySettings: Partial<{
+      profileVisibility: 'everyone' | 'contacts' | 'nobody';
+      lastSeenVisibility: 'everyone' | 'contacts' | 'nobody';
+      profilePhotoVisibility: 'everyone' | 'contacts' | 'nobody';
+      aboutVisibility: 'everyone' | 'contacts' | 'nobody';
+    }>;
+  }> = {},
+) {
   const userId = overrides.userId ?? new mongoose.Types.ObjectId();
   return ProfileModel.create({
     userId,
@@ -399,11 +401,11 @@ describe('ProfileService.uploadAvatar', () => {
 
     expect(uploadToCloudinary).toHaveBeenCalledWith(
       expect.any(Buffer),
-      expect.objectContaining({ folder: 'truson-chat/avatars' }),
+      expect.objectContaining({ folder: 'linkora/avatars' }),
     );
     expect(result.avatar).toMatchObject({
       url: expect.stringContaining('cloudinary.com'),
-      publicId: 'truson-chat/avatars/test123',
+      publicId: 'linkora/avatars/test123',
     });
   });
 

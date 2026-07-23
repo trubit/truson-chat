@@ -5,11 +5,11 @@ import { useStickerPacks } from '../queries/index';
 import type { StickerItem } from '@/store/stickerStore';
 
 const C = {
-  panel:   '#080C18',
-  border:  'rgba(139,92,246,0.12)',
-  accent:  '#9B6DFF',
-  txt2:    '#94A3B8',
-  txt3:    '#475569',
+  panel: '#080C18',
+  border: 'rgba(139,92,246,0.12)',
+  accent: '#9B6DFF',
+  txt2: '#94A3B8',
+  txt3: '#475569',
 } as const;
 
 export function StickerPicker({
@@ -30,9 +30,13 @@ export function StickerPicker({
     .map((id) => allStickers.get(id))
     .filter((s): s is StickerItem => s !== undefined);
 
-  const tabs = recentItems.length > 0
-    ? [{ label: 'Recent', stickers: recentItems }, ...packs.map((p) => ({ label: p.name, stickers: p.stickers }))]
-    : packs.map((p) => ({ label: p.name, stickers: p.stickers }));
+  const tabs =
+    recentItems.length > 0
+      ? [
+          { label: 'Recent', stickers: recentItems },
+          ...packs.map((p) => ({ label: p.name, stickers: p.stickers })),
+        ]
+      : packs.map((p) => ({ label: p.name, stickers: p.stickers }));
 
   const handleSelect = (sticker: StickerItem) => {
     trackStickerUse(sticker._id);
@@ -59,7 +63,13 @@ export function StickerPicker({
             sx={{
               borderBottom: `1px solid ${C.border}`,
               minHeight: 36,
-              '& .MuiTab-root': { fontSize: 11, minHeight: 36, color: C.txt3, textTransform: 'none', px: 1.5 },
+              '& .MuiTab-root': {
+                fontSize: 11,
+                minHeight: 36,
+                color: C.txt3,
+                textTransform: 'none',
+                px: 1.5,
+              },
               '& .Mui-selected': { color: C.accent },
               '& .MuiTabs-indicator': { bgcolor: C.accent },
             }}

@@ -34,10 +34,7 @@ function patchSource(sourceText) {
   // need to convert from a file:// URL.  The entire expression is replaced
   // so we don't leave a dangling `fileURLToPath(...)` call that would throw
   // "URL must be of scheme file" when passed a bare Windows path.
-  let patched = sourceText.replace(
-    /fileURLToPath\s*\(\s*import\.meta\.url\s*\)/g,
-    '__filename',
-  );
+  let patched = sourceText.replace(/fileURLToPath\s*\(\s*import\.meta\.url\s*\)/g, '__filename');
   // Also handle the bare `import.meta.url` that appears on its own (without
   // being wrapped in fileURLToPath) — replace with a `file://` URL string
   // so any remaining fileURLToPath calls still work.
@@ -48,30 +45,18 @@ function patchSource(sourceText) {
 module.exports = {
   process(sourceText, sourcePath, options) {
     const patched = patchSource(sourceText);
-    return getTransformer(options.transformerConfig).process(
-      patched,
-      sourcePath,
-      options,
-    );
+    return getTransformer(options.transformerConfig).process(patched, sourcePath, options);
   },
 
   processAsync(sourceText, sourcePath, options) {
     const patched = patchSource(sourceText);
-    return getTransformer(options.transformerConfig).processAsync(
-      patched,
-      sourcePath,
-      options,
-    );
+    return getTransformer(options.transformerConfig).processAsync(patched, sourcePath, options);
   },
 
   getCacheKey(sourceText, sourcePath, options) {
     // Include the patched source in the cache key so that changes to the
     // regex substitution invalidate the cache correctly.
     const patched = patchSource(sourceText);
-    return getTransformer(options.transformerConfig).getCacheKey(
-      patched,
-      sourcePath,
-      options,
-    );
+    return getTransformer(options.transformerConfig).getCacheKey(patched, sourcePath, options);
   },
 };

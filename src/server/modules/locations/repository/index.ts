@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
-import { SharedLocationModel, type ISharedLocation } from '../../../database/models/SharedLocation.js';
+import {
+  SharedLocationModel,
+  type ISharedLocation,
+} from '../../../database/models/SharedLocation.js';
 
 export class SharedLocationRepository {
   async create(data: Partial<ISharedLocation>): Promise<ISharedLocation> {

@@ -121,9 +121,10 @@ describe('BlockingService.blockUser', () => {
     const fakeId = new mongoose.Types.ObjectId().toString();
     const service = makeService();
 
-    await expect(
-      service.blockUser(blocker._id.toString(), fakeId, {}),
-    ).rejects.toMatchObject({ statusCode: 404, code: 'USER_NOT_FOUND' });
+    await expect(service.blockUser(blocker._id.toString(), fakeId, {})).rejects.toMatchObject({
+      statusCode: 404,
+      code: 'USER_NOT_FOUND',
+    });
   });
 });
 
@@ -133,8 +134,14 @@ describe('BlockingService.blockUser', () => {
 
 describe('BlockingService.unblockUser', () => {
   it('happy path removes a block', async () => {
-    const blocker = await createTestUser({ username: 'unblocker1', email: 'unblocker1@example.com' });
-    const blocked = await createTestUser({ username: 'unblocked1', email: 'unblocked1@example.com' });
+    const blocker = await createTestUser({
+      username: 'unblocker1',
+      email: 'unblocker1@example.com',
+    });
+    const blocked = await createTestUser({
+      username: 'unblocked1',
+      email: 'unblocked1@example.com',
+    });
 
     const service = makeService();
     await service.blockUser(blocker._id.toString(), blocked._id.toString(), {});
@@ -151,8 +158,14 @@ describe('BlockingService.unblockUser', () => {
   });
 
   it('rejects unblocking a user that was not blocked with BLOCK_NOT_FOUND', async () => {
-    const blocker = await createTestUser({ username: 'unblocker2', email: 'unblocker2@example.com' });
-    const notBlocked = await createTestUser({ username: 'notblocked1', email: 'notblocked1@example.com' });
+    const blocker = await createTestUser({
+      username: 'unblocker2',
+      email: 'unblocker2@example.com',
+    });
+    const notBlocked = await createTestUser({
+      username: 'notblocked1',
+      email: 'notblocked1@example.com',
+    });
 
     const service = makeService();
     await expect(
@@ -212,9 +225,10 @@ describe('BlockingService.muteUser', () => {
     const fakeId = new mongoose.Types.ObjectId().toString();
     const service = makeService();
 
-    await expect(
-      service.muteUser(muter._id.toString(), fakeId, {}),
-    ).rejects.toMatchObject({ statusCode: 404, code: 'USER_NOT_FOUND' });
+    await expect(service.muteUser(muter._id.toString(), fakeId, {})).rejects.toMatchObject({
+      statusCode: 404,
+      code: 'USER_NOT_FOUND',
+    });
   });
 });
 
@@ -243,7 +257,10 @@ describe('BlockingService.unmuteUser', () => {
 
   it('rejects unmuting a user that was not muted with MUTE_NOT_FOUND', async () => {
     const muter = await createTestUser({ username: 'unmuter2', email: 'unmuter2@example.com' });
-    const notMuted = await createTestUser({ username: 'notmuted1', email: 'notmuted1@example.com' });
+    const notMuted = await createTestUser({
+      username: 'notmuted1',
+      email: 'notmuted1@example.com',
+    });
 
     const service = makeService();
     await expect(

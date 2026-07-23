@@ -58,11 +58,9 @@ export const useFriendsStore = create<FriendsStore>((set) => ({
       friendsMeta: { ...state.friendsMeta, total: Math.max(0, state.friendsMeta.total - 1) },
     })),
 
-  setReceivedRequests: (receivedRequests, meta) =>
-    set({ receivedRequests, receivedMeta: meta }),
+  setReceivedRequests: (receivedRequests, meta) => set({ receivedRequests, receivedMeta: meta }),
 
-  setSentRequests: (sentRequests, meta) =>
-    set({ sentRequests, sentMeta: meta }),
+  setSentRequests: (sentRequests, meta) => set({ sentRequests, sentMeta: meta }),
 
   addReceivedRequest: (request) =>
     set((state) => ({

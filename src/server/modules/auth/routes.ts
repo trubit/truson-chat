@@ -45,11 +45,6 @@ router.post(
   validateBody(sendPhoneOtpSchema),
   controller.sendPhoneOtp,
 );
-router.post(
-  '/verify-phone',
-  authenticate,
-  validateBody(verifyPhoneSchema),
-  controller.verifyPhone,
-);
+router.post('/verify-phone', authenticate, validateBody(verifyPhoneSchema), controller.verifyPhone);
 
 export default router;

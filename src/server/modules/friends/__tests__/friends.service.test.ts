@@ -137,8 +137,14 @@ describe('FriendsService.sendRequest', () => {
 
 describe('FriendsService.acceptRequest', () => {
   it('happy path creates friendship and returns friend data', async () => {
-    const sender = await createTestUser({ username: 'accsender1', email: 'accsender1@example.com' });
-    const recipient = await createTestUser({ username: 'accrecip1', email: 'accrecip1@example.com' });
+    const sender = await createTestUser({
+      username: 'accsender1',
+      email: 'accsender1@example.com',
+    });
+    const recipient = await createTestUser({
+      username: 'accrecip1',
+      email: 'accrecip1@example.com',
+    });
 
     const requestRepo = new FriendRequestRepository();
     const request = await requestRepo.create(sender._id.toString(), recipient._id.toString());
@@ -161,9 +167,18 @@ describe('FriendsService.acceptRequest', () => {
   });
 
   it('rejects if wrong recipient (FORBIDDEN)', async () => {
-    const sender = await createTestUser({ username: 'accsender2', email: 'accsender2@example.com' });
-    const recipient = await createTestUser({ username: 'accrecip2', email: 'accrecip2@example.com' });
-    const intruder = await createTestUser({ username: 'intruder2', email: 'intruder2@example.com' });
+    const sender = await createTestUser({
+      username: 'accsender2',
+      email: 'accsender2@example.com',
+    });
+    const recipient = await createTestUser({
+      username: 'accrecip2',
+      email: 'accrecip2@example.com',
+    });
+    const intruder = await createTestUser({
+      username: 'intruder2',
+      email: 'intruder2@example.com',
+    });
 
     const requestRepo = new FriendRequestRepository();
     const request = await requestRepo.create(sender._id.toString(), recipient._id.toString());
@@ -175,8 +190,14 @@ describe('FriendsService.acceptRequest', () => {
   });
 
   it('rejects if request is not pending (REQUEST_NOT_PENDING)', async () => {
-    const sender = await createTestUser({ username: 'accsender3', email: 'accsender3@example.com' });
-    const recipient = await createTestUser({ username: 'accrecip3', email: 'accrecip3@example.com' });
+    const sender = await createTestUser({
+      username: 'accsender3',
+      email: 'accsender3@example.com',
+    });
+    const recipient = await createTestUser({
+      username: 'accrecip3',
+      email: 'accrecip3@example.com',
+    });
 
     const requestRepo = new FriendRequestRepository();
     const request = await requestRepo.create(sender._id.toString(), recipient._id.toString());
@@ -195,9 +216,10 @@ describe('FriendsService.acceptRequest', () => {
     const fakeId = new mongoose.Types.ObjectId().toString();
     const service = makeService();
 
-    await expect(
-      service.acceptRequest(user._id.toString(), fakeId),
-    ).rejects.toMatchObject({ statusCode: 404, code: 'REQUEST_NOT_FOUND' });
+    await expect(service.acceptRequest(user._id.toString(), fakeId)).rejects.toMatchObject({
+      statusCode: 404,
+      code: 'REQUEST_NOT_FOUND',
+    });
   });
 });
 
@@ -207,8 +229,14 @@ describe('FriendsService.acceptRequest', () => {
 
 describe('FriendsService.cancelRequest', () => {
   it('happy path cancels a pending request', async () => {
-    const sender = await createTestUser({ username: 'cansender1', email: 'cansender1@example.com' });
-    const recipient = await createTestUser({ username: 'canrecip1', email: 'canrecip1@example.com' });
+    const sender = await createTestUser({
+      username: 'cansender1',
+      email: 'cansender1@example.com',
+    });
+    const recipient = await createTestUser({
+      username: 'canrecip1',
+      email: 'canrecip1@example.com',
+    });
 
     const requestRepo = new FriendRequestRepository();
     const request = await requestRepo.create(sender._id.toString(), recipient._id.toString());
@@ -223,8 +251,14 @@ describe('FriendsService.cancelRequest', () => {
   });
 
   it('rejects if the wrong person (not sender) tries to cancel (FORBIDDEN)', async () => {
-    const sender = await createTestUser({ username: 'cansender2', email: 'cansender2@example.com' });
-    const recipient = await createTestUser({ username: 'canrecip2', email: 'canrecip2@example.com' });
+    const sender = await createTestUser({
+      username: 'cansender2',
+      email: 'cansender2@example.com',
+    });
+    const recipient = await createTestUser({
+      username: 'canrecip2',
+      email: 'canrecip2@example.com',
+    });
 
     const requestRepo = new FriendRequestRepository();
     const request = await requestRepo.create(sender._id.toString(), recipient._id.toString());
@@ -236,8 +270,14 @@ describe('FriendsService.cancelRequest', () => {
   });
 
   it('rejects if request is not pending (REQUEST_NOT_PENDING)', async () => {
-    const sender = await createTestUser({ username: 'cansender3', email: 'cansender3@example.com' });
-    const recipient = await createTestUser({ username: 'canrecip3', email: 'canrecip3@example.com' });
+    const sender = await createTestUser({
+      username: 'cansender3',
+      email: 'cansender3@example.com',
+    });
+    const recipient = await createTestUser({
+      username: 'canrecip3',
+      email: 'canrecip3@example.com',
+    });
 
     const requestRepo = new FriendRequestRepository();
     const request = await requestRepo.create(sender._id.toString(), recipient._id.toString());
@@ -254,9 +294,10 @@ describe('FriendsService.cancelRequest', () => {
     const fakeId = new mongoose.Types.ObjectId().toString();
     const service = makeService();
 
-    await expect(
-      service.cancelRequest(user._id.toString(), fakeId),
-    ).rejects.toMatchObject({ statusCode: 404, code: 'REQUEST_NOT_FOUND' });
+    await expect(service.cancelRequest(user._id.toString(), fakeId)).rejects.toMatchObject({
+      statusCode: 404,
+      code: 'REQUEST_NOT_FOUND',
+    });
   });
 });
 
@@ -266,8 +307,14 @@ describe('FriendsService.cancelRequest', () => {
 
 describe('FriendsService.removeFriend', () => {
   it('removes an existing friendship', async () => {
-    const user1 = await createTestUser({ username: 'remfriend1a', email: 'remfriend1a@example.com' });
-    const user2 = await createTestUser({ username: 'remfriend1b', email: 'remfriend1b@example.com' });
+    const user1 = await createTestUser({
+      username: 'remfriend1a',
+      email: 'remfriend1a@example.com',
+    });
+    const user2 = await createTestUser({
+      username: 'remfriend1b',
+      email: 'remfriend1b@example.com',
+    });
 
     const friendshipRepo = new FriendshipRepository();
     await friendshipRepo.create(user1._id.toString(), user2._id.toString());
@@ -287,8 +334,14 @@ describe('FriendsService.removeFriend', () => {
   });
 
   it('throws NOT_FRIENDS when they are not friends', async () => {
-    const user1 = await createTestUser({ username: 'remfriend2a', email: 'remfriend2a@example.com' });
-    const user2 = await createTestUser({ username: 'remfriend2b', email: 'remfriend2b@example.com' });
+    const user1 = await createTestUser({
+      username: 'remfriend2a',
+      email: 'remfriend2a@example.com',
+    });
+    const user2 = await createTestUser({
+      username: 'remfriend2b',
+      email: 'remfriend2b@example.com',
+    });
 
     const service = makeService();
     await expect(

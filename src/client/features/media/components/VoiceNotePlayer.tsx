@@ -5,12 +5,12 @@ import PauseIcon from '@mui/icons-material/Pause';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 
 const C = {
-  accent:    '#9B6DFF',
+  accent: '#9B6DFF',
   accentDim: 'rgba(155,109,255,0.35)',
-  txt2:      '#94A3B8',
-  txt3:      '#475569',
-  bg:        'rgba(13,18,37,0.9)',
-  border:    'rgba(139,92,246,0.12)',
+  txt2: '#94A3B8',
+  txt3: '#475569',
+  bg: 'rgba(13,18,37,0.9)',
+  border: 'rgba(139,92,246,0.12)',
 } as const;
 
 function formatTime(seconds: number): string {
@@ -28,11 +28,11 @@ export function VoiceNotePlayer({
   duration?: number;
   waveform?: number[];
 }) {
-  const audioRef  = useRef<HTMLAudioElement>(null);
-  const [playing, setPlaying]       = useState(false);
-  const [current, setCurrent]       = useState(0);
-  const [total, setTotal]           = useState(duration ?? 0);
-  const [loadError, setLoadError]   = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [total, setTotal] = useState(duration ?? 0);
+  const [loadError, setLoadError] = useState(false);
 
   // Normalize waveform to 50 bars
   const bars: number[] = (() => {
@@ -55,13 +55,19 @@ export function VoiceNotePlayer({
     if (!audio) return;
 
     const onTimeUpdate = () => setCurrent(audio.currentTime);
-    const onDuration   = () => { setTotal(audio.duration); setLoadError(false); };
-    const onEnded      = () => {
+    const onDuration = () => {
+      setTotal(audio.duration);
+      setLoadError(false);
+    };
+    const onEnded = () => {
       setPlaying(false);
       setCurrent(0);
       audio.currentTime = 0; // reset so next play starts from beginning
     };
-    const onError      = () => { setLoadError(true); setPlaying(false); };
+    const onError = () => {
+      setLoadError(true);
+      setPlaying(false);
+    };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('loadedmetadata', onDuration);
@@ -92,13 +98,16 @@ export function VoiceNotePlayer({
     }
   }, [playing, loadError]);
 
-  const handleWaveformClick = useCallback((idx: number) => {
-    const audio = audioRef.current;
-    if (!audio || !total) return;
-    const seekTo = (idx / 50) * total;
-    audio.currentTime = seekTo;
-    setCurrent(seekTo);
-  }, [total]);
+  const handleWaveformClick = useCallback(
+    (idx: number) => {
+      const audio = audioRef.current;
+      if (!audio || !total) return;
+      const seekTo = (idx / 50) * total;
+      audio.currentTime = seekTo;
+      setCurrent(seekTo);
+    },
+    [total],
+  );
 
   const playedBars = total > 0 ? Math.round((current / total) * 50) : 0;
 
@@ -122,7 +131,9 @@ export function VoiceNotePlayer({
       {/* Play/Pause */}
       <IconButton
         size="small"
-        onClick={() => { void togglePlay(); }}
+        onClick={() => {
+          void togglePlay();
+        }}
         disabled={loadError}
         sx={{
           width: 32,
@@ -134,11 +145,13 @@ export function VoiceNotePlayer({
           '&.Mui-disabled': { bgcolor: C.txt3, color: 'rgba(255,255,255,0.4)' },
         }}
       >
-        {loadError
-          ? <ErrorOutlineIcon sx={{ fontSize: 16 }} />
-          : playing
-            ? <PauseIcon sx={{ fontSize: 16 }} />
-            : <PlayArrowIcon sx={{ fontSize: 16 }} />}
+        {loadError ? (
+          <ErrorOutlineIcon sx={{ fontSize: 16 }} />
+        ) : playing ? (
+          <PauseIcon sx={{ fontSize: 16 }} />
+        ) : (
+          <PlayArrowIcon sx={{ fontSize: 16 }} />
+        )}
       </IconButton>
 
       {/* Waveform */}
@@ -169,7 +182,9 @@ export function VoiceNotePlayer({
       </Box>
 
       {/* Time */}
-      <Typography sx={{ fontSize: 11, color: C.txt3, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+      <Typography
+        sx={{ fontSize: 11, color: C.txt3, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}
+      >
         {formatTime(current)} / {formatTime(total)}
       </Typography>
     </Box>

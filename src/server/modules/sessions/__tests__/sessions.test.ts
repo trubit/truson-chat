@@ -42,7 +42,6 @@ jest.mock('../../../logger/index.js', () => ({
 import { SessionModel } from '../../../database/models/Session.js';
 import { SessionsService } from '../service/index.js';
 
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -85,12 +84,11 @@ describe('SessionsService', () => {
       const currentId = makeObjectId();
       const otherId = makeObjectId();
 
-      const mockSessions = [
-        buildSession({ _id: currentId }),
-        buildSession({ _id: otherId }),
-      ];
+      const mockSessions = [buildSession({ _id: currentId }), buildSession({ _id: otherId })];
 
-      const sortMock = jest.fn().mockReturnValue({ lean: jest.fn().mockResolvedValue(mockSessions) });
+      const sortMock = jest
+        .fn()
+        .mockReturnValue({ lean: jest.fn().mockResolvedValue(mockSessions) });
       (SessionModel.find as jest.Mock).mockReturnValue({ sort: sortMock });
 
       const result = await service.listSessions(
@@ -213,10 +211,7 @@ describe('SessionsService', () => {
     it('revokes all sessions except the current one and returns revokedCount', async () => {
       const userId = makeObjectId();
       const currentSessionId = makeObjectId();
-      const otherSessions = [
-        { _id: makeObjectId() },
-        { _id: makeObjectId() },
-      ];
+      const otherSessions = [{ _id: makeObjectId() }, { _id: makeObjectId() }];
 
       const selectMock = jest.fn().mockReturnValue({
         lean: jest.fn().mockResolvedValue(otherSessions),
@@ -239,7 +234,9 @@ describe('SessionsService', () => {
 
       expect(result.revokedCount).toBe(2);
       expect(SessionModel.updateMany).toHaveBeenCalledWith(
-        expect.objectContaining({ _id: expect.objectContaining({ $in: otherSessions.map((s) => s._id) }) }),
+        expect.objectContaining({
+          _id: expect.objectContaining({ $in: otherSessions.map((s) => s._id) }),
+        }),
         expect.objectContaining({ isActive: false }),
       );
     });

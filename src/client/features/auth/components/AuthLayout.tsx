@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { Box, Typography } from '@mui/material';
-import ForumIcon from '@mui/icons-material/Forum';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 import BoltIcon from '@mui/icons-material/Bolt';
 import GroupsIcon from '@mui/icons-material/Groups';
+import { LinkoraLogo } from '@/components/LinkoraLogo';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -13,14 +13,13 @@ interface AuthLayoutProps {
 
 const FEATURES = [
   { Icon: ShieldOutlinedIcon, text: 'End-to-end encrypted by default' },
-  { Icon: BoltIcon,           text: 'Real-time sync across all your devices' },
-  { Icon: GroupsIcon,         text: 'Groups, channels & direct messages' },
+  { Icon: BoltIcon, text: 'Real-time sync across all your devices' },
+  { Icon: GroupsIcon, text: 'Groups, channels & direct messages' },
 ];
 
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-
       {/* ── Left hero panel (desktop only) ────────────────────────── */}
       <Box
         sx={{
@@ -72,31 +71,8 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
           }}
         >
           {/* Brand mark */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 9 }}>
-            <Box
-              sx={{
-                width: 42,
-                height: 42,
-                borderRadius: '11px',
-                background: 'linear-gradient(135deg, #10C4A0 0%, #0D9E80 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 0 0 8px rgba(16,196,160,0.12), 0 4px 20px rgba(16,196,160,0.35)',
-              }}
-            >
-              <ForumIcon sx={{ color: '#fff', fontSize: 20 }} />
-            </Box>
-            <Typography
-              sx={{
-                color: '#fff',
-                fontWeight: 800,
-                fontSize: '1.0625rem',
-                letterSpacing: '-0.5px',
-              }}
-            >
-              Truson-Chat
-            </Typography>
+          <Box sx={{ mb: 9 }}>
+            <LinkoraLogo size={42} showWordmark wordmarkColor="#fff" wordmarkSize="1.0625rem" />
           </Box>
 
           {/* ── Signal rings illustration ─── */}
@@ -189,7 +165,8 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               maxWidth: 310,
             }}
           >
-            Fast, private messaging with real-time sync — for individuals, teams, and every conversation in between.
+            Fast, private messaging with real-time sync — for individuals, teams, and every
+            conversation in between.
           </Typography>
 
           {/* Feature list */}
@@ -228,11 +205,8 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
 
         {/* Footer */}
         <Box sx={{ px: { md: 5, lg: 6.5 }, pb: 4, position: 'relative', zIndex: 1 }}>
-          <Typography
-            variant="caption"
-            sx={{ color: 'rgba(255,255,255,0.18)', fontWeight: 500 }}
-          >
-            © 2026 Truson-Chat · Secure · Private · Fast
+          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.18)', fontWeight: 500 }}>
+            © 2026 Linkora · Secure · Private · Fast
           </Typography>
         </Box>
       </Box>
@@ -278,23 +252,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             background: 'linear-gradient(135deg, #07101C 0%, #071A16 100%)',
           }}
         >
-          <Box
-            sx={{
-              width: 36,
-              height: 36,
-              borderRadius: '9px',
-              background: 'linear-gradient(135deg, #10C4A0, #0D9E80)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 12px rgba(16,196,160,0.4)',
-            }}
-          >
-            <ForumIcon sx={{ color: '#fff', fontSize: 18 }} />
-          </Box>
-          <Typography sx={{ color: '#fff', fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.3px' }}>
-            Truson-Chat
-          </Typography>
+          <LinkoraLogo size={36} showWordmark wordmarkColor="#fff" wordmarkSize="1rem" />
         </Box>
 
         {/* Form content */}

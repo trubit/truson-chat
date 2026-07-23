@@ -6,19 +6,20 @@ import { channelController } from './controller/index.js';
 
 function validate<T>(schema: z.ZodSchema<T>, data: unknown): T {
   const r = schema.safeParse(data);
-  if (!r.success) throw new AppError(r.error.issues[0]?.message ?? 'Validation error', 400, 'VALIDATION_ERROR');
+  if (!r.success)
+    throw new AppError(r.error.issues[0]?.message ?? 'Validation error', 400, 'VALIDATION_ERROR');
   return r.data;
 }
 
 const createSchema = z.object({
-  groupId:         z.string().min(1),
-  name:            z.string().min(1).max(100),
-  description:     z.string().max(500).optional(),
-  type:            z.enum(['text','announcement','voice','stage']).default('text'),
-  isPrivate:       z.boolean().default(false),
+  groupId: z.string().min(1),
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+  type: z.enum(['text', 'announcement', 'voice', 'stage']).default('text'),
+  isPrivate: z.boolean().default(false),
   slowModeSeconds: z.number().int().min(0).max(21600).default(0),
-  topic:           z.string().max(1024).optional(),
-  position:        z.number().int().min(0).optional(),
+  topic: z.string().max(1024).optional(),
+  position: z.number().int().min(0).optional(),
 });
 
 const updateSchema = createSchema.partial().omit({ groupId: true });

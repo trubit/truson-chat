@@ -1,18 +1,20 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 :root {
-  --color-primary: #10C4A0;
-  --color-primary-dark: #0D9E80;
-  --color-secondary: #E87830;
-  --color-bg: #F0F4F8;
+  --color-primary: #10c4a0;
+  --color-primary-dark: #0d9e80;
+  --color-secondary: #e87830;
+  --color-bg: #f0f4f8;
   --color-surface: #ffffff;
-  --color-text: #0D1B29;
+  --color-text: #0d1b29;
   --color-text-muted: #567390;
-  --color-border: rgba(13,27,41,0.12);
+  --color-border: rgba(13, 27, 41, 0.12);
   --color-danger: #dc3545;
   --color-success: #198754;
   --color-warning: #ffc107;
@@ -23,8 +25,16 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
   --transition: 0.2s ease;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    sans-serif;
   font-size: 15px;
   line-height: 1.5;
   font-weight: 400;
@@ -83,17 +93,17 @@ img {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #07101C;
-    --color-surface: #0D1B29;
-    --color-text: #E8EFF5;
-    --color-text-muted: #8FA8BD;
-    --color-border: rgba(143,168,189,0.13);
+    --color-bg: #07101c;
+    --color-surface: #0d1b29;
+    --color-text: #e8eff5;
+    --color-text-muted: #8fa8bd;
+    --color-border: rgba(143, 168, 189, 0.13);
   }
 }
 
 /* Focus ring — visible keyboard navigation */
 :focus-visible {
-  outline: 2px solid #10C4A0;
+  outline: 2px solid #10c4a0;
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -103,13 +113,15 @@ img {
 .MuiIconButton-root:focus-visible,
 .MuiTab-root:focus-visible,
 .MuiListItemButton-root:focus-visible {
-  outline: 2px solid #10C4A0 !important;
+  outline: 2px solid #10c4a0 !important;
   outline-offset: 2px !important;
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }

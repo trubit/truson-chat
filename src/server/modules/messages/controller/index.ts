@@ -6,11 +6,7 @@ import { messageService } from '../service/index.js';
 // ---------------------------------------------------------------------------
 
 export class MessageController {
-  async getMessages(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async getMessages(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const query = req.query as {
@@ -31,11 +27,7 @@ export class MessageController {
     }
   }
 
-  async sendMessage(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async sendMessage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const dto = req.body as {
@@ -60,11 +52,7 @@ export class MessageController {
     }
   }
 
-  async getMessage(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async getMessage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const id = req.params.id as string;
@@ -75,11 +63,7 @@ export class MessageController {
     }
   }
 
-  async editMessage(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async editMessage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const id = req.params.id as string;
@@ -91,11 +75,7 @@ export class MessageController {
     }
   }
 
-  async deleteMessage(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async deleteMessage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const id = req.params.id as string;
@@ -106,11 +86,7 @@ export class MessageController {
     }
   }
 
-  async toggleReaction(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async toggleReaction(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const id = req.params.id as string;
@@ -122,11 +98,7 @@ export class MessageController {
     }
   }
 
-  async markDelivered(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async markDelivered(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const { conversationId } = req.body as { conversationId: string };
@@ -137,11 +109,7 @@ export class MessageController {
     }
   }
 
-  async markRead(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async markRead(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const { conversationId, messageId } = req.body as {
@@ -155,11 +123,7 @@ export class MessageController {
     }
   }
 
-  async searchMessages(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async searchMessages(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const query = req.query as {

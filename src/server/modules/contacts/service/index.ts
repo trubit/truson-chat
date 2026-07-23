@@ -147,10 +147,7 @@ export class ContactsService {
     await this.repo.delete(contactId);
   }
 
-  async toggleFavorite(
-    requesterId: string,
-    contactId: string,
-  ): Promise<{ isFavorite: boolean }> {
+  async toggleFavorite(requesterId: string, contactId: string): Promise<{ isFavorite: boolean }> {
     if (!mongoose.isValidObjectId(contactId)) {
       throw new AppError('Invalid contact ID', 400, 'INVALID_CONTACT_ID');
     }

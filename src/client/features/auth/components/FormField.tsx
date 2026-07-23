@@ -1,9 +1,5 @@
 import type { ReactNode } from 'react';
-import {
-  FormControl,
-  FormLabel,
-  FormHelperText,
-} from '@mui/material';
+import { FormControl, FormLabel, FormHelperText } from '@mui/material';
 
 interface FormFieldProps {
   label: string;
@@ -32,9 +28,7 @@ export function FormField({
         {label}
       </FormLabel>
       {children}
-      {(error ?? helperText) && (
-        <FormHelperText>{error ?? helperText}</FormHelperText>
-      )}
+      {(error ?? helperText) && <FormHelperText>{error ?? helperText}</FormHelperText>}
     </FormControl>
   );
 }

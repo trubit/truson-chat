@@ -1,7 +1,16 @@
 import { useState, useCallback } from 'react';
 import {
-  Dialog, DialogTitle, DialogContent, Box, TextField, Avatar,
-  Typography, IconButton, CircularProgress, alpha, Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Box,
+  TextField,
+  Avatar,
+  Typography,
+  IconButton,
+  CircularProgress,
+  alpha,
+  Button,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -10,17 +19,17 @@ import { useSearchUsers } from '@/features/discovery/queries/index';
 import { useAddMember } from '../queries/index';
 
 const C = {
-  bg:      '#0C1722',
-  panel:   '#111D2B',
-  border:  'rgba(134,150,160,0.12)',
-  accent:  '#10C4A0',
-  danger:  '#ef4444',
-  txt1:    '#E9EDEF',
-  txt2:    '#8696A0',
+  bg: '#0C1722',
+  panel: '#111D2B',
+  border: 'rgba(134,150,160,0.12)',
+  accent: '#10C4A0',
+  danger: '#ef4444',
+  txt1: '#E9EDEF',
+  txt2: '#8696A0',
 } as const;
 
 interface Props {
-  open:    boolean;
+  open: boolean;
   onClose: () => void;
   groupId: string;
   alreadyMemberIds: string[];
@@ -35,11 +44,14 @@ export default function AddMemberDialog({ open, onClose, groupId, alreadyMemberI
 
   const users = searchData?.users ?? [];
 
-  const handleAdd = useCallback((userId: string) => {
-    addMember.mutate(userId, {
-      onSuccess: () => setAdded((prev) => new Set([...prev, userId])),
-    });
-  }, [addMember]);
+  const handleAdd = useCallback(
+    (userId: string) => {
+      addMember.mutate(userId, {
+        onSuccess: () => setAdded((prev) => new Set([...prev, userId])),
+      });
+    },
+    [addMember],
+  );
 
   function handleClose() {
     setQ('');
@@ -53,9 +65,20 @@ export default function AddMemberDialog({ open, onClose, groupId, alreadyMemberI
       onClose={handleClose}
       maxWidth="xs"
       fullWidth
-      slotProps={{ paper: { sx: { bgcolor: C.bg, border: `1px solid ${C.border}`, borderRadius: '16px' } } }}
+      slotProps={{
+        paper: { sx: { bgcolor: C.bg, border: `1px solid ${C.border}`, borderRadius: '16px' } },
+      }}
     >
-      <DialogTitle sx={{ color: C.txt1, fontWeight: 700, pb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <DialogTitle
+        sx={{
+          color: C.txt1,
+          fontWeight: 700,
+          pb: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         Add participant
         <IconButton size="small" onClick={handleClose} sx={{ color: C.txt2 }}>
           <CloseIcon />
@@ -66,14 +89,18 @@ export default function AddMemberDialog({ open, onClose, groupId, alreadyMemberI
         {/* Search field */}
         <TextField
           autoFocus
-          fullWidth size="small"
+          fullWidth
+          size="small"
           placeholder="Search by name or username…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           sx={{
             mb: 2,
             '& .MuiOutlinedInput-root': {
-              bgcolor: C.panel, borderRadius: '10px', color: C.txt1, fontSize: 14,
+              bgcolor: C.panel,
+              borderRadius: '10px',
+              color: C.txt1,
+              fontSize: 14,
               '& fieldset': { borderColor: C.border },
               '&.Mui-focused fieldset': { borderColor: C.accent },
             },
@@ -98,15 +125,19 @@ export default function AddMemberDialog({ open, onClose, groupId, alreadyMemberI
           ) : (
             users.map((user) => {
               const isAlready = alreadyMemberIds.includes(user.id);
-              const isAdded   = added.has(user.id);
+              const isAdded = added.has(user.id);
               const isPending = addMember.isPending && addMember.variables === user.id;
 
               return (
                 <Box
                   key={user.id}
                   sx={{
-                    display: 'flex', alignItems: 'center', gap: 1.5,
-                    py: 1, px: 0.5, borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    py: 1,
+                    px: 0.5,
+                    borderRadius: '10px',
                     '&:hover': { bgcolor: alpha(C.accent, 0.04) },
                   }}
                 >
@@ -126,20 +157,35 @@ export default function AddMemberDialog({ open, onClose, groupId, alreadyMemberI
                   </Box>
 
                   {isAlready ? (
-                    <Typography sx={{ color: C.txt2, fontSize: 12, flexShrink: 0 }}>Already in</Typography>
+                    <Typography sx={{ color: C.txt2, fontSize: 12, flexShrink: 0 }}>
+                      Already in
+                    </Typography>
                   ) : isAdded ? (
                     <CheckCircleIcon sx={{ color: C.accent, fontSize: 22 }} />
                   ) : (
                     <Button
                       size="small"
                       variant="contained"
-                      startIcon={isPending ? <CircularProgress size={12} color="inherit" /> : <PersonAddIcon sx={{ fontSize: 15 }} />}
+                      startIcon={
+                        isPending ? (
+                          <CircularProgress size={12} color="inherit" />
+                        ) : (
+                          <PersonAddIcon sx={{ fontSize: 15 }} />
+                        )
+                      }
                       onClick={() => handleAdd(user.id)}
                       disabled={isPending}
                       sx={{
-                        bgcolor: C.accent, color: '#fff', textTransform: 'none',
-                        fontSize: 12, fontWeight: 600, borderRadius: '8px',
-                        px: 1.5, py: 0.5, minWidth: 'auto', flexShrink: 0,
+                        bgcolor: C.accent,
+                        color: '#fff',
+                        textTransform: 'none',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        borderRadius: '8px',
+                        px: 1.5,
+                        py: 0.5,
+                        minWidth: 'auto',
+                        flexShrink: 0,
                         '&:hover': { bgcolor: '#0D9E80' },
                       }}
                     >

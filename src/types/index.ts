@@ -1,5 +1,5 @@
 /**
- * Global TypeScript ambient declarations and utility types for Truson-Chat.
+ * Global TypeScript ambient declarations and utility types for Linkora.
  * Imported once in tsconfig paths; do not add runtime logic here.
  */
 
@@ -24,9 +24,7 @@ export type Optional<T> = T | undefined;
 // ── Deep modifiers ────────────────────────────────────────────────────────────
 
 /** Recursively make all properties of `T` optional. */
-export type DeepPartial<T> = T extends object
-  ? { [P in keyof T]?: DeepPartial<T[P]> }
-  : T;
+export type DeepPartial<T> = T extends object ? { [P in keyof T]?: DeepPartial<T[P]> } : T;
 
 /** Recursively make all properties of `T` readonly. */
 export type DeepReadonly<T> = T extends (infer U)[]

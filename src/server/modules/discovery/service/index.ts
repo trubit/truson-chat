@@ -72,8 +72,7 @@ export class DiscoveryService {
 
     let pendingRequest: 'sent' | 'received' | undefined;
     if (pendingReq) {
-      pendingRequest =
-        pendingReq.senderId.toString() === requesterId ? 'sent' : 'received';
+      pendingRequest = pendingReq.senderId.toString() === requesterId ? 'sent' : 'received';
     }
 
     return {
@@ -203,11 +202,7 @@ export class DiscoveryService {
 
   async getRecentSearches(userId: string): Promise<RecentSearch[]> {
     try {
-      const items = await redisClient.lrange(
-        recentSearchesKey(userId),
-        0,
-        MAX_RECENT_SEARCHES - 1,
-      );
+      const items = await redisClient.lrange(recentSearchesKey(userId), 0, MAX_RECENT_SEARCHES - 1);
       return items.map((item) => JSON.parse(item) as RecentSearch);
     } catch {
       return [];

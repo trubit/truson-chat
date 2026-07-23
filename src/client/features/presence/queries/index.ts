@@ -1,11 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '@/services/api';
 import { usePresenceStore } from '@/store/presenceStore';
-import type {
-  IPresenceData,
-  PublicPresenceData,
-  UpdatePresenceDto,
-} from '@shared/types/social';
+import type { IPresenceData, PublicPresenceData, UpdatePresenceDto } from '@shared/types/social';
 
 // ─── Query keys ───────────────────────────────────────────────────────────────
 

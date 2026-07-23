@@ -45,10 +45,7 @@ class JSDOMWithFetchEnvironment extends JSDOMEnvironment {
     // Copy Fetch API globals from Node's real `global` so that
     // MSW interceptors (which extend Request / Response) can load.
     for (const name of FETCH_GLOBALS) {
-      if (
-        typeof this.global[name] === 'undefined' &&
-        typeof global[name] !== 'undefined'
-      ) {
+      if (typeof this.global[name] === 'undefined' && typeof global[name] !== 'undefined') {
         this.global[name] = global[name];
       }
     }

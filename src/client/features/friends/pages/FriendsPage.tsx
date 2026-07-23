@@ -1,18 +1,33 @@
 import { useState, type SyntheticEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Box, Typography, Paper, Tabs, Tab, Avatar, Button,
-  CircularProgress, List, ListItem, ListItemAvatar,
-  ListItemText, ListItemSecondaryAction, Chip,
+  Box,
+  Typography,
+  Paper,
+  Tabs,
+  Tab,
+  Avatar,
+  Button,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ListItemSecondaryAction,
+  Chip,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import ChatIcon from '@mui/icons-material/Chat';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import {
-  useFriends, useReceivedRequests, useSentRequests,
-  useAcceptFriendRequest, useRejectFriendRequest,
-  useCancelFriendRequest, useRemoveFriend,
+  useFriends,
+  useReceivedRequests,
+  useSentRequests,
+  useAcceptFriendRequest,
+  useRejectFriendRequest,
+  useCancelFriendRequest,
+  useRemoveFriend,
 } from '../queries/index';
 import { useCreateConversation } from '@/features/chat/queries/index';
 import { ROUTES } from '@/routes/index';
@@ -37,14 +52,28 @@ function FriendItem({ friend }: { friend: IFriendData }) {
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={<Typography variant="body1" sx={{ fontWeight: 600 }}>{friend.displayName}</Typography>}
-        secondary={<Typography variant="caption" color="text.secondary">@{friend.username}</Typography>}
+        primary={
+          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+            {friend.displayName}
+          </Typography>
+        }
+        secondary={
+          <Typography variant="caption" color="text.secondary">
+            @{friend.username}
+          </Typography>
+        }
       />
       <ListItemSecondaryAction sx={{ display: 'flex', gap: 1 }}>
         <Button
           size="small"
           variant="contained"
-          startIcon={createConversation.isPending ? <CircularProgress size={14} color="inherit" /> : <ChatIcon />}
+          startIcon={
+            createConversation.isPending ? (
+              <CircularProgress size={14} color="inherit" />
+            ) : (
+              <ChatIcon />
+            )
+          }
           onClick={handleMessage}
           disabled={createConversation.isPending}
         >
@@ -73,17 +102,30 @@ function ReceivedRequestItem({ request }: { request: IFriendRequestData }) {
   return (
     <ListItem divider>
       <ListItemAvatar>
-        <Avatar src={request.sender.avatar} alt={request.sender.displayName} sx={{ bgcolor: 'secondary.main' }}>
+        <Avatar
+          src={request.sender.avatar}
+          alt={request.sender.displayName}
+          sx={{ bgcolor: 'secondary.main' }}
+        >
           {request.sender.displayName.charAt(0).toUpperCase()}
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={<Typography variant="body1" sx={{ fontWeight: 600 }}>{request.sender.displayName}</Typography>}
+        primary={
+          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+            {request.sender.displayName}
+          </Typography>
+        }
         secondary={
           <Box>
-            <Typography variant="caption" color="text.secondary">@{request.sender.username}</Typography>
+            <Typography variant="caption" color="text.secondary">
+              @{request.sender.username}
+            </Typography>
             {request.message && (
-              <Typography variant="caption" sx={{ display: 'block', fontStyle: 'italic', mt: 0.25 }}>
+              <Typography
+                variant="caption"
+                sx={{ display: 'block', fontStyle: 'italic', mt: 0.25 }}
+              >
                 &ldquo;{request.message}&rdquo;
               </Typography>
             )}
@@ -121,13 +163,25 @@ function SentRequestItem({ request }: { request: IFriendRequestData }) {
   return (
     <ListItem divider>
       <ListItemAvatar>
-        <Avatar src={request.recipient.avatar} alt={request.recipient.displayName} sx={{ bgcolor: 'info.main' }}>
+        <Avatar
+          src={request.recipient.avatar}
+          alt={request.recipient.displayName}
+          sx={{ bgcolor: 'info.main' }}
+        >
           {request.recipient.displayName.charAt(0).toUpperCase()}
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={<Typography variant="body1" sx={{ fontWeight: 600 }}>{request.recipient.displayName}</Typography>}
-        secondary={<Typography variant="caption" color="text.secondary">@{request.recipient.username} · Pending</Typography>}
+        primary={
+          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+            {request.recipient.displayName}
+          </Typography>
+        }
+        secondary={
+          <Typography variant="caption" color="text.secondary">
+            @{request.recipient.username} · Pending
+          </Typography>
+        }
       />
       <ListItemSecondaryAction>
         <Button
@@ -144,9 +198,15 @@ function SentRequestItem({ request }: { request: IFriendRequestData }) {
   );
 }
 
-interface TabPanelProps { children?: React.ReactNode; index: number; value: number; }
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
 function TabPanel({ children, value, index }: TabPanelProps) {
-  return <div hidden={value !== index}>{value === index && <Box sx={{ pt: 1 }}>{children}</Box>}</div>;
+  return (
+    <div hidden={value !== index}>{value === index && <Box sx={{ pt: 1 }}>{children}</Box>}</div>
+  );
 }
 
 export default function FriendsPage() {
@@ -162,7 +222,9 @@ export default function FriendsPage() {
 
   return (
     <Box sx={{ maxWidth: 720, mx: 'auto', p: { xs: 1.5, sm: 2.5 } }}>
-      <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Friends</Typography>
+      <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
+        Friends
+      </Typography>
 
       <Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>
         <Tabs
@@ -182,7 +244,9 @@ export default function FriendsPage() {
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 Requests
-                {received.length > 0 && <Chip label={received.length} size="small" color="primary" />}
+                {received.length > 0 && (
+                  <Chip label={received.length} size="small" color="primary" />
+                )}
               </Box>
             }
           />
@@ -198,35 +262,67 @@ export default function FriendsPage() {
 
         {/* Friends list */}
         <TabPanel value={tab} index={0}>
-          {loadingFriends && <Box sx={{ p: 3, textAlign: 'center' }}><CircularProgress /></Box>}
-          {!loadingFriends && friends.length === 0 && (
-            <Box sx={{ p: 4, textAlign: 'center' }}>
-              <Typography color="text.secondary">No friends yet. Use Discover to find people!</Typography>
+          {loadingFriends && (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <CircularProgress />
             </Box>
           )}
-          {friends.length > 0 && <List disablePadding>{friends.map((f) => <FriendItem key={f.friendshipId} friend={f} />)}</List>}
+          {!loadingFriends && friends.length === 0 && (
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography color="text.secondary">
+                No friends yet. Use Discover to find people!
+              </Typography>
+            </Box>
+          )}
+          {friends.length > 0 && (
+            <List disablePadding>
+              {friends.map((f) => (
+                <FriendItem key={f.friendshipId} friend={f} />
+              ))}
+            </List>
+          )}
         </TabPanel>
 
         {/* Received requests */}
         <TabPanel value={tab} index={1}>
-          {loadingReceived && <Box sx={{ p: 3, textAlign: 'center' }}><CircularProgress /></Box>}
+          {loadingReceived && (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <CircularProgress />
+            </Box>
+          )}
           {!loadingReceived && received.length === 0 && (
             <Box sx={{ p: 4, textAlign: 'center' }}>
               <Typography color="text.secondary">No pending friend requests.</Typography>
             </Box>
           )}
-          {received.length > 0 && <List disablePadding>{received.map((r) => <ReceivedRequestItem key={r.id} request={r} />)}</List>}
+          {received.length > 0 && (
+            <List disablePadding>
+              {received.map((r) => (
+                <ReceivedRequestItem key={r.id} request={r} />
+              ))}
+            </List>
+          )}
         </TabPanel>
 
         {/* Sent requests */}
         <TabPanel value={tab} index={2}>
-          {loadingSent && <Box sx={{ p: 3, textAlign: 'center' }}><CircularProgress /></Box>}
+          {loadingSent && (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <CircularProgress />
+            </Box>
+          )}
           {!loadingSent && sent.length === 0 && (
             <Box sx={{ p: 4, textAlign: 'center' }}>
               <Typography color="text.secondary">No sent requests.</Typography>
             </Box>
           )}
-          {sent.length > 0 && <List disablePadding>{sent.map((r) => <SentRequestItem key={r.id} request={r} />)}</List>}
+          {sent.length > 0 && (
+            <List disablePadding>
+              {sent.map((r) => (
+                <SentRequestItem key={r.id} request={r} />
+              ))}
+            </List>
+          )}
         </TabPanel>
       </Paper>
     </Box>

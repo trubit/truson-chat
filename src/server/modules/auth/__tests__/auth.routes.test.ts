@@ -69,11 +69,7 @@ jest.mock('../../../emails/service.js', () => ({
 
 // Pass all rate-limit middleware through — we test the auth logic not throttling.
 jest.mock('../../../security/rateLimit', () => {
-  const passThrough = (
-    _req: unknown,
-    _res: unknown,
-    next: () => void,
-  ) => next();
+  const passThrough = (_req: unknown, _res: unknown, next: () => void) => next();
   return {
     generalRateLimiter: passThrough,
     authRateLimiter: passThrough,
@@ -150,9 +146,7 @@ async function registerUser(overrides: Partial<typeof VALID_REGISTER> = {}) {
 }
 
 async function loginUser(email = VALID_REGISTER.email, password = VALID_REGISTER.password) {
-  const res = await request(app)
-    .post(`${API}/login`)
-    .send({ email, password });
+  const res = await request(app).post(`${API}/login`).send({ email, password });
   return res;
 }
 
@@ -254,9 +248,7 @@ describe('GET /api/v1/auth/me', () => {
     const loginRes = await loginUser();
     const { accessToken } = loginRes.body.data as { accessToken: string };
 
-    const res = await request(app)
-      .get(`${API}/me`)
-      .set('Authorization', `Bearer ${accessToken}`);
+    const res = await request(app).get(`${API}/me`).set('Authorization', `Bearer ${accessToken}`);
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -264,9 +256,7 @@ describe('GET /api/v1/auth/me', () => {
   });
 
   it('responds 401 when the token is malformed', async () => {
-    const res = await request(app)
-      .get(`${API}/me`)
-      .set('Authorization', 'Bearer not.a.real.token');
+    const res = await request(app).get(`${API}/me`).set('Authorization', 'Bearer not.a.real.token');
 
     expect(res.status).toBe(401);
   });
@@ -316,9 +306,7 @@ describe('POST /api/v1/auth/refresh', () => {
     const loginRes = await loginUser();
     const { refreshToken } = loginRes.body.data as { refreshToken: string };
 
-    const res = await request(app)
-      .post(`${API}/refresh`)
-      .send({ refreshToken });
+    const res = await request(app).post(`${API}/refresh`).send({ refreshToken });
 
     expect(res.status).toBe(200);
     expect(res.body.data).toHaveProperty('accessToken');

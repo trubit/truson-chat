@@ -59,9 +59,7 @@ export function useBlockedList(query?: BlockListQuery) {
       if (query?.limit) params.set('limit', String(query.limit));
 
       const qs = params.toString();
-      const res = await apiService.get<BlockedListResponse>(
-        `/blocking${qs ? `?${qs}` : ''}`,
-      );
+      const res = await apiService.get<BlockedListResponse>(`/blocking${qs ? `?${qs}` : ''}`);
       setBlockedList(res.data.blocks, res.data.meta);
       return res.data;
     },
@@ -80,9 +78,7 @@ export function useMutedList(query?: BlockListQuery) {
       if (query?.limit) params.set('limit', String(query.limit));
 
       const qs = params.toString();
-      const res = await apiService.get<MutedListResponse>(
-        `/blocking/muted${qs ? `?${qs}` : ''}`,
-      );
+      const res = await apiService.get<MutedListResponse>(`/blocking/muted${qs ? `?${qs}` : ''}`);
       setMutedList(res.data.mutes, res.data.meta);
       return res.data;
     },
@@ -124,8 +120,7 @@ export function useUnblockUser() {
   const removeBlocked = useBlockingStore((s) => s.removeBlocked);
 
   return useMutation({
-    mutationFn: (userId: string) =>
-      apiService.del<{ success: boolean }>(`/blocking/${userId}`),
+    mutationFn: (userId: string) => apiService.del<{ success: boolean }>(`/blocking/${userId}`),
     onSuccess: (_, userId) => {
       removeBlocked(userId);
       queryClient.invalidateQueries({ queryKey: BLOCKING_KEYS.blocked() });

@@ -80,9 +80,13 @@ export default function ForgotPasswordPage() {
               <CheckCircleOutlineIcon sx={{ fontSize: 40, color: '#fff' }} />
             </Box>
 
-            <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', lineHeight: 1.8 }}>
-              If an account exists for that email, you will receive a password reset
-              link shortly. Check your spam folder if you don&apos;t see it.
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ textAlign: 'center', lineHeight: 1.8 }}
+            >
+              If an account exists for that email, you will receive a password reset link shortly.
+              Check your spam folder if you don&apos;t see it.
             </Typography>
 
             <Button
@@ -175,11 +179,7 @@ export default function ForgotPasswordPage() {
               },
             }}
           >
-            {isLoading ? (
-              <CircularProgress size={22} color="inherit" />
-            ) : (
-              'Send reset link'
-            )}
+            {isLoading ? <CircularProgress size={22} color="inherit" /> : 'Send reset link'}
           </Button>
 
           <Button

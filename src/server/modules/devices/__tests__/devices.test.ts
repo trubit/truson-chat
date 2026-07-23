@@ -309,10 +309,9 @@ describe('DevicesService', () => {
         ),
       ).resolves.toBeUndefined();
 
-      expect(DeviceModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        deviceId.toHexString(),
-        { revokedAt: expect.any(Date) },
-      );
+      expect(DeviceModel.findByIdAndUpdate).toHaveBeenCalledWith(deviceId.toHexString(), {
+        revokedAt: expect.any(Date),
+      });
       expect(SessionModel.updateMany).toHaveBeenCalled();
     });
 

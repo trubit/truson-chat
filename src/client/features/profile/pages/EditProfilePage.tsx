@@ -37,11 +37,7 @@ interface EditProfileFormValues {
 
 function extractErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'response' in error
-  ) {
+  if (typeof error === 'object' && error !== null && 'response' in error) {
     const axiosError = error as {
       response?: { data?: { message?: string; error?: string } };
     };
@@ -410,11 +406,7 @@ export default function EditProfilePage() {
                 disabled={isFormLoading}
                 sx={{ minWidth: 120 }}
               >
-                {isFormLoading ? (
-                  <CircularProgress size={22} color="inherit" />
-                ) : (
-                  'Save changes'
-                )}
+                {isFormLoading ? <CircularProgress size={22} color="inherit" /> : 'Save changes'}
               </Button>
             </Box>
           </Box>

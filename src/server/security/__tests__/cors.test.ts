@@ -23,17 +23,14 @@ import { corsOptions } from '../cors';
 type OriginCallback = (err: Error | null, allow?: boolean) => void;
 
 // Extract the origin function from corsOptions (it is always a function here)
-function callOrigin(
-  origin: string | undefined,
-  callback: OriginCallback,
-): void {
+function callOrigin(origin: string | undefined, callback: OriginCallback): void {
   if (typeof corsOptions.origin !== 'function') {
     throw new Error('corsOptions.origin is not a function');
   }
-  (corsOptions.origin as (
-    origin: string | undefined,
-    callback: OriginCallback,
-  ) => void)(origin, callback);
+  (corsOptions.origin as (origin: string | undefined, callback: OriginCallback) => void)(
+    origin,
+    callback,
+  );
 }
 
 // ---------------------------------------------------------------------------

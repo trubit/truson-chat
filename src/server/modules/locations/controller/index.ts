@@ -6,11 +6,20 @@ import { shareLocationSchema } from '../validator/index.js';
 class SharedLocationController {
   async share(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) { next(new AppError('Unauthorized', 401, 'UNAUTHORIZED')); return; }
+      if (!req.user) {
+        next(new AppError('Unauthorized', 401, 'UNAUTHORIZED'));
+        return;
+      }
 
       const parsed = shareLocationSchema.safeParse(req.body);
       if (!parsed.success) {
-        next(new AppError(parsed.error.issues[0]?.message ?? 'Validation error', 400, 'VALIDATION_ERROR'));
+        next(
+          new AppError(
+            parsed.error.issues[0]?.message ?? 'Validation error',
+            400,
+            'VALIDATION_ERROR',
+          ),
+        );
         return;
       }
 
@@ -23,7 +32,10 @@ class SharedLocationController {
 
   async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) { next(new AppError('Unauthorized', 401, 'UNAUTHORIZED')); return; }
+      if (!req.user) {
+        next(new AppError('Unauthorized', 401, 'UNAUTHORIZED'));
+        return;
+      }
       const id = req.params['id'] as string;
       const result = await sharedLocationService.getById(id);
       res.json({ success: true, data: result });

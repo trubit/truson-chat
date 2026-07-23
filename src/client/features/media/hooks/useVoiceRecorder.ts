@@ -3,15 +3,15 @@ import { useVoiceStore } from '@/store/voiceStore';
 
 export function useVoiceRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef        = useRef<Blob[]>([]);
-  const timerRef         = useRef<ReturnType<typeof setInterval> | null>(null);
-  const analyserRef      = useRef<AnalyserNode | null>(null);
-  const animFrameRef     = useRef<number | null>(null);
-  const streamRef        = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const {
     startRecording: storeStart,
-    stopRecording:  storeStop,
+    stopRecording: storeStop,
     cancelRecording,
     setDuration,
     addWaveformPoint,
@@ -23,7 +23,10 @@ export function useVoiceRecorder() {
   } = useVoiceStore();
 
   const stopRecording = useCallback(() => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     if (mediaRecorderRef.current?.state !== 'inactive') {
       mediaRecorderRef.current?.stop();
     }
@@ -35,8 +38,8 @@ export function useVoiceRecorder() {
       streamRef.current = stream;
 
       // Setup audio analyser for waveform visualization
-      const ctx      = new AudioContext();
-      const source   = ctx.createMediaStreamSource(stream);
+      const ctx = new AudioContext();
+      const source = ctx.createMediaStreamSource(stream);
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 256;
       source.connect(analyser);
@@ -56,10 +59,12 @@ export function useVoiceRecorder() {
       mediaRecorderRef.current = recorder;
       chunksRef.current = [];
 
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
       recorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        const url  = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
         storeStop(blob, url);
         stream.getTracks().forEach((t) => t.stop());
         if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
@@ -83,7 +88,10 @@ export function useVoiceRecorder() {
   }, [storeStart, storeStop, cancelRecording, setDuration, addWaveformPoint]);
 
   const cancel = useCallback(() => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     if (mediaRecorderRef.current?.state !== 'inactive') mediaRecorderRef.current?.stop();
     if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
@@ -98,5 +106,14 @@ export function useVoiceRecorder() {
     };
   }, []);
 
-  return { startRecording, stopRecording, cancel, isRecording, audioBlob, audioUrl, duration, waveform };
+  return {
+    startRecording,
+    stopRecording,
+    cancel,
+    isRecording,
+    audioBlob,
+    audioUrl,
+    duration,
+    waveform,
+  };
 }

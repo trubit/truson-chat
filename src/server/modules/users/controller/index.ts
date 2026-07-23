@@ -46,14 +46,7 @@ export class UsersController {
       const ip = req.ip ?? '';
       const ua = req.headers['user-agent'] ?? '';
 
-      const result = await this.service.updateUser(
-        requesterId,
-        requesterRole,
-        id,
-        data,
-        ip,
-        ua,
-      );
+      const result = await this.service.updateUser(requesterId, requesterRole, id, data, ip, ua);
       res.status(200).json({ success: true, data: result });
     } catch (err) {
       next(err);

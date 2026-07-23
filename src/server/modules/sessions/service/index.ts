@@ -45,10 +45,7 @@ function formatSession(
 // ---------------------------------------------------------------------------
 
 export class SessionsService {
-  async listSessions(
-    userId: string,
-    currentSessionId: string,
-  ): Promise<SessionListResponse> {
+  async listSessions(userId: string, currentSessionId: string): Promise<SessionListResponse> {
     const sessions = await SessionModel.find({
       userId: new mongoose.Types.ObjectId(userId),
       isActive: true,
@@ -118,11 +115,7 @@ export class SessionsService {
     ua: string,
   ): Promise<void> {
     if (sessionId === currentSessionId) {
-      throw new AppError(
-        'Cannot revoke current session',
-        400,
-        'CANNOT_REVOKE_CURRENT_SESSION',
-      );
+      throw new AppError('Cannot revoke current session', 400, 'CANNOT_REVOKE_CURRENT_SESSION');
     }
 
     const session = await SessionModel.findById(sessionId).lean();

@@ -42,14 +42,18 @@ router.post('/', (req, res, next) => {
 });
 
 // GET /conversations — list conversations
-router.get('/', (req, _res, next) => {
-  try {
-    validate(listConversationsSchema, req.query);
-    next();
-  } catch (err) {
-    next(err);
-  }
-}, conversationController.getConversations.bind(conversationController));
+router.get(
+  '/',
+  (req, _res, next) => {
+    try {
+      validate(listConversationsSchema, req.query);
+      next();
+    } catch (err) {
+      next(err);
+    }
+  },
+  conversationController.getConversations.bind(conversationController),
+);
 
 // GET /conversations/:id — get single conversation
 router.get('/:id', conversationController.getConversation.bind(conversationController));

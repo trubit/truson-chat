@@ -4,11 +4,7 @@ import { validateBody, validateParams } from '../../middlewares/validate.js';
 import { PresenceRepository } from './repository/index.js';
 import { PresenceService } from './service/index.js';
 import { PresenceController } from './controller/index.js';
-import {
-  updatePresenceSchema,
-  userIdParamSchema,
-  batchPresenceSchema,
-} from './validator/index.js';
+import { updatePresenceSchema, userIdParamSchema, batchPresenceSchema } from './validator/index.js';
 
 const router = Router();
 

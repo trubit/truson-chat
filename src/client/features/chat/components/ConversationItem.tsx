@@ -5,14 +5,14 @@ import type { ConversationWithMeta } from '@/store/conversationStore';
 import { usePresenceStore } from '@/store/presenceStore';
 
 const C = {
-  panel:     '#0C1722',
-  border:    'rgba(134,150,160,0.12)',
-  accent:    '#10C4A0',
-  accentDark:'#0D9E80',
-  txt1:      '#E9EDEF',
-  txt2:      '#8696A0',
-  txt3:      '#567390',
-  badge:     '#10C4A0',
+  panel: '#0C1722',
+  border: 'rgba(134,150,160,0.12)',
+  accent: '#10C4A0',
+  accentDark: '#0D9E80',
+  txt1: '#E9EDEF',
+  txt2: '#8696A0',
+  txt3: '#567390',
+  badge: '#10C4A0',
 } as const;
 
 function formatTime(timestamp: string): string {
@@ -40,10 +40,7 @@ function getLastMessagePreview(conv: ConversationWithMeta): string {
   return lm.content || '';
 }
 
-function getConversationName(
-  conv: ConversationWithMeta,
-  currentUserId: string,
-): string {
+function getConversationName(conv: ConversationWithMeta, currentUserId: string): string {
   if (conv.metadata.name) return conv.metadata.name;
   if (conv.type === 'direct') {
     const otherId = conv.participants?.find((p) => p !== currentUserId);
@@ -95,12 +92,11 @@ export default function ConversationItem({
 
   // For direct conversations, show online indicator for the other participant
   const presences = usePresenceStore((s) => s.presences);
-  const otherUserId = conversation.type === 'direct'
-    ? conversation.participants?.find((p) => p !== currentUserId)
-    : undefined;
-  const isOnline = otherUserId
-    ? presences[otherUserId]?.status === 'online'
-    : false;
+  const otherUserId =
+    conversation.type === 'direct'
+      ? conversation.participants?.find((p) => p !== currentUserId)
+      : undefined;
+  const isOnline = otherUserId ? presences[otherUserId]?.status === 'online' : false;
 
   return (
     <Box
@@ -116,9 +112,7 @@ export default function ConversationItem({
         transition: 'background 0.18s',
         bgcolor: isActive ? 'rgba(16,196,160,0.09)' : 'transparent',
         '&:hover': {
-          bgcolor: isActive
-            ? 'rgba(16,196,160,0.12)'
-            : 'rgba(255,255,255,0.025)',
+          bgcolor: isActive ? 'rgba(16,196,160,0.12)' : 'rgba(255,255,255,0.025)',
         },
         ...(isActive && {
           '&::before': {
@@ -210,9 +204,7 @@ export default function ConversationItem({
           </Typography>
         </Box>
 
-        <Box
-          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-        >
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography
             sx={{
               fontSize: 12.5,
@@ -229,9 +221,7 @@ export default function ConversationItem({
           </Typography>
           {hasUnread && (
             <Badge
-              badgeContent={
-                conversation.unreadCount > 99 ? '99+' : conversation.unreadCount
-              }
+              badgeContent={conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
               sx={{
                 flexShrink: 0,
                 '& .MuiBadge-badge': {

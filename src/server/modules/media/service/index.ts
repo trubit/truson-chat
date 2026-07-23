@@ -10,28 +10,28 @@ import { logger } from '../../../logger/index.js';
 
 function getMimeMediaType(mimeType: string): MediaFileType {
   if (mimeType.startsWith('image/gif')) return 'gif';
-  if (mimeType.startsWith('image/'))   return 'image';
-  if (mimeType.startsWith('video/'))   return 'video';
-  if (mimeType.startsWith('audio/'))   return 'audio';
+  if (mimeType.startsWith('image/')) return 'image';
+  if (mimeType.startsWith('video/')) return 'video';
+  if (mimeType.startsWith('audio/')) return 'audio';
   return 'document';
 }
 
 function toResponse(file: IMediaFile): UploadedMediaResponse {
   return {
-    _id:          file._id.toString(),
-    url:          file.secureUrl,
-    secureUrl:    file.secureUrl,
-    publicId:     file.publicId,
-    mimeType:     file.mimeType,
-    size:         file.size,
+    _id: file._id.toString(),
+    url: file.secureUrl,
+    secureUrl: file.secureUrl,
+    publicId: file.publicId,
+    mimeType: file.mimeType,
+    size: file.size,
     originalName: file.originalName,
-    width:        file.width,
-    height:       file.height,
-    duration:     file.duration,
-    thumbnail:    file.thumbnail,
-    type:         file.type,
-    status:       file.status,
-    createdAt:    file.createdAt.toISOString(),
+    width: file.width,
+    height: file.height,
+    duration: file.duration,
+    thumbnail: file.thumbnail,
+    type: file.type,
+    status: file.status,
+    createdAt: file.createdAt.toISOString(),
   };
 }
 
@@ -50,9 +50,9 @@ export class MediaService {
       cloudResult = await cloudinaryService.upload(file.path, {
         userId,
         mediaType,
-        mimeType:     file.mimetype,
+        mimeType: file.mimetype,
         originalName: file.originalname,
-        tags:         ['chat-media'],
+        tags: ['chat-media'],
       });
     } catch (err) {
       logger.error('Cloudinary upload failed', { err, userId });
@@ -61,20 +61,20 @@ export class MediaService {
     }
 
     const createData: Partial<IMediaFile> = {
-      uploaderId:   new mongoose.Types.ObjectId(userId),
-      type:         mediaType,
-      url:          cloudResult.url,
-      secureUrl:    cloudResult.secureUrl,
-      publicId:     cloudResult.publicId,
+      uploaderId: new mongoose.Types.ObjectId(userId),
+      type: mediaType,
+      url: cloudResult.url,
+      secureUrl: cloudResult.secureUrl,
+      publicId: cloudResult.publicId,
       resourceType: cloudResult.resourceType,
-      mimeType:     file.mimetype,
-      size:         file.size,
+      mimeType: file.mimetype,
+      size: file.size,
       originalName: file.originalname,
-      width:        cloudResult.width,
-      height:       cloudResult.height,
-      duration:     cloudResult.duration,
-      thumbnail:    cloudResult.thumbnailUrl,
-      status:       'ready',
+      width: cloudResult.width,
+      height: cloudResult.height,
+      duration: cloudResult.duration,
+      thumbnail: cloudResult.thumbnailUrl,
+      status: 'ready',
     };
 
     if (opts.conversationId && mongoose.Types.ObjectId.isValid(opts.conversationId)) {
@@ -104,7 +104,8 @@ export class MediaService {
   async getMedia(userId: string, mediaId: string): Promise<UploadedMediaResponse> {
     const file = await this.repo.findById(mediaId);
     if (!file || file.deletedAt) throw new AppError('Media not found', 404, 'NOT_FOUND');
-    if (file.uploaderId.toString() !== userId) throw new AppError('Access denied', 403, 'FORBIDDEN');
+    if (file.uploaderId.toString() !== userId)
+      throw new AppError('Access denied', 403, 'FORBIDDEN');
     return toResponse(file);
   }
 
@@ -112,7 +113,8 @@ export class MediaService {
     _userId: string,
     query: MediaQuery,
   ): Promise<{ files: UploadedMediaResponse[]; total: number; page: number; totalPages: number }> {
-    if (!query.conversationId) throw new AppError('conversationId required', 400, 'VALIDATION_ERROR');
+    if (!query.conversationId)
+      throw new AppError('conversationId required', 400, 'VALIDATION_ERROR');
     const { files, total } = await this.repo.findByConversation(
       query.conversationId,
       query.type as MediaFileType | undefined,
@@ -120,9 +122,9 @@ export class MediaService {
       query.limit ?? 20,
     );
     return {
-      files:      files.map(toResponse),
+      files: files.map(toResponse),
       total,
-      page:       query.page ?? 1,
+      page: query.page ?? 1,
       totalPages: Math.ceil(total / (query.limit ?? 20)),
     };
   }
@@ -130,7 +132,8 @@ export class MediaService {
   async deleteMedia(userId: string, mediaId: string): Promise<void> {
     const file = await this.repo.findById(mediaId);
     if (!file || file.deletedAt) throw new AppError('Media not found', 404, 'NOT_FOUND');
-    if (file.uploaderId.toString() !== userId) throw new AppError('Access denied', 403, 'FORBIDDEN');
+    if (file.uploaderId.toString() !== userId)
+      throw new AppError('Access denied', 403, 'FORBIDDEN');
 
     const resType = file.resourceType as 'image' | 'video' | 'raw';
     await cloudinaryService.delete(file.publicId, resType);

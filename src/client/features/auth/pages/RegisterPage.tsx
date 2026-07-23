@@ -37,7 +37,9 @@ interface RegisterFormValues {
 function extractErrorMessage(error: unknown): string {
   // Check Axios response body first — AxiosError extends Error so instanceof check must come after
   if (typeof error === 'object' && error !== null && 'response' in error) {
-    const axiosError = error as { response?: { data?: { message?: string; error?: string }; status?: number } };
+    const axiosError = error as {
+      response?: { data?: { message?: string; error?: string }; status?: number };
+    };
     const msg = axiosError.response?.data?.message ?? axiosError.response?.data?.error;
     if (msg) return msg;
     if (axiosError.response?.status === 409) return 'Username or email is already taken.';
@@ -47,8 +49,7 @@ function extractErrorMessage(error: unknown): string {
 }
 
 const USERNAME_REGEX = /^[a-zA-Z0-9_.-]+$/;
-const PASSWORD_COMPLEXITY =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).+$/;
+const PASSWORD_COMPLEXITY = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).+$/;
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -87,10 +88,7 @@ export default function RegisterPage() {
 
   return (
     <Box data-testid="page-register">
-      <AuthLayout
-        title="Create account ✨"
-        subtitle="Join Truson-Chat — it's free and takes seconds"
-      >
+      <AuthLayout title="Create account ✨" subtitle="Join Linkora — it's free and takes seconds">
         {registerMutation.isError && (
           <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
             {extractErrorMessage(registerMutation.error)}
@@ -349,18 +347,10 @@ export default function RegisterPage() {
             }}
             aria-label="Create account"
           >
-            {isLoading ? (
-              <CircularProgress size={22} color="inherit" />
-            ) : (
-              'Create account'
-            )}
+            {isLoading ? <CircularProgress size={22} color="inherit" /> : 'Create account'}
           </Button>
 
-          <Typography
-            variant="caption"
-            color="text.disabled"
-            sx={{ textAlign: 'center', mt: -1 }}
-          >
+          <Typography variant="caption" color="text.disabled" sx={{ textAlign: 'center', mt: -1 }}>
             By creating an account you agree to our{' '}
             <Link href="#" underline="hover" color="text.secondary">
               Terms of Service
@@ -374,7 +364,11 @@ export default function RegisterPage() {
 
         {/* Divider */}
         <Divider sx={{ my: 3 }}>
-          <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 600, letterSpacing: '0.08em' }}>
+          <Typography
+            variant="caption"
+            color="text.disabled"
+            sx={{ fontWeight: 600, letterSpacing: '0.08em' }}
+          >
             OR
           </Typography>
         </Divider>

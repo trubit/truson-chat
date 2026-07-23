@@ -66,12 +66,7 @@ export class SessionsController {
       const ip = req.ip ?? req.socket.remoteAddress ?? '';
       const ua = req.headers['user-agent'] ?? '';
 
-      const result = await sessionsService.revokeAllSessions(
-        userId,
-        currentSessionId,
-        ip,
-        ua,
-      );
+      const result = await sessionsService.revokeAllSessions(userId, currentSessionId, ip, ua);
 
       const response: ApiResponse<{ revokedCount: number }> = {
         success: true,

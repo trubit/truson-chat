@@ -5,12 +5,12 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 
 const C = {
-  border:  'rgba(139,92,246,0.12)',
-  txt1:    '#F1F5F9',
-  txt2:    '#94A3B8',
-  txt3:    '#475569',
-  bg:      'rgba(13,18,37,0.9)',
-  accent:  '#9B6DFF',
+  border: 'rgba(139,92,246,0.12)',
+  txt1: '#F1F5F9',
+  txt2: '#94A3B8',
+  txt3: '#475569',
+  bg: 'rgba(13,18,37,0.9)',
+  accent: '#9B6DFF',
   accentDark: '#7C3AED',
 } as const;
 
@@ -24,9 +24,9 @@ function downloadVCard(
   (emails ?? []).forEach((e) => lines.push(`EMAIL:${e.email}`));
   lines.push('END:VCARD');
   const blob = new Blob([lines.join('\r\n')], { type: 'text/vcard' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
   a.download = `${name}.vcf`;
   a.click();
   URL.revokeObjectURL(url);

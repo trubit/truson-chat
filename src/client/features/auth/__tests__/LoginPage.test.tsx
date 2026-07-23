@@ -70,25 +70,17 @@ describe('LoginPage', () => {
     renderLoginPage();
 
     expect(screen.getByTestId('page-login')).toBeInTheDocument();
-    expect(
-      screen.getByRole('textbox', { name: /email address/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /email address/i })).toBeInTheDocument();
     // Password field is type="password" so not a textbox role — query by label.
     expect(screen.getByLabelText(/^password/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: /sign in/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
   });
 
   it('shows the forgot password link and register link', () => {
     renderLoginPage();
 
-    expect(
-      screen.getByRole('link', { name: /forgot password/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: /create one/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /forgot password/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /create one/i })).toBeInTheDocument();
   });
 
   it('shows validation errors when submitting empty form', async () => {
@@ -142,10 +134,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup();
     renderLoginPage();
 
-    await user.type(
-      screen.getByRole('textbox', { name: /email address/i }),
-      'test@example.com',
-    );
+    await user.type(screen.getByRole('textbox', { name: /email address/i }), 'test@example.com');
     await user.type(screen.getByLabelText(/^password/i), 'password123');
 
     // Fire-and-forget the click so the pending state can be observed before
@@ -177,17 +166,12 @@ describe('LoginPage', () => {
     const user = userEvent.setup();
     renderLoginPage();
 
-    await user.type(
-      screen.getByRole('textbox', { name: /email address/i }),
-      'wrong@example.com',
-    );
+    await user.type(screen.getByRole('textbox', { name: /email address/i }), 'wrong@example.com');
     await user.type(screen.getByLabelText(/^password/i), 'wrongpassword');
     await user.click(screen.getByRole('button', { name: /sign in/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByRole('alert'),
-      ).toBeInTheDocument();
+      expect(screen.getByRole('alert')).toBeInTheDocument();
     });
   });
 
@@ -201,10 +185,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup();
     renderLoginPage();
 
-    await user.type(
-      screen.getByRole('textbox', { name: /email address/i }),
-      'user@example.com',
-    );
+    await user.type(screen.getByRole('textbox', { name: /email address/i }), 'user@example.com');
     await user.type(screen.getByLabelText(/^password/i), 'mypassword');
     await user.click(screen.getByRole('button', { name: /sign in/i }));
 

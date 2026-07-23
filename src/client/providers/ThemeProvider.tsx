@@ -12,10 +12,7 @@ interface AppThemeProviderProps {
 export function AppThemeProvider({ children }: AppThemeProviderProps) {
   const mode = useThemeStore((state) => state.mode);
 
-  const theme = useMemo(
-    () => (mode === 'dark' ? darkTheme : lightTheme),
-    [mode],
-  );
+  const theme = useMemo(() => (mode === 'dark' ? darkTheme : lightTheme), [mode]);
 
   return (
     <ThemeProvider theme={theme}>

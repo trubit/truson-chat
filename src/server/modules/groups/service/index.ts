@@ -1,13 +1,17 @@
 import mongoose from 'mongoose';
 import { AppError } from '../../../middlewares/errorHandler.js';
 import { GroupMemberModel, GroupBanModel, ProfileModel } from '../../../database/models/index.js';
-import { groupRepository }     from '../repository/index.js';
+import { groupRepository } from '../repository/index.js';
 import { MEMBER_ROLES } from '../../../../shared/constants/roles.js';
-import type { IGroup }         from '../../../database/models/Group.js';
-import type { IGroupMember }   from '../../../database/models/GroupMember.js';
-import type { IGroupMessage }  from '../../../database/models/GroupMessage.js';
+import type { IGroup } from '../../../database/models/Group.js';
+import type { IGroupMember } from '../../../database/models/GroupMember.js';
+import type { IGroupMessage } from '../../../database/models/GroupMessage.js';
 import type {
-  CreateGroupDto, UpdateGroupDto, GroupQuery, GroupMessageQuery, SendGroupMessageDto,
+  CreateGroupDto,
+  UpdateGroupDto,
+  GroupQuery,
+  GroupMessageQuery,
+  SendGroupMessageDto,
 } from '../types/index.js';
 import type { GroupSummary, GroupDetail, GroupMessage } from '../../../../shared/types/group.js';
 
@@ -17,45 +21,47 @@ import type { GroupSummary, GroupDetail, GroupMessage } from '../../../../shared
 
 function toGroupSummary(g: IGroup): GroupSummary {
   return {
-    _id:           g._id.toString(),
-    name:          g.name,
-    handle:        g.handle,
-    description:   g.description,
-    type:          g.type,
-    status:        g.status,
-    avatar:        g.avatar,
-    memberCount:   g.memberCount,
-    communityId:   g.communityId?.toString(),
+    _id: g._id.toString(),
+    name: g.name,
+    handle: g.handle,
+    description: g.description,
+    type: g.type,
+    status: g.status,
+    avatar: g.avatar,
+    memberCount: g.memberCount,
+    communityId: g.communityId?.toString(),
     lastMessageAt: g.lastMessageAt?.toISOString(),
-    createdAt:     g.createdAt.toISOString(),
-    updatedAt:     g.updatedAt.toISOString(),
+    createdAt: g.createdAt.toISOString(),
+    updatedAt: g.updatedAt.toISOString(),
   };
 }
 
 function toGroupDetail(g: IGroup, myMembership?: IGroupMember | null): GroupDetail {
   return {
     ...toGroupSummary(g),
-    coverImage:       g.coverImage,
-    maxMembers:       g.maxMembers,
-    settings:         g.settings as unknown as GroupDetail['settings'],
-    categories:       g.categories,
-    tags:             g.tags,
-    inviteLink:       g.inviteLink,
+    coverImage: g.coverImage,
+    maxMembers: g.maxMembers,
+    settings: g.settings as unknown as GroupDetail['settings'],
+    categories: g.categories,
+    tags: g.tags,
+    inviteLink: g.inviteLink,
     inviteLinkExpiry: g.inviteLinkExpiry?.toISOString(),
     pinnedMessageIds: g.pinnedMessageIds.map((id) => id.toString()),
-    createdBy:        g.createdBy.toString(),
-    myMembership:     myMembership ? {
-      _id:         myMembership._id.toString(),
-      groupId:     myMembership.groupId.toString(),
-      userId:      myMembership.userId.toString(),
-      role:        myMembership.role,
-      customTitle: myMembership.customTitle,
-      status:      myMembership.status as 'active' | 'muted' | 'banned',
-      joinedAt:    myMembership.joinedAt.toISOString(),
-      mutedUntil:  myMembership.mutedUntil?.toISOString(),
-      lastReadAt:  myMembership.lastReadAt?.toISOString(),
-      displayName: '',
-    } : null,
+    createdBy: g.createdBy.toString(),
+    myMembership: myMembership
+      ? {
+          _id: myMembership._id.toString(),
+          groupId: myMembership.groupId.toString(),
+          userId: myMembership.userId.toString(),
+          role: myMembership.role,
+          customTitle: myMembership.customTitle,
+          status: myMembership.status as 'active' | 'muted' | 'banned',
+          joinedAt: myMembership.joinedAt.toISOString(),
+          mutedUntil: myMembership.mutedUntil?.toISOString(),
+          lastReadAt: myMembership.lastReadAt?.toISOString(),
+          displayName: '',
+        }
+      : null,
   };
 }
 
@@ -65,8 +71,9 @@ type ProfileMap = Map<string, { displayName: string; avatarUrl?: string }>;
 async function fetchProfileMap(userIds: string[]): Promise<ProfileMap> {
   if (userIds.length === 0) return new Map();
   const unique = [...new Set(userIds)].filter((id) => mongoose.Types.ObjectId.isValid(id));
-  const profiles = await ProfileModel
-    .find({ userId: { $in: unique.map((id) => new mongoose.Types.ObjectId(id)) } })
+  const profiles = await ProfileModel.find({
+    userId: { $in: unique.map((id) => new mongoose.Types.ObjectId(id)) },
+  })
     .select('userId displayName avatar')
     .lean()
     .exec();
@@ -75,7 +82,7 @@ async function fetchProfileMap(userIds: string[]): Promise<ProfileMap> {
       (p.userId as mongoose.Types.ObjectId).toString(),
       {
         displayName: p.displayName as string,
-        avatarUrl:   (p.avatar as { url?: string } | undefined)?.url,
+        avatarUrl: (p.avatar as { url?: string } | undefined)?.url,
       },
     ]),
   );
@@ -89,38 +96,44 @@ function toGroupMessage(m: IGroupMessage, profileMap?: ProfileMap): GroupMessage
   const senderId = isPopulated
     ? (raw as { _id: mongoose.Types.ObjectId })._id.toString()
     : String(raw);
-  const username = isPopulated
-    ? (raw as { username?: string }).username
-    : undefined;
+  const username = isPopulated ? (raw as { username?: string }).username : undefined;
 
   const profile = profileMap?.get(senderId);
 
   const senderObj = {
-    _id:         senderId,
+    _id: senderId,
     displayName: profile?.displayName ?? username ?? senderId.slice(-6),
-    avatarUrl:   profile?.avatarUrl,
+    avatarUrl: profile?.avatarUrl,
   };
 
   return {
-    _id:        m._id.toString(),
-    groupId:    m.groupId.toString(),
-    channelId:  m.channelId?.toString(),
+    _id: m._id.toString(),
+    groupId: m.groupId.toString(),
+    channelId: m.channelId?.toString(),
     senderId,
-    type:       m.type,
-    content:    m.deletedAt ? '' : m.content,
-    media:      m.deletedAt ? [] : m.media,
-    replyTo:    m.replyTo?.toString(),
-    mentions:   m.mentions.map((mn) => ({ userId: mn.userId.toString(), offset: mn.offset, length: mn.length })),
-    reactions:  m.reactions.map((r) => ({ emoji: r.emoji, users: r.users.map((u) => u.toString()), count: r.count })),
-    status:     m.status,
-    isPinned:   m.isPinned,
-    isEdited:   m.isEdited,
-    editedAt:   m.editedAt?.toISOString(),
-    deletedAt:  m.deletedAt?.toISOString(),
-    readCount:  m.readCount,
-    createdAt:  m.createdAt.toISOString(),
-    updatedAt:  m.updatedAt.toISOString(),
-    sender:     senderObj,
+    type: m.type,
+    content: m.deletedAt ? '' : m.content,
+    media: m.deletedAt ? [] : m.media,
+    replyTo: m.replyTo?.toString(),
+    mentions: m.mentions.map((mn) => ({
+      userId: mn.userId.toString(),
+      offset: mn.offset,
+      length: mn.length,
+    })),
+    reactions: m.reactions.map((r) => ({
+      emoji: r.emoji,
+      users: r.users.map((u) => u.toString()),
+      count: r.count,
+    })),
+    status: m.status,
+    isPinned: m.isPinned,
+    isEdited: m.isEdited,
+    editedAt: m.editedAt?.toISOString(),
+    deletedAt: m.deletedAt?.toISOString(),
+    readCount: m.readCount,
+    createdAt: m.createdAt.toISOString(),
+    updatedAt: m.updatedAt.toISOString(),
+    sender: senderObj,
   };
 }
 
@@ -129,7 +142,6 @@ function toGroupMessage(m: IGroupMessage, profileMap?: ProfileMap): GroupMessage
 // ---------------------------------------------------------------------------
 
 export class GroupService {
-
   async createGroup(userId: string, dto: CreateGroupDto): Promise<GroupDetail> {
     if (dto.handle) {
       const existing = await groupRepository.findByHandle(dto.handle);
@@ -139,7 +151,11 @@ export class GroupService {
     const group = await groupRepository.create({ ...dto, createdBy: userId });
 
     // Add creator as owner
-    await groupRepository.addMember({ groupId: group._id.toString(), userId, role: MEMBER_ROLES.OWNER });
+    await groupRepository.addMember({
+      groupId: group._id.toString(),
+      userId,
+      role: MEMBER_ROLES.OWNER,
+    });
 
     const membership = await groupRepository.findMember(group._id.toString(), userId);
     return toGroupDetail(group, membership);
@@ -161,15 +177,26 @@ export class GroupService {
     return toGroupDetail(group, membership);
   }
 
-  async getMyGroups(userId: string, page: number, limit: number): Promise<{ groups: GroupSummary[]; total: number; hasMore: boolean }> {
+  async getMyGroups(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ groups: GroupSummary[]; total: number; hasMore: boolean }> {
     const { groups, total } = await groupRepository.findByUser(userId, { page, limit });
     return { groups: groups.map(toGroupSummary), total, hasMore: total > page * limit };
   }
 
-  async discoverGroups(_userId: string, query: GroupQuery): Promise<{ groups: GroupSummary[]; total: number; hasMore: boolean }> {
-    const page  = query.page  ?? 1;
+  async discoverGroups(
+    _userId: string,
+    query: GroupQuery,
+  ): Promise<{ groups: GroupSummary[]; total: number; hasMore: boolean }> {
+    const page = query.page ?? 1;
     const limit = query.limit ?? 20;
-    const { groups, total } = await groupRepository.findMany({ ...query, type: 'public', status: 'active' });
+    const { groups, total } = await groupRepository.findMany({
+      ...query,
+      type: 'public',
+      status: 'active',
+    });
     return { groups: groups.map(toGroupSummary), total, hasMore: total > page * limit };
   }
 
@@ -201,12 +228,13 @@ export class GroupService {
   async joinGroup(userId: string, groupId: string): Promise<void> {
     const group = await groupRepository.findById(groupId);
     if (!group || group.deletedAt) throw new AppError('Group not found', 404, 'NOT_FOUND');
-    if (group.type === 'private') throw new AppError('This group requires an invite', 403, 'INVITE_REQUIRED');
+    if (group.type === 'private')
+      throw new AppError('This group requires an invite', 403, 'INVITE_REQUIRED');
 
     // Check ban
     const ban = await GroupBanModel.findOne({
       groupId: new mongoose.Types.ObjectId(groupId),
-      userId:  new mongoose.Types.ObjectId(userId),
+      userId: new mongoose.Types.ObjectId(userId),
       liftedAt: null,
     }).exec();
     if (ban && (!ban.expiresAt || ban.expiresAt > new Date())) {
@@ -241,7 +269,11 @@ export class GroupService {
       throw new AppError('Not a member', 400, 'NOT_MEMBER');
     }
     if (membership.role === MEMBER_ROLES.OWNER) {
-      throw new AppError('Owner cannot leave — transfer ownership first', 400, 'OWNER_CANNOT_LEAVE');
+      throw new AppError(
+        'Owner cannot leave — transfer ownership first',
+        400,
+        'OWNER_CANNOT_LEAVE',
+      );
     }
     await groupRepository.removeMember(groupId, userId);
     await groupRepository.incrementMemberCount(groupId, -1);
@@ -279,19 +311,26 @@ export class GroupService {
     return toGroupMessage(msg, profileMap);
   }
 
-  async getMessages(userId: string, query: GroupMessageQuery): Promise<{ messages: GroupMessage[]; hasMore: boolean }> {
+  async getMessages(
+    userId: string,
+    query: GroupMessageQuery,
+  ): Promise<{ messages: GroupMessage[]; hasMore: boolean }> {
     const membership = await groupRepository.findMember(query.groupId, userId);
     if (!membership || membership.status !== 'active') {
       throw new AppError('Not a member', 403, 'NOT_MEMBER');
     }
     const { messages, hasMore } = await groupRepository.findMessages(query);
     // Collect unique sender IDs, then batch-fetch profiles in one query
-    const senderIds = [...new Set(messages.map((m) => {
-      const raw = m.senderId as unknown;
-      return typeof raw === 'object' && raw !== null && '_id' in raw
-        ? (raw as { _id: mongoose.Types.ObjectId })._id.toString()
-        : String(raw);
-    }))];
+    const senderIds = [
+      ...new Set(
+        messages.map((m) => {
+          const raw = m.senderId as unknown;
+          return typeof raw === 'object' && raw !== null && '_id' in raw
+            ? (raw as { _id: mongoose.Types.ObjectId })._id.toString()
+            : String(raw);
+        }),
+      ),
+    ];
     const profileMap = await fetchProfileMap(senderIds);
     return { messages: messages.map((m) => toGroupMessage(m, profileMap)), hasMore };
   }
@@ -299,7 +338,8 @@ export class GroupService {
   async editMessage(userId: string, messageId: string, content: string): Promise<GroupMessage> {
     const msg = await groupRepository.findMessageById(messageId);
     if (!msg) throw new AppError('Message not found', 404, 'NOT_FOUND');
-    if (msg.senderId.toString() !== userId) throw new AppError('Cannot edit another user\'s message', 403, 'FORBIDDEN');
+    if (msg.senderId.toString() !== userId)
+      throw new AppError("Cannot edit another user's message", 403, 'FORBIDDEN');
     const updated = await groupRepository.editMessage(messageId, content);
     if (!updated) throw new AppError('Message not found', 404, 'NOT_FOUND');
     const profileMap = await fetchProfileMap([userId]);
@@ -312,11 +352,17 @@ export class GroupService {
 
     const membership = await groupRepository.findMember(msg.groupId.toString(), userId);
     const rawSender = msg.senderId as unknown;
-    const senderId = typeof rawSender === 'object' && rawSender !== null && '_id' in rawSender
-      ? (rawSender as { _id: mongoose.Types.ObjectId })._id.toString()
-      : String(rawSender);
+    const senderId =
+      typeof rawSender === 'object' && rawSender !== null && '_id' in rawSender
+        ? (rawSender as { _id: mongoose.Types.ObjectId })._id.toString()
+        : String(rawSender);
     const isOwner = senderId === userId;
-    const canDelete = isOwner || (membership && ([MEMBER_ROLES.OWNER, MEMBER_ROLES.ADMIN, MEMBER_ROLES.MODERATOR] as string[]).includes(membership.role));
+    const canDelete =
+      isOwner ||
+      (membership &&
+        ([MEMBER_ROLES.OWNER, MEMBER_ROLES.ADMIN, MEMBER_ROLES.MODERATOR] as string[]).includes(
+          membership.role,
+        ));
     if (!canDelete) throw new AppError('Cannot delete this message', 403, 'FORBIDDEN');
 
     const deleted = await groupRepository.softDeleteMessage(messageId, userId);
@@ -325,11 +371,16 @@ export class GroupService {
     return toGroupMessage(deleted, profileMap);
   }
 
-  async reactToMessage(userId: string, messageId: string, emoji: string): Promise<{ action: 'add' | 'remove'; count: number }> {
+  async reactToMessage(
+    userId: string,
+    messageId: string,
+    emoji: string,
+  ): Promise<{ action: 'add' | 'remove'; count: number }> {
     const msg = await groupRepository.findMessageById(messageId);
     if (!msg) throw new AppError('Message not found', 404, 'NOT_FOUND');
     const membership = await groupRepository.findMember(msg.groupId.toString(), userId);
-    if (!membership || membership.status !== 'active') throw new AppError('Not a member', 403, 'NOT_MEMBER');
+    if (!membership || membership.status !== 'active')
+      throw new AppError('Not a member', 403, 'NOT_MEMBER');
     const { action, count } = await groupRepository.toggleReaction(messageId, emoji, userId);
     return { action, count };
   }
@@ -342,7 +393,8 @@ export class GroupService {
 
   async getPinnedMessages(userId: string, groupId: string): Promise<GroupMessage[]> {
     const membership = await groupRepository.findMember(groupId, userId);
-    if (!membership || membership.status !== 'active') throw new AppError('Not a member', 403, 'NOT_MEMBER');
+    if (!membership || membership.status !== 'active')
+      throw new AppError('Not a member', 403, 'NOT_MEMBER');
     const msgs = await groupRepository.findPinned(groupId);
     const senderIds = [...new Set(msgs.map((m) => String(m.senderId)))];
     const profileMap = await fetchProfileMap(senderIds);
@@ -361,17 +413,27 @@ export class GroupService {
 
   // ——— Private helpers ———
 
-  async requirePermission(groupId: string, userId: string, permission: string): Promise<IGroupMember> {
+  async requirePermission(
+    groupId: string,
+    userId: string,
+    permission: string,
+  ): Promise<IGroupMember> {
     const membership = await groupRepository.findMember(groupId, userId);
     if (!membership || membership.status !== 'active') {
       throw new AppError('Not a member of this group', 403, 'NOT_MEMBER');
     }
 
     // Owner and admin always pass
-    if (([MEMBER_ROLES.OWNER, MEMBER_ROLES.ADMIN] as string[]).includes(membership.role)) return membership;
+    if (([MEMBER_ROLES.OWNER, MEMBER_ROLES.ADMIN] as string[]).includes(membership.role))
+      return membership;
 
     // Moderators can manage members but not group settings
-    if (membership.role === MEMBER_ROLES.MODERATOR && ['mute_members', 'kick_members', 'delete_others_messages', 'pin_messages'].includes(permission)) {
+    if (
+      membership.role === MEMBER_ROLES.MODERATOR &&
+      ['mute_members', 'kick_members', 'delete_others_messages', 'pin_messages'].includes(
+        permission,
+      )
+    ) {
       return membership;
     }
 

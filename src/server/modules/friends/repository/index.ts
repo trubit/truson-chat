@@ -111,8 +111,7 @@ export class FriendRequestRepository {
 // FriendshipRepository
 // ---------------------------------------------------------------------------
 
-const sortIds = (a: string, b: string): [string, string] =>
-  a < b ? [a, b] : [b, a];
+const sortIds = (a: string, b: string): [string, string] => (a < b ? [a, b] : [b, a]);
 
 export class FriendshipRepository {
   async create(userId1: string, userId2: string): Promise<IFriendship> {

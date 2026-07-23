@@ -128,9 +128,7 @@ describe('Unknown route', () => {
   });
 
   it('returns 404 for an unknown POST route', async () => {
-    const res = await request(app)
-      .post('/no-such-endpoint')
-      .send({ foo: 'bar' });
+    const res = await request(app).post('/no-such-endpoint').send({ foo: 'bar' });
 
     expect(res.status).toBe(404);
     expect(res.body.success).toBe(false);

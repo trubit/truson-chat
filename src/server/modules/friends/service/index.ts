@@ -183,9 +183,7 @@ export class FriendsService {
       query.search,
     );
 
-    const items = await Promise.all(
-      friendships.map((f) => this.populateFriendship(f, userId)),
-    );
+    const items = await Promise.all(friendships.map((f) => this.populateFriendship(f, userId)));
 
     return {
       items,
@@ -211,10 +209,7 @@ export class FriendsService {
     await this.friendshipRepo.remove(userId, friendId);
   }
 
-  async checkFriendshipStatus(
-    userId: string,
-    targetId: string,
-  ): Promise<FriendshipStatusResult> {
+  async checkFriendshipStatus(userId: string, targetId: string): Promise<FriendshipStatusResult> {
     const areFriends = await this.friendshipRepo.areFriends(userId, targetId);
 
     if (areFriends) {

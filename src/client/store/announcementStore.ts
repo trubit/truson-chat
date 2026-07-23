@@ -3,15 +3,15 @@ import type { AnnouncementSummary } from '@shared/types';
 
 interface AnnouncementState {
   announcements: Map<string, AnnouncementSummary[]>; // scopeKey → announcements
-  isLoading:     boolean;
+  isLoading: boolean;
 }
 
 interface AnnouncementActions {
-  setAnnouncements:  (scopeKey: string, announcements: AnnouncementSummary[]) => void;
-  upsertAnnouncement:(scopeKey: string, announcement: AnnouncementSummary) => void;
-  removeAnnouncement:(scopeKey: string, announcementId: string) => void;
-  setLoading:        (v: boolean) => void;
-  reset:             () => void;
+  setAnnouncements: (scopeKey: string, announcements: AnnouncementSummary[]) => void;
+  upsertAnnouncement: (scopeKey: string, announcement: AnnouncementSummary) => void;
+  removeAnnouncement: (scopeKey: string, announcementId: string) => void;
+  setLoading: (v: boolean) => void;
+  reset: () => void;
 }
 
 type AnnouncementStore = AnnouncementState & AnnouncementActions;
@@ -20,7 +20,7 @@ type AnnouncementStore = AnnouncementState & AnnouncementActions;
 
 const initial: AnnouncementState = {
   announcements: new Map(),
-  isLoading:     false,
+  isLoading: false,
 };
 
 export const useAnnouncementStore = create<AnnouncementStore>()((set, get) => ({
@@ -36,7 +36,8 @@ export const useAnnouncementStore = create<AnnouncementStore>()((set, get) => ({
     const all = new Map(get().announcements);
     const existing = all.get(scopeKey) ?? [];
     const idx = existing.findIndex((a) => a._id === announcement._id);
-    if (idx !== -1) existing[idx] = announcement; else existing.unshift(announcement);
+    if (idx !== -1) existing[idx] = announcement;
+    else existing.unshift(announcement);
     all.set(scopeKey, [...existing]);
     set({ announcements: all });
   },
@@ -44,10 +45,13 @@ export const useAnnouncementStore = create<AnnouncementStore>()((set, get) => ({
   removeAnnouncement: (scopeKey, announcementId) => {
     const all = new Map(get().announcements);
     const existing = all.get(scopeKey) ?? [];
-    all.set(scopeKey, existing.filter((a) => a._id !== announcementId));
+    all.set(
+      scopeKey,
+      existing.filter((a) => a._id !== announcementId),
+    );
     set({ announcements: all });
   },
 
   setLoading: (v) => set({ isLoading: v }),
-  reset:      () => set(initial),
+  reset: () => set(initial),
 }));

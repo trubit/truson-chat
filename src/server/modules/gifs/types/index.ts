@@ -1,8 +1,8 @@
 export interface GifItem {
-  id:      string;
-  title:   string;
-  url:     string;
+  id: string;
+  title: string;
+  url: string;
   preview: string;
-  width:   number;
-  height:  number;
+  width: number;
+  height: number;
 }

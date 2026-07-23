@@ -23,7 +23,11 @@ import HistoryIcon from '@mui/icons-material/History';
 import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import ComputerIcon from '@mui/icons-material/Computer';
 import { useSecurityOverview, useSecurityLogs } from '../queries';
-import { useListSessions, useRevokeSession, useRevokeAllSessions } from '@/features/sessions/queries';
+import {
+  useListSessions,
+  useRevokeSession,
+  useRevokeAllSessions,
+} from '@/features/sessions/queries';
 import { useListDevices, useTrustDevice, useRemoveDevice } from '@/features/devices/queries';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -39,9 +43,7 @@ function formatDate(dateString: string): string {
   }
 }
 
-function severityColor(
-  severity: string,
-): 'default' | 'warning' | 'error' | 'success' | 'info' {
+function severityColor(severity: string): 'default' | 'warning' | 'error' | 'success' | 'info' {
   if (severity === 'high' || severity === 'critical') return 'error';
   if (severity === 'medium') return 'warning';
   if (severity === 'low') return 'info';
@@ -121,11 +123,7 @@ function SessionsSection() {
             onClick={() => revokeAllSessions.mutate()}
             disabled={revokeAllSessions.isPending}
           >
-            {revokeAllSessions.isPending ? (
-              <CircularProgress size={16} />
-            ) : (
-              'Revoke all others'
-            )}
+            {revokeAllSessions.isPending ? <CircularProgress size={16} /> : 'Revoke all others'}
           </Button>
         )}
       </Box>
@@ -154,11 +152,7 @@ function SessionsSection() {
                         aria-label="Revoke session"
                         size="small"
                       >
-                        {revokeSession.isPending ? (
-                          <CircularProgress size={16} />
-                        ) : (
-                          <DeleteIcon />
-                        )}
+                        {revokeSession.isPending ? <CircularProgress size={16} /> : <DeleteIcon />}
                       </IconButton>
                     </Tooltip>
                   )
@@ -179,8 +173,7 @@ function SessionsSection() {
                   }
                   secondary={
                     <Typography variant="caption" color="text.secondary">
-                      {session.userAgent} &bull; Active{' '}
-                      {formatDate(session.lastActivityAt)}
+                      {session.userAgent} &bull; Active {formatDate(session.lastActivityAt)}
                     </Typography>
                   }
                 />
@@ -265,9 +258,7 @@ function DevicesSection() {
                         {device.isCurrentDevice && (
                           <Chip label="This device" size="small" color="primary" />
                         )}
-                        {device.trusted && (
-                          <Chip label="Trusted" size="small" color="success" />
-                        )}
+                        {device.trusted && <Chip label="Trusted" size="small" color="success" />}
                       </Box>
                     }
                     secondary={
@@ -320,9 +311,7 @@ function SecurityLogsSection() {
                 <ListItemText
                   primary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body2">
-                        {log.eventType.replace(/_/g, ' ')}
-                      </Typography>
+                      <Typography variant="body2">{log.eventType.replace(/_/g, ' ')}</Typography>
                       <Chip
                         label={log.severity}
                         size="small"
@@ -354,10 +343,7 @@ function SecurityLogsSection() {
 
 export default function SecurityPage() {
   return (
-    <Box
-      data-testid="page-security"
-      sx={{ maxWidth: 800, mx: 'auto', p: { xs: 1, sm: 2 } }}
-    >
+    <Box data-testid="page-security" sx={{ maxWidth: 800, mx: 'auto', p: { xs: 1, sm: 2 } }}>
       <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
         Security center
       </Typography>

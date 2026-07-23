@@ -60,9 +60,7 @@ export function useGetProfile(userId: string) {
   return useQuery({
     queryKey: PROFILE_KEYS.user(userId),
     queryFn: async () => {
-      const response = await apiService.get<ProfileApiResponse>(
-        `/profile/${userId}`,
-      );
+      const response = await apiService.get<ProfileApiResponse>(`/profile/${userId}`);
       return response.data;
     },
     enabled: Boolean(userId),
@@ -188,8 +186,7 @@ export function useGetPreferences() {
   return useQuery({
     queryKey: PROFILE_KEYS.preferences,
     queryFn: async () => {
-      const response =
-        await apiService.get<PreferencesApiResponse>('/profile/preferences');
+      const response = await apiService.get<PreferencesApiResponse>('/profile/preferences');
       setPreferences(response.data);
       return response.data;
     },

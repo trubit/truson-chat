@@ -19,20 +19,20 @@ import {
 import { apiService } from '@/services/api';
 
 const C = {
-  bg:      '#060913',
-  card:    '#0A0D1F',
-  card2:   '#09101E',
-  border:  'rgba(245,158,11,0.1)',
+  bg: '#060913',
+  card: '#0A0D1F',
+  card2: '#09101E',
+  border: 'rgba(245,158,11,0.1)',
   border2: 'rgba(255,255,255,0.06)',
-  accent:  '#F59E0B',
-  violet:  '#9B6DFF',
-  teal:    '#22D3EE',
-  green:   '#10B981',
-  red:     '#EF4444',
-  amber:   '#FBBF24',
-  txt1:    '#F1F5F9',
-  txt2:    '#94A3B8',
-  txt3:    '#475569',
+  accent: '#F59E0B',
+  violet: '#9B6DFF',
+  teal: '#22D3EE',
+  green: '#10B981',
+  red: '#EF4444',
+  amber: '#FBBF24',
+  txt1: '#F1F5F9',
+  txt2: '#94A3B8',
+  txt3: '#475569',
 };
 
 interface UserStats {
@@ -52,7 +52,10 @@ interface StatsResponse {
   data: { users: UserStats };
 }
 
-interface GrowthPoint { date: string; users: number }
+interface GrowthPoint {
+  date: string;
+  users: number;
+}
 interface GrowthResponse {
   success: boolean;
   data: GrowthPoint[];
@@ -100,7 +103,15 @@ function StatCard({
       />
       <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         <Box>
-          <Typography variant="caption" sx={{ color: C.txt3, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem' }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: C.txt3,
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              fontSize: '0.68rem',
+            }}
+          >
             {label}
           </Typography>
           <Typography variant="h4" sx={{ color: C.txt1, fontWeight: 700, mt: 0.5, lineHeight: 1 }}>
@@ -165,16 +176,18 @@ export default function AdminDashboard() {
 
   const pieData = stats
     ? [
-        { name: 'Active',      value: stats.active },
-        { name: 'Suspended',   value: stats.suspended },
-        { name: 'Pending',     value: stats.pendingVerification },
-        { name: 'Deleted',     value: stats.deleted },
+        { name: 'Active', value: stats.active },
+        { name: 'Suspended', value: stats.suspended },
+        { name: 'Pending', value: stats.pendingVerification },
+        { name: 'Deleted', value: stats.deleted },
       ].filter((d) => d.value > 0)
     : [];
 
   if (statsQ.isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
+      >
         <CircularProgress sx={{ color: C.accent }} />
       </Box>
     );
@@ -208,7 +221,7 @@ export default function AdminDashboard() {
           <StatCard
             label="Active Users"
             value={stats?.active ?? 0}
-            sub={`${stats?.total ? Math.round(((stats.active) / stats.total) * 100) : 0}% of total`}
+            sub={`${stats?.total ? Math.round((stats.active / stats.total) * 100) : 0}% of total`}
             Icon={CheckCircleOutlinedIcon}
             color={C.green}
             glow="rgba(16,185,129,0.12)"
@@ -249,19 +262,39 @@ export default function AdminDashboard() {
               height: 340,
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}
+            >
               <Typography variant="body1" sx={{ color: C.txt1, fontWeight: 600 }}>
                 User Growth
               </Typography>
-              <Chip label="Last 30 days" size="small" sx={{ bgcolor: 'rgba(155,109,255,0.12)', color: C.violet, border: '1px solid rgba(155,109,255,0.2)', fontSize: '0.7rem' }} />
+              <Chip
+                label="Last 30 days"
+                size="small"
+                sx={{
+                  bgcolor: 'rgba(155,109,255,0.12)',
+                  color: C.violet,
+                  border: '1px solid rgba(155,109,255,0.2)',
+                  fontSize: '0.7rem',
+                }}
+              />
             </Box>
             {growthQ.isLoading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', pt: 6 }}>
                 <CircularProgress size={28} sx={{ color: C.violet }} />
               </Box>
             ) : growth.length === 0 ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70%' }}>
-                <Typography variant="body2" sx={{ color: C.txt3 }}>No data for last 30 days</Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '70%',
+                }}
+              >
+                <Typography variant="body2" sx={{ color: C.txt3 }}>
+                  No data for last 30 days
+                </Typography>
               </Box>
             ) : (
               <ResponsiveContainer width="100%" height={230}>
@@ -316,8 +349,17 @@ export default function AdminDashboard() {
               Status Breakdown
             </Typography>
             {pieData.length === 0 ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70%' }}>
-                <Typography variant="body2" sx={{ color: C.txt3 }}>No data</Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '70%',
+                }}
+              >
+                <Typography variant="body2" sx={{ color: C.txt3 }}>
+                  No data
+                </Typography>
               </Box>
             ) : (
               <>
@@ -345,7 +387,14 @@ export default function AdminDashboard() {
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
                   {pieData.map((d, i) => (
                     <Box key={d.name} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: PIE_COLORS[i % PIE_COLORS.length] }} />
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          bgcolor: PIE_COLORS[i % PIE_COLORS.length],
+                        }}
+                      />
                       <Typography variant="caption" sx={{ color: C.txt2, fontSize: '0.72rem' }}>
                         {d.name} ({d.value.toLocaleString()})
                       </Typography>
@@ -362,9 +411,9 @@ export default function AdminDashboard() {
       <Grid container spacing={2} sx={{ mt: 3 }}>
         {[
           { label: 'Pending Verification', value: stats?.pendingVerification ?? 0, color: C.amber },
-          { label: 'Suspended',            value: stats?.suspended ?? 0,           color: C.red },
-          { label: 'Business Accounts',    value: stats?.business ?? 0,            color: C.teal },
-          { label: 'New Today',            value: stats?.newToday ?? 0,            color: C.green },
+          { label: 'Suspended', value: stats?.suspended ?? 0, color: C.red },
+          { label: 'Business Accounts', value: stats?.business ?? 0, color: C.teal },
+          { label: 'New Today', value: stats?.newToday ?? 0, color: C.green },
         ].map(({ label, value, color }) => (
           <Grid size={{ xs: 6, md: 3 }} key={label}>
             <Box
@@ -378,8 +427,12 @@ export default function AdminDashboard() {
                 alignItems: 'center',
               }}
             >
-              <Typography variant="body2" sx={{ color: C.txt2, fontSize: '0.8rem' }}>{label}</Typography>
-              <Typography variant="body1" sx={{ color, fontWeight: 700 }}>{value.toLocaleString()}</Typography>
+              <Typography variant="body2" sx={{ color: C.txt2, fontSize: '0.8rem' }}>
+                {label}
+              </Typography>
+              <Typography variant="body1" sx={{ color, fontWeight: 700 }}>
+                {value.toLocaleString()}
+              </Typography>
             </Box>
           </Grid>
         ))}

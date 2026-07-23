@@ -35,7 +35,7 @@ const envSchema = z.object({
     .default(false),
   SMTP_USER: z.union([z.email(), z.literal('')]).default(''),
   SMTP_PASS: z.string().default(''),
-  SMTP_FROM_NAME: z.string().default('Truson-Chat'),
+  SMTP_FROM_NAME: z.string().default('Linkora'),
   SMTP_FROM_EMAIL: z.union([z.email(), z.literal('')]).default(''),
 
   BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(14).default(12),
@@ -45,16 +45,17 @@ const envSchema = z.object({
   MAX_FILE_SIZE_BYTES: z.coerce.number().int().default(52428800),
   UPLOAD_DIR: z.string().default('./uploads'),
 
-  LOG_LEVEL: z
-    .enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly'])
-    .default('info'),
+  LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info'),
   LOG_FILE_ENABLED: z
     .string()
     .transform((v) => v === 'true')
     .default(false),
   LOG_DIR: z.string().default('./logs'),
 
-  COOKIE_SECURE: z.string().transform((v) => v === 'true').default(false),
+  COOKIE_SECURE: z
+    .string()
+    .transform((v) => v === 'true')
+    .default(false),
   COOKIE_SAME_SITE: z.enum(['strict', 'lax', 'none']).default('strict'),
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().default(10),
   ADMIN_EMAIL: z.union([z.string().email(), z.literal('')]).default(''),

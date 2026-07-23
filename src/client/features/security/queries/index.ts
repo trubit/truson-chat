@@ -1,19 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiService } from '@/services/api';
 import { useSecurityStore } from '@/store/securityStore';
-import type {
-  SecurityLogResponse,
-  SecurityOverview,
-  PaginationMeta,
-} from '@/types/auth';
+import type { SecurityLogResponse, SecurityOverview, PaginationMeta } from '@/types/auth';
 
 // ---------------------------------------------------------------------------
 // Query keys
 // ---------------------------------------------------------------------------
 
 export const SECURITY_KEYS = {
-  logs: (page: number, limit: number) =>
-    ['security', 'logs', page, limit] as const,
+  logs: (page: number, limit: number) => ['security', 'logs', page, limit] as const,
   overview: ['security', 'overview'] as const,
 };
 
@@ -63,10 +58,7 @@ export function useSecurityOverview() {
   return useQuery({
     queryKey: SECURITY_KEYS.overview,
     queryFn: async () => {
-      const response =
-        await apiService.get<SecurityOverviewApiResponse>(
-          '/security/overview',
-        );
+      const response = await apiService.get<SecurityOverviewApiResponse>('/security/overview');
       setOverview(response.data);
       return response.data;
     },

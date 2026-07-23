@@ -101,11 +101,10 @@ export class ContactRepository {
       return this.findById(id);
     }
 
-    return ContactModel.findOneAndUpdate(
-      { _id: new ObjId(id) },
-      updateOp,
-      { returnDocument: 'after', runValidators: true },
-    ).exec();
+    return ContactModel.findOneAndUpdate({ _id: new ObjId(id) }, updateOp, {
+      returnDocument: 'after',
+      runValidators: true,
+    }).exec();
   }
 
   async delete(id: string): Promise<void> {
@@ -126,10 +125,7 @@ export class ContactRepository {
 
     return ContactModel.find({
       ownerId: new ObjId(ownerId),
-      $or: [
-        { contactUserId: { $in: matchingUserIds } },
-        { displayName: { $regex: regex } },
-      ],
+      $or: [{ contactUserId: { $in: matchingUserIds } }, { displayName: { $regex: regex } }],
     })
       .limit(limit)
       .exec();

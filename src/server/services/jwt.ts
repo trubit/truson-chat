@@ -10,7 +10,7 @@ const { sign, verify, decode } = jwt;
 // ---------------------------------------------------------------------------
 
 export interface JwtPayload {
-  sub: string;       // userId as ObjectId string
+  sub: string; // userId as ObjectId string
   email: string;
   role: 'user' | 'admin' | 'business';
   sessionId: string; // Session ObjectId as string
@@ -21,8 +21,8 @@ export interface JwtPayload {
 
 export interface TokenPair {
   accessToken: string;
-  refreshToken: string;  // raw token — caller must hash before storing
-  expiresIn: number;     // seconds until the access token expires
+  refreshToken: string; // raw token — caller must hash before storing
+  expiresIn: number; // seconds until the access token expires
 }
 
 // ---------------------------------------------------------------------------

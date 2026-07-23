@@ -7,12 +7,12 @@ import FolderZipIcon from '@mui/icons-material/FolderZip';
 import DownloadIcon from '@mui/icons-material/Download';
 
 const C = {
-  border:  'rgba(139,92,246,0.12)',
-  txt1:    '#F1F5F9',
-  txt2:    '#94A3B8',
-  txt3:    '#475569',
-  bg:      'rgba(13,18,37,0.9)',
-  accent:  '#9B6DFF',
+  border: 'rgba(139,92,246,0.12)',
+  txt1: '#F1F5F9',
+  txt2: '#94A3B8',
+  txt3: '#475569',
+  bg: 'rgba(13,18,37,0.9)',
+  accent: '#9B6DFF',
 } as const;
 
 function formatSize(bytes?: number): string {
@@ -24,15 +24,19 @@ function formatSize(bytes?: number): string {
 
 function FileIcon({ mimeType }: { mimeType?: string }) {
   if (!mimeType) return <DescriptionIcon sx={{ fontSize: 28, color: '#94A3B8' }} />;
-  if (mimeType.includes('pdf'))
-    return <PictureAsPdfIcon sx={{ fontSize: 28, color: '#EF4444' }} />;
+  if (mimeType.includes('pdf')) return <PictureAsPdfIcon sx={{ fontSize: 28, color: '#EF4444' }} />;
   if (mimeType.includes('word') || mimeType.includes('document'))
     return <DescriptionIcon sx={{ fontSize: 28, color: '#3B82F6' }} />;
   if (mimeType.includes('excel') || mimeType.includes('spreadsheet') || mimeType.includes('csv'))
     return <TableChartIcon sx={{ fontSize: 28, color: '#22C55E' }} />;
   if (mimeType.includes('powerpoint') || mimeType.includes('presentation'))
     return <SlideshowIcon sx={{ fontSize: 28, color: '#F97316' }} />;
-  if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('tar') || mimeType.includes('gz'))
+  if (
+    mimeType.includes('zip') ||
+    mimeType.includes('rar') ||
+    mimeType.includes('tar') ||
+    mimeType.includes('gz')
+  )
     return <FolderZipIcon sx={{ fontSize: 28, color: '#EAB308' }} />;
   return <DescriptionIcon sx={{ fontSize: 28, color: '#94A3B8' }} />;
 }
@@ -79,9 +83,7 @@ export function DocumentCard({
           {name}
         </Typography>
         {size !== undefined && (
-          <Typography sx={{ fontSize: 11, color: C.txt3 }}>
-            {formatSize(size)}
-          </Typography>
+          <Typography sx={{ fontSize: 11, color: C.txt3 }}>{formatSize(size)}</Typography>
         )}
       </Box>
 

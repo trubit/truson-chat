@@ -38,11 +38,7 @@ const DEFAULT_PRIVACY: PrivacyState = {
 
 function extractErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'response' in error
-  ) {
+  if (typeof error === 'object' && error !== null && 'response' in error) {
     const axiosError = error as {
       response?: { data?: { message?: string; error?: string } };
     };
@@ -64,18 +60,21 @@ export default function PrivacySettingsPage() {
   useEffect(() => {
     if (profile?.privacySettings) {
       setPrivacy({
-        profileVisibility: (profile.privacySettings.profileVisibility as PrivacyVisibility) ?? 'everyone',
-        lastSeenVisibility: (profile.privacySettings.lastSeenVisibility as PrivacyVisibility) ?? 'everyone',
-        profilePhotoVisibility: (profile.privacySettings.profilePhotoVisibility as PrivacyVisibility) ?? 'everyone',
-        aboutVisibility: (profile.privacySettings.aboutVisibility as PrivacyVisibility) ?? 'everyone',
+        profileVisibility:
+          (profile.privacySettings.profileVisibility as PrivacyVisibility) ?? 'everyone',
+        lastSeenVisibility:
+          (profile.privacySettings.lastSeenVisibility as PrivacyVisibility) ?? 'everyone',
+        profilePhotoVisibility:
+          (profile.privacySettings.profilePhotoVisibility as PrivacyVisibility) ?? 'everyone',
+        aboutVisibility:
+          (profile.privacySettings.aboutVisibility as PrivacyVisibility) ?? 'everyone',
       });
     }
   }, [profile]);
 
-  const handleChange =
-    (field: keyof PrivacyState) => (value: PrivacyVisibility) => {
-      setPrivacy((prev) => ({ ...prev, [field]: value }));
-    };
+  const handleChange = (field: keyof PrivacyState) => (value: PrivacyVisibility) => {
+    setPrivacy((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSave = () => {
     updatePrivacy.mutate(privacy);
@@ -94,29 +93,28 @@ export default function PrivacySettingsPage() {
     );
   }
 
-  const fields: Array<{ key: keyof PrivacyState; label: string; description: string }> =
-    [
-      {
-        key: 'profileVisibility',
-        label: 'Profile visibility',
-        description: 'Who can see your profile page',
-      },
-      {
-        key: 'lastSeenVisibility',
-        label: 'Last seen',
-        description: 'Who can see when you were last active',
-      },
-      {
-        key: 'profilePhotoVisibility',
-        label: 'Profile photo',
-        description: 'Who can see your profile picture',
-      },
-      {
-        key: 'aboutVisibility',
-        label: 'About / Bio',
-        description: 'Who can see your bio information',
-      },
-    ];
+  const fields: Array<{ key: keyof PrivacyState; label: string; description: string }> = [
+    {
+      key: 'profileVisibility',
+      label: 'Profile visibility',
+      description: 'Who can see your profile page',
+    },
+    {
+      key: 'lastSeenVisibility',
+      label: 'Last seen',
+      description: 'Who can see when you were last active',
+    },
+    {
+      key: 'profilePhotoVisibility',
+      label: 'Profile photo',
+      description: 'Who can see your profile picture',
+    },
+    {
+      key: 'aboutVisibility',
+      label: 'About / Bio',
+      description: 'Who can see your bio information',
+    },
+  ];
 
   return (
     <Box
@@ -129,7 +127,7 @@ export default function PrivacySettingsPage() {
             Privacy settings
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Control who can see your information on Truson-Chat.
+            Control who can see your information on Linkora.
           </Typography>
           <Divider sx={{ mb: 3 }} />
 
@@ -171,9 +169,7 @@ export default function PrivacySettingsPage() {
                       id={`${key}-select`}
                       value={privacy[key]}
                       label={label}
-                      onChange={(e) =>
-                        handleChange(key)(e.target.value as PrivacyVisibility)
-                      }
+                      onChange={(e) => handleChange(key)(e.target.value as PrivacyVisibility)}
                       disabled={updatePrivacy.isPending}
                       aria-label={label}
                     >

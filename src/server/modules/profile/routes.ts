@@ -25,42 +25,22 @@ router.get('/me', authenticate, controller.getOwnProfile);
 router.get('/preferences', authenticate, controller.getPreferences);
 
 // PATCH /profile
-router.patch(
-  '/',
-  authenticate,
-  validateBody(updateProfileSchema),
-  controller.updateProfile,
-);
+router.patch('/', authenticate, validateBody(updateProfileSchema), controller.updateProfile);
 
 // POST /profile/avatar — multer single 'avatar'
-router.post(
-  '/avatar',
-  authenticate,
-  imageUpload.single('avatar'),
-  controller.uploadAvatar,
-);
+router.post('/avatar', authenticate, imageUpload.single('avatar'), controller.uploadAvatar);
 
 // DELETE /profile/avatar
 router.delete('/avatar', authenticate, controller.removeAvatar);
 
 // POST /profile/cover — multer single 'cover'
-router.post(
-  '/cover',
-  authenticate,
-  imageUpload.single('cover'),
-  controller.uploadCoverImage,
-);
+router.post('/cover', authenticate, imageUpload.single('cover'), controller.uploadCoverImage);
 
 // DELETE /profile/cover
 router.delete('/cover', authenticate, controller.removeCoverImage);
 
 // PATCH /profile/privacy
-router.patch(
-  '/privacy',
-  authenticate,
-  validateBody(updatePrivacySchema),
-  controller.updatePrivacy,
-);
+router.patch('/privacy', authenticate, validateBody(updatePrivacySchema), controller.updatePrivacy);
 
 // PATCH /profile/preferences
 router.patch(
@@ -71,11 +51,6 @@ router.patch(
 );
 
 // GET /profile/:userId — optionalAuth (public profile, respects privacy settings)
-router.get(
-  '/:userId',
-  optionalAuth,
-  validateParams(userIdParamSchema),
-  controller.getProfile,
-);
+router.get('/:userId', optionalAuth, validateParams(userIdParamSchema), controller.getProfile);
 
 export default router;

@@ -11,7 +11,10 @@ export function useUpload() {
   const accessToken = useAuthStore((s) => s.accessToken);
 
   const upload = useCallback(
-    (file: File, opts: { conversationId?: string; isVoiceNote?: boolean } = {}): Promise<UploadItem['result']> => {
+    (
+      file: File,
+      opts: { conversationId?: string; isVoiceNote?: boolean } = {},
+    ): Promise<UploadItem['result']> => {
       return new Promise((resolve, reject) => {
         const id = uuidv4();
         addUpload(id, file);
@@ -33,7 +36,10 @@ export function useUpload() {
 
         xhr.addEventListener('load', () => {
           if (xhr.status >= 200 && xhr.status < 300) {
-            const response = JSON.parse(xhr.responseText) as { success: boolean; data: UploadItem['result'] };
+            const response = JSON.parse(xhr.responseText) as {
+              success: boolean;
+              data: UploadItem['result'];
+            };
             completeUpload(id, response.data);
             resolve(response.data);
           } else {
@@ -41,7 +47,9 @@ export function useUpload() {
             try {
               const body = JSON.parse(xhr.responseText) as { message?: string; error?: string };
               msg = body.message ?? body.error ?? msg;
-            } catch { /* keep default */ }
+            } catch {
+              /* keep default */
+            }
             failUpload(id, msg);
             reject(new Error(msg));
           }

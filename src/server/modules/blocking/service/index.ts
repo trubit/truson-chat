@@ -36,11 +36,7 @@ export class BlockingService {
     };
   }
 
-  async blockUser(
-    blockerId: string,
-    targetUserId: string,
-    dto: BlockUserDto,
-  ): Promise<IBlockData> {
+  async blockUser(blockerId: string, targetUserId: string, dto: BlockUserDto): Promise<IBlockData> {
     if (!mongoose.isValidObjectId(targetUserId)) {
       throw new AppError('Invalid user ID', 400, 'INVALID_ID');
     }
@@ -118,11 +114,7 @@ export class BlockingService {
     return this.blockRepo.isBlockedEitherDirection(user1Id, user2Id);
   }
 
-  async muteUser(
-    muterId: string,
-    targetUserId: string,
-    dto: MuteUserDto,
-  ): Promise<IMuteData> {
+  async muteUser(muterId: string, targetUserId: string, dto: MuteUserDto): Promise<IMuteData> {
     if (!mongoose.isValidObjectId(targetUserId)) {
       throw new AppError('Invalid user ID', 400, 'INVALID_ID');
     }

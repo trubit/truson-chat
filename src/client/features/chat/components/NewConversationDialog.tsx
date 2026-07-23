@@ -1,9 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Dialog, DialogTitle, DialogContent, List, ListItem,
-  ListItemAvatar, ListItemText, Avatar, Typography,
-  InputBase, Box, CircularProgress, IconButton, alpha,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  Typography,
+  InputBase,
+  Box,
+  CircularProgress,
+  IconButton,
+  alpha,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
@@ -59,9 +70,20 @@ export default function NewConversationDialog({ open, onClose }: NewConversation
       onClose={onClose}
       maxWidth="xs"
       fullWidth
-      slotProps={{ paper: { sx: { bgcolor: C.panel, border: `1px solid ${C.border}`, borderRadius: 3 } } }}
+      slotProps={{
+        paper: { sx: { bgcolor: C.panel, border: `1px solid ${C.border}`, borderRadius: 3 } },
+      }}
     >
-      <DialogTitle sx={{ color: C.txt1, fontWeight: 700, pb: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <DialogTitle
+        sx={{
+          color: C.txt1,
+          fontWeight: 700,
+          pb: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         New Conversation
         <IconButton size="small" onClick={onClose} sx={{ color: C.txt2 }}>
           <CloseIcon fontSize="small" />
@@ -71,19 +93,31 @@ export default function NewConversationDialog({ open, onClose }: NewConversation
       <DialogContent sx={{ p: 0 }}>
         {/* Search */}
         <Box sx={{ px: 2, pb: 1.5 }}>
-          <Box sx={{
-            display: 'flex', alignItems: 'center', gap: 1,
-            bgcolor: C.searchBg, borderRadius: '10px', px: 1.5, py: 0.85,
-            border: `1px solid ${C.border}`,
-            '&:focus-within': { borderColor: alpha(C.accent, 0.4) },
-          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              bgcolor: C.searchBg,
+              borderRadius: '10px',
+              px: 1.5,
+              py: 0.85,
+              border: `1px solid ${C.border}`,
+              '&:focus-within': { borderColor: alpha(C.accent, 0.4) },
+            }}
+          >
             <SearchIcon sx={{ fontSize: 16, color: C.txt2, flexShrink: 0 }} />
             <InputBase
               autoFocus
               placeholder="Search friends…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              sx={{ flex: 1, fontSize: 13.5, color: C.txt1, '& input::placeholder': { color: C.txt2, opacity: 1 } }}
+              sx={{
+                flex: 1,
+                fontSize: 13.5,
+                color: C.txt1,
+                '& input::placeholder': { color: C.txt2, opacity: 1 },
+              }}
             />
           </Box>
         </Box>
@@ -108,19 +142,37 @@ export default function NewConversationDialog({ open, onClose }: NewConversation
                   key={f.friendshipId}
                   onClick={() => handleSelect(f.friendId)}
                   sx={{
-                    cursor: 'pointer', px: 2, py: 1.25,
+                    cursor: 'pointer',
+                    px: 2,
+                    py: 1.25,
                     transition: 'bgcolor 0.15s',
                     '&:hover': { bgcolor: 'rgba(255,255,255,0.04)' },
                   }}
                 >
                   <ListItemAvatar>
-                    <Avatar src={f.avatar} alt={f.displayName} sx={{ width: 40, height: 40, bgcolor: C.accent, fontSize: 15, fontWeight: 700 }}>
+                    <Avatar
+                      src={f.avatar}
+                      alt={f.displayName}
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        bgcolor: C.accent,
+                        fontSize: 15,
+                        fontWeight: 700,
+                      }}
+                    >
                       {f.displayName.charAt(0).toUpperCase()}
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={<Typography sx={{ color: C.txt1, fontWeight: 600, fontSize: 14 }}>{f.displayName}</Typography>}
-                    secondary={<Typography sx={{ color: C.txt2, fontSize: 12 }}>@{f.username}</Typography>}
+                    primary={
+                      <Typography sx={{ color: C.txt1, fontWeight: 600, fontSize: 14 }}>
+                        {f.displayName}
+                      </Typography>
+                    }
+                    secondary={
+                      <Typography sx={{ color: C.txt2, fontSize: 12 }}>@{f.username}</Typography>
+                    }
                   />
                   {loading && <CircularProgress size={18} sx={{ color: C.accent }} />}
                 </ListItem>

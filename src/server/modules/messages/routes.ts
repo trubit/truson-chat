@@ -41,14 +41,32 @@ router.use(authenticate);
 // IMPORTANT: /search must come BEFORE /:id so "search" is not captured as messageId
 
 // GET /messages/search — search messages
-router.get('/search', (_req, _res, next) => {
-  try { validate(searchSchema, _req.query); next(); } catch (err) { next(err); }
-}, messageController.searchMessages.bind(messageController));
+router.get(
+  '/search',
+  (_req, _res, next) => {
+    try {
+      validate(searchSchema, _req.query);
+      next();
+    } catch (err) {
+      next(err);
+    }
+  },
+  messageController.searchMessages.bind(messageController),
+);
 
 // GET /messages — get messages for a conversation
-router.get('/', (_req, _res, next) => {
-  try { validate(messageQuerySchema, _req.query); next(); } catch (err) { next(err); }
-}, messageController.getMessages.bind(messageController));
+router.get(
+  '/',
+  (_req, _res, next) => {
+    try {
+      validate(messageQuerySchema, _req.query);
+      next();
+    } catch (err) {
+      next(err);
+    }
+  },
+  messageController.getMessages.bind(messageController),
+);
 
 // POST /messages — send a message
 router.post('/', (req, res, next) => {

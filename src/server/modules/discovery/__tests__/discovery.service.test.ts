@@ -60,11 +60,13 @@ afterEach(async () => {
 
 type UserStatus = 'active' | 'suspended' | 'deleted' | 'pending_verification';
 
-async function createTestUser(overrides: Partial<{
-  username: string;
-  email: string;
-  status: UserStatus;
-}> = {}) {
+async function createTestUser(
+  overrides: Partial<{
+    username: string;
+    email: string;
+    status: UserStatus;
+  }> = {},
+) {
   const user = await UserModel.create({
     username: overrides.username ?? 'testuser',
     email: overrides.email ?? 'test@example.com',
@@ -100,7 +102,10 @@ function makeService() {
 
 describe('DiscoveryService.searchUsers', () => {
   it('returns matching users by username', async () => {
-    const requester = await createTestUser({ username: 'searcher1', email: 'searcher1@example.com' });
+    const requester = await createTestUser({
+      username: 'searcher1',
+      email: 'searcher1@example.com',
+    });
     await createTestUser({ username: 'alice123', email: 'alice123@example.com' });
     await createTestUser({ username: 'bob456', email: 'bob456@example.com' });
 
@@ -112,7 +117,10 @@ describe('DiscoveryService.searchUsers', () => {
   });
 
   it('returns empty results when no users match the query', async () => {
-    const requester = await createTestUser({ username: 'searcher2', email: 'searcher2@example.com' });
+    const requester = await createTestUser({
+      username: 'searcher2',
+      email: 'searcher2@example.com',
+    });
     await createTestUser({ username: 'charlie789', email: 'charlie789@example.com' });
 
     const service = makeService();
@@ -135,7 +143,10 @@ describe('DiscoveryService.searchUsers', () => {
   });
 
   it('excludes users who have blocked the requester', async () => {
-    const requester = await createTestUser({ username: 'searcher3', email: 'searcher3@example.com' });
+    const requester = await createTestUser({
+      username: 'searcher3',
+      email: 'searcher3@example.com',
+    });
     const blocker = await createTestUser({ username: 'dave001', email: 'dave001@example.com' });
 
     await BlockedUserModel.create({
@@ -150,7 +161,10 @@ describe('DiscoveryService.searchUsers', () => {
   });
 
   it('excludes users that the requester has blocked', async () => {
-    const requester = await createTestUser({ username: 'searcher4', email: 'searcher4@example.com' });
+    const requester = await createTestUser({
+      username: 'searcher4',
+      email: 'searcher4@example.com',
+    });
     const blockedUser = await createTestUser({ username: 'eve002', email: 'eve002@example.com' });
 
     await BlockedUserModel.create({
@@ -165,7 +179,10 @@ describe('DiscoveryService.searchUsers', () => {
   });
 
   it('marks isFriend=true for an existing friend in results', async () => {
-    const requester = await createTestUser({ username: 'searcher5', email: 'searcher5@example.com' });
+    const requester = await createTestUser({
+      username: 'searcher5',
+      email: 'searcher5@example.com',
+    });
     const friend = await createTestUser({ username: 'frank003', email: 'frank003@example.com' });
 
     const ids = [requester._id.toString(), friend._id.toString()].sort();

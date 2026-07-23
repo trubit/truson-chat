@@ -25,8 +25,7 @@ interface ResetPasswordFormValues {
   confirmPassword: string;
 }
 
-const PASSWORD_COMPLEXITY =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).+$/;
+const PASSWORD_COMPLEXITY = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).+$/;
 
 function extractErrorMessage(error: unknown): string {
   if (typeof error === 'object' && error !== null && 'response' in error) {
@@ -89,10 +88,7 @@ export default function ResetPasswordPage() {
 
   return (
     <Box data-testid="page-reset-password">
-      <AuthLayout
-        title="Set new password 🔒"
-        subtitle="Choose a strong password for your account"
-      >
+      <AuthLayout title="Set new password 🔒" subtitle="Choose a strong password for your account">
         {resetPasswordMutation.isError && (
           <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
             {extractErrorMessage(resetPasswordMutation.error)}
@@ -222,11 +218,7 @@ export default function ResetPasswordPage() {
               },
             }}
           >
-            {isLoading ? (
-              <CircularProgress size={22} color="inherit" />
-            ) : (
-              'Reset password'
-            )}
+            {isLoading ? <CircularProgress size={22} color="inherit" /> : 'Reset password'}
           </Button>
         </Box>
 

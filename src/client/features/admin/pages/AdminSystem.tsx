@@ -8,17 +8,17 @@ import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
 import { apiService } from '@/services/api';
 
 const C = {
-  bg:     '#060913',
-  card:   '#0A0D1F',
+  bg: '#060913',
+  card: '#0A0D1F',
   border: 'rgba(255,255,255,0.06)',
   accent: '#F59E0B',
   violet: '#9B6DFF',
-  teal:   '#22D3EE',
-  green:  '#10B981',
-  red:    '#EF4444',
-  txt1:   '#F1F5F9',
-  txt2:   '#94A3B8',
-  txt3:   '#475569',
+  teal: '#22D3EE',
+  green: '#10B981',
+  red: '#EF4444',
+  txt1: '#F1F5F9',
+  txt2: '#94A3B8',
+  txt3: '#475569',
 };
 
 interface SystemInfo {
@@ -100,8 +100,13 @@ function InfoCard({
       {typeof progress === 'number' && (
         <Box sx={{ mt: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
-            <Typography variant="caption" sx={{ color: C.txt3, fontSize: '0.68rem' }}>Usage</Typography>
-            <Typography variant="caption" sx={{ color: progressColor ?? C.accent, fontSize: '0.68rem', fontWeight: 600 }}>
+            <Typography variant="caption" sx={{ color: C.txt3, fontSize: '0.68rem' }}>
+              Usage
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: progressColor ?? C.accent, fontSize: '0.68rem', fontWeight: 600 }}
+            >
               {progress}%
             </Typography>
           </Box>
@@ -147,17 +152,16 @@ export default function AdminSystem() {
   });
 
   const info = data?.data;
-  const heapPct = info
-    ? Math.round((info.memory.heapUsedMB / info.memory.heapTotalMB) * 100)
-    : 0;
+  const heapPct = info ? Math.round((info.memory.heapUsedMB / info.memory.heapTotalMB) * 100) : 0;
 
-  const heapColor =
-    heapPct > 85 ? C.red : heapPct > 65 ? C.accent : C.green;
+  const heapColor = heapPct > 85 ? C.red : heapPct > 65 ? C.accent : C.green;
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+      <Box
+        sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}
+      >
         <Box>
           <Typography variant="h5" sx={{ color: C.txt1, fontWeight: 700, mb: 0.5 }}>
             System
@@ -196,17 +200,23 @@ export default function AdminSystem() {
               gap: 3,
             }}
           >
-            <Typography variant="body2" sx={{ color: C.txt2, fontWeight: 600, width: '100%', mb: -1 }}>
+            <Typography
+              variant="body2"
+              sx={{ color: C.txt2, fontWeight: 600, width: '100%', mb: -1 }}
+            >
               Service Status
             </Typography>
             {[
               { label: 'API Server', ok: true },
-              { label: 'Database',   ok: true },
-              { label: 'Redis',      ok: true },
+              { label: 'Database', ok: true },
+              { label: 'Redis', ok: true },
             ].map(({ label, ok }) => (
               <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <StatusDot ok={ok} />
-                <Typography variant="body2" sx={{ color: ok ? C.txt1 : C.red, fontSize: '0.82rem' }}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: ok ? C.txt1 : C.red, fontSize: '0.82rem' }}
+                >
                   {label}
                 </Typography>
                 <Typography variant="caption" sx={{ color: ok ? C.green : C.red, fontWeight: 600 }}>
@@ -280,17 +290,27 @@ export default function AdminSystem() {
 
             <Grid container spacing={2}>
               {[
-                { label: 'Environment',    value: info.env },
-                { label: 'Platform',       value: info.platform },
-                { label: 'Node Version',   value: info.nodeVersion },
-                { label: 'Uptime (sec)',   value: Math.round(info.uptime).toLocaleString() },
+                { label: 'Environment', value: info.env },
+                { label: 'Platform', value: info.platform },
+                { label: 'Node Version', value: info.nodeVersion },
+                { label: 'Uptime (sec)', value: Math.round(info.uptime).toLocaleString() },
               ].map(({ label, value }) => (
                 <Grid size={{ xs: 12, sm: 6 }} key={label}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', py: 1, borderBottom: `1px solid rgba(255,255,255,0.04)` }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      py: 1,
+                      borderBottom: `1px solid rgba(255,255,255,0.04)`,
+                    }}
+                  >
                     <Typography variant="body2" sx={{ color: C.txt3, fontSize: '0.82rem' }}>
                       {label}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: C.txt1, fontWeight: 500, fontSize: '0.82rem' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: C.txt1, fontWeight: 500, fontSize: '0.82rem' }}
+                    >
                       {value}
                     </Typography>
                   </Box>

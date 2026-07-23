@@ -11,19 +11,21 @@ import { useUploadStore } from '@/store/uploadStore';
 import type { UploadItem } from '@/store/uploadStore';
 
 const C = {
-  panel:    '#080C18',
-  border:   'rgba(139,92,246,0.12)',
-  accent:   '#9B6DFF',
-  txt1:     '#F1F5F9',
-  txt2:     '#94A3B8',
-  txt3:     '#475569',
-  badge:    '#10B981',
+  panel: '#080C18',
+  border: 'rgba(139,92,246,0.12)',
+  accent: '#9B6DFF',
+  txt1: '#F1F5F9',
+  txt2: '#94A3B8',
+  txt3: '#475569',
+  badge: '#10B981',
 } as const;
 
 function FileTypeIcon({ file }: { file: File }) {
   if (file.type.startsWith('image/')) return <ImageIcon sx={{ fontSize: 18, color: C.accent }} />;
-  if (file.type.startsWith('video/')) return <VideocamIcon sx={{ fontSize: 18, color: '#22D3EE' }} />;
-  if (file.type.startsWith('audio/')) return <AudiotrackIcon sx={{ fontSize: 18, color: '#FBBF24' }} />;
+  if (file.type.startsWith('video/'))
+    return <VideocamIcon sx={{ fontSize: 18, color: '#22D3EE' }} />;
+  if (file.type.startsWith('audio/'))
+    return <AudiotrackIcon sx={{ fontSize: 18, color: '#FBBF24' }} />;
   return <InsertDriveFileIcon sx={{ fontSize: 18, color: C.txt2 }} />;
 }
 
@@ -63,7 +65,9 @@ function UploadRow({ item }: { item: UploadItem }) {
           </Box>
         )}
       </Box>
-      {item.status === 'done' && <CheckCircleIcon sx={{ fontSize: 16, color: C.badge, flexShrink: 0 }} />}
+      {item.status === 'done' && (
+        <CheckCircleIcon sx={{ fontSize: 16, color: C.badge, flexShrink: 0 }} />
+      )}
       {item.status === 'error' && (
         <ErrorIcon sx={{ fontSize: 16, color: '#EF4444', flexShrink: 0 }} />
       )}
@@ -140,7 +144,9 @@ export function UploadProgress() {
           }}
         >
           <Typography sx={{ fontSize: 12, fontWeight: 600, color: C.txt2 }}>
-            {allDone ? 'All uploads complete' : `Uploading ${activeItems.length} file${activeItems.length !== 1 ? 's' : ''}…`}
+            {allDone
+              ? 'All uploads complete'
+              : `Uploading ${activeItems.length} file${activeItems.length !== 1 ? 's' : ''}…`}
           </Typography>
           <IconButton
             size="small"

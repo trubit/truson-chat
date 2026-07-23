@@ -1,3 +1,4 @@
+import './storeMigration'; // must be first — migrates localStorage keys before stores hydrate
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Toaster } from 'react-hot-toast';
@@ -16,7 +17,7 @@ createRoot(root).render(
   <StrictMode>
     <ErrorBoundary>
       <AppProviders>
-          <App />
+        <App />
         <Toaster
           position="top-right"
           toastOptions={{

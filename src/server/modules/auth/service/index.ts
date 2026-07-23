@@ -125,9 +125,7 @@ export class AuthService {
     // Send verification email (fire-and-forget — don't block registration)
     const rawVerifyToken = generateRawToken();
     const verifyTokenHash = jwtService.hashToken(rawVerifyToken);
-    const verifyExpiresAt = new Date(
-      Date.now() + env.EMAIL_VERIFY_EXPIRY_HOURS * 60 * 60 * 1000,
-    );
+    const verifyExpiresAt = new Date(Date.now() + env.EMAIL_VERIFY_EXPIRY_HOURS * 60 * 60 * 1000);
 
     await this.repo.createVerificationToken(
       userId,
@@ -168,11 +166,7 @@ export class AuthService {
 
   // ── login ──────────────────────────────────────────────────────────────────
 
-  async login(
-    input: LoginInput,
-    ipAddress: string,
-    userAgent: string,
-  ): Promise<AuthResponse> {
+  async login(input: LoginInput, ipAddress: string, userAgent: string): Promise<AuthResponse> {
     const env = getEnv();
 
     const user = await this.repo.findUserByEmail(input.email, true);
@@ -385,10 +379,7 @@ export class AuthService {
     });
 
     // Revoke old token, point it at the replacement
-    await this.repo.revokeRefreshToken(
-      storedToken._id.toString(),
-      newRefreshToken._id.toString(),
-    );
+    await this.repo.revokeRefreshToken(storedToken._id.toString(), newRefreshToken._id.toString());
 
     // Revoke old session
     await this.repo.revokeSession(storedToken.sessionId.toString(), 'token_rotated');

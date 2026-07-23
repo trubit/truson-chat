@@ -46,9 +46,7 @@ export function useSearchUsers(query: UserSearchQuery, enabled = true) {
       if (query.page) params.set('page', String(query.page));
       if (query.limit) params.set('limit', String(query.limit));
 
-      const res = await apiService.get<SearchResponse>(
-        `/discovery/search?${params.toString()}`,
-      );
+      const res = await apiService.get<SearchResponse>(`/discovery/search?${params.toString()}`);
       setSearchQuery(query.q);
       setSearchResults(res.data.users, res.data.meta);
       return res.data;

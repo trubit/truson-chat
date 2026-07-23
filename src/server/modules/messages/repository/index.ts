@@ -1,9 +1,5 @@
 import mongoose from 'mongoose';
-import {
-  MessageModel,
-  type IMessage,
-  type MsgType,
-} from '../../../database/models/Message.js';
+import { MessageModel, type IMessage, type MsgType } from '../../../database/models/Message.js';
 import type { MessageSearchQuery } from '../types/index.js';
 
 // ---------------------------------------------------------------------------
@@ -25,12 +21,8 @@ export class MessageRepository {
       senderId: new mongoose.Types.ObjectId(data.senderId),
       type: data.type,
       content: data.content,
-      replyTo: data.replyTo
-        ? new mongoose.Types.ObjectId(data.replyTo)
-        : undefined,
-      mentions: (data.mentions ?? []).map(
-        (id) => new mongoose.Types.ObjectId(id),
-      ),
+      replyTo: data.replyTo ? new mongoose.Types.ObjectId(data.replyTo) : undefined,
+      mentions: (data.mentions ?? []).map((id) => new mongoose.Types.ObjectId(id)),
       media: data.media ?? [],
       status: 'sent',
     });
@@ -72,10 +64,7 @@ export class MessageRepository {
       sortDir = 1;
     }
 
-    const docs = await MessageModel.find(query)
-      .sort({ _id: sortDir })
-      .limit(fetchLimit)
-      .exec();
+    const docs = await MessageModel.find(query).sort({ _id: sortDir }).limit(fetchLimit).exec();
 
     const hasMore = docs.length > limit;
     const messages = hasMore ? docs.slice(0, limit) : docs;
@@ -165,14 +154,11 @@ export class MessageRepository {
   async addDeliveryReceipt(messageId: string, userId: string): Promise<void> {
     if (!mongoose.Types.ObjectId.isValid(messageId)) return;
     const userOid = new mongoose.Types.ObjectId(userId);
-    await MessageModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(messageId),
-      {
-        $addToSet: {
-          deliveredTo: { userId: userOid, deliveredAt: new Date() },
-        },
+    await MessageModel.findByIdAndUpdate(new mongoose.Types.ObjectId(messageId), {
+      $addToSet: {
+        deliveredTo: { userId: userOid, deliveredAt: new Date() },
       },
-    ).exec();
+    }).exec();
   }
 
   async addReadReceipt(messageId: string, userId: string): Promise<void> {
@@ -192,10 +178,7 @@ export class MessageRepository {
   }
 
   // Mark all unread messages in a conversation as delivered for a user
-  async markAllDelivered(
-    conversationId: string,
-    userId: string,
-  ): Promise<string[]> {
+  async markAllDelivered(conversationId: string, userId: string): Promise<string[]> {
     if (!mongoose.Types.ObjectId.isValid(conversationId)) return [];
 
     const userOid = new mongoose.Types.ObjectId(userId);
@@ -231,11 +214,7 @@ export class MessageRepository {
   }
 
   // Mark all messages up to messageId as read by userId
-  async markAllRead(
-    conversationId: string,
-    userId: string,
-    upToMessageId: string,
-  ): Promise<void> {
+  async markAllRead(conversationId: string, userId: string, upToMessageId: string): Promise<void> {
     if (
       !mongoose.Types.ObjectId.isValid(conversationId) ||
       !mongoose.Types.ObjectId.isValid(upToMessageId)
@@ -288,9 +267,7 @@ export class MessageRepository {
     return MessageModel.countDocuments(filter).exec();
   }
 
-  async search(
-    query: MessageSearchQuery,
-  ): Promise<{ messages: IMessage[]; total: number }> {
+  async search(query: MessageSearchQuery): Promise<{ messages: IMessage[]; total: number }> {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
     const skip = (page - 1) * limit;
@@ -300,13 +277,8 @@ export class MessageRepository {
       deletedAt: null,
     };
 
-    if (
-      query.conversationId &&
-      mongoose.Types.ObjectId.isValid(query.conversationId)
-    ) {
-      filter['conversationId'] = new mongoose.Types.ObjectId(
-        query.conversationId,
-      );
+    if (query.conversationId && mongoose.Types.ObjectId.isValid(query.conversationId)) {
+      filter['conversationId'] = new mongoose.Types.ObjectId(query.conversationId);
     }
 
     const [messages, total] = await Promise.all([

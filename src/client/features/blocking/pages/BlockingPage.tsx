@@ -1,15 +1,22 @@
 import { useState, type SyntheticEvent } from 'react';
 import {
-  Box, Typography, Paper, Tabs, Tab, Avatar, Button,
-  CircularProgress, List, ListItem, ListItemAvatar,
-  ListItemText, ListItemSecondaryAction,
+  Box,
+  Typography,
+  Paper,
+  Tabs,
+  Tab,
+  Avatar,
+  Button,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ListItemSecondaryAction,
 } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
 import VolumeOffIcon from '@mui/icons-material/VolumeOff';
-import {
-  useBlockedList, useMutedList,
-  useUnblockUser, useUnmuteUser,
-} from '../queries/index';
+import { useBlockedList, useMutedList, useUnblockUser, useUnmuteUser } from '../queries/index';
 import type { IBlockData, IMuteData } from '@shared/types/social';
 
 function BlockedItem({ entry }: { entry: IBlockData }) {
@@ -17,13 +24,25 @@ function BlockedItem({ entry }: { entry: IBlockData }) {
   return (
     <ListItem divider>
       <ListItemAvatar>
-        <Avatar src={entry.blockedUser.avatar} alt={entry.blockedUser.displayName} sx={{ bgcolor: 'error.main' }}>
+        <Avatar
+          src={entry.blockedUser.avatar}
+          alt={entry.blockedUser.displayName}
+          sx={{ bgcolor: 'error.main' }}
+        >
           {entry.blockedUser.displayName.charAt(0).toUpperCase()}
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={<Typography variant="body1" sx={{ fontWeight: 600 }}>{entry.blockedUser.displayName}</Typography>}
-        secondary={<Typography variant="caption" color="text.secondary">@{entry.blockedUser.username}</Typography>}
+        primary={
+          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+            {entry.blockedUser.displayName}
+          </Typography>
+        }
+        secondary={
+          <Typography variant="caption" color="text.secondary">
+            @{entry.blockedUser.username}
+          </Typography>
+        }
       />
       <ListItemSecondaryAction>
         <Button
@@ -46,12 +65,20 @@ function MutedItem({ entry }: { entry: IMuteData }) {
   return (
     <ListItem divider>
       <ListItemAvatar>
-        <Avatar src={entry.mutedUser.avatar} alt={entry.mutedUser.displayName} sx={{ bgcolor: 'action.disabled' }}>
+        <Avatar
+          src={entry.mutedUser.avatar}
+          alt={entry.mutedUser.displayName}
+          sx={{ bgcolor: 'action.disabled' }}
+        >
           {entry.mutedUser.displayName.charAt(0).toUpperCase()}
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={<Typography variant="body1" sx={{ fontWeight: 600 }}>{entry.mutedUser.displayName}</Typography>}
+        primary={
+          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+            {entry.mutedUser.displayName}
+          </Typography>
+        }
         secondary={
           <Typography variant="caption" color="text.secondary">
             @{entry.mutedUser.username}
@@ -74,9 +101,15 @@ function MutedItem({ entry }: { entry: IMuteData }) {
   );
 }
 
-interface TabPanelProps { children?: React.ReactNode; index: number; value: number; }
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
 function TabPanel({ children, value, index }: TabPanelProps) {
-  return <div hidden={value !== index}>{value === index && <Box sx={{ pt: 1 }}>{children}</Box>}</div>;
+  return (
+    <div hidden={value !== index}>{value === index && <Box sx={{ pt: 1 }}>{children}</Box>}</div>
+  );
 }
 
 export default function BlockingPage() {
@@ -90,9 +123,12 @@ export default function BlockingPage() {
 
   return (
     <Box sx={{ maxWidth: 720, mx: 'auto', p: { xs: 1.5, sm: 2.5 } }}>
-      <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>Blocked & Muted</Typography>
+      <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+        Blocked & Muted
+      </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5 }}>
-        Blocked users cannot message you or see your profile. Muted users' notifications are suppressed.
+        Blocked users cannot message you or see your profile. Muted users' notifications are
+        suppressed.
       </Typography>
 
       <Paper sx={{ borderRadius: 2, overflow: 'hidden' }}>
@@ -106,7 +142,11 @@ export default function BlockingPage() {
         </Tabs>
 
         <TabPanel value={tab} index={0}>
-          {loadingBlocked && <Box sx={{ p: 3, textAlign: 'center' }}><CircularProgress /></Box>}
+          {loadingBlocked && (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <CircularProgress />
+            </Box>
+          )}
           {!loadingBlocked && blocked.length === 0 && (
             <Box sx={{ p: 4, textAlign: 'center' }}>
               <BlockIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
@@ -115,13 +155,19 @@ export default function BlockingPage() {
           )}
           {blocked.length > 0 && (
             <List disablePadding>
-              {blocked.map((b) => <BlockedItem key={b.id} entry={b} />)}
+              {blocked.map((b) => (
+                <BlockedItem key={b.id} entry={b} />
+              ))}
             </List>
           )}
         </TabPanel>
 
         <TabPanel value={tab} index={1}>
-          {loadingMuted && <Box sx={{ p: 3, textAlign: 'center' }}><CircularProgress /></Box>}
+          {loadingMuted && (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+              <CircularProgress />
+            </Box>
+          )}
           {!loadingMuted && muted.length === 0 && (
             <Box sx={{ p: 4, textAlign: 'center' }}>
               <VolumeOffIcon sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
@@ -130,7 +176,9 @@ export default function BlockingPage() {
           )}
           {muted.length > 0 && (
             <List disablePadding>
-              {muted.map((m) => <MutedItem key={m.id} entry={m} />)}
+              {muted.map((m) => (
+                <MutedItem key={m.id} entry={m} />
+              ))}
             </List>
           )}
         </TabPanel>

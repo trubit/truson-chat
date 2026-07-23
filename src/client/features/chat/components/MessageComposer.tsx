@@ -9,20 +9,20 @@ import MicIcon from '@mui/icons-material/Mic';
 import StopIcon from '@mui/icons-material/Stop';
 import CancelIcon from '@mui/icons-material/Cancel';
 import type { Message, MessageMedia } from '@shared/types';
-import { MediaPicker }      from '@/features/media/components/MediaPicker';
-import { useUpload }        from '@/features/media/hooks/useUpload';
+import { MediaPicker } from '@/features/media/components/MediaPicker';
+import { useUpload } from '@/features/media/hooks/useUpload';
 import { useVoiceRecorder } from '@/features/media/hooks/useVoiceRecorder';
 import type { StickerItem } from '@/store/stickerStore';
-import type { GifItem }     from '@/store/gifStore';
+import type { GifItem } from '@/store/gifStore';
 
 const C = {
-  panel:      '#1F2C34',
-  border:     'rgba(134,150,160,0.15)',
-  accent:     '#10C4A0',
+  panel: '#1F2C34',
+  border: 'rgba(134,150,160,0.15)',
+  accent: '#10C4A0',
   accentDark: '#0D9E80',
-  txt1:       '#E9EDEF',
-  txt2:       '#8696A0',
-  txt3:       '#567390',
+  txt1: '#E9EDEF',
+  txt2: '#8696A0',
+  txt3: '#567390',
 } as const;
 
 function formatDuration(secs: number): string {
@@ -33,7 +33,12 @@ function formatDuration(secs: number): string {
 
 interface MessageComposerProps {
   conversationId: string;
-  onSend: (content: string, replyTo?: string, media?: MessageMedia[], type?: string) => Promise<void>;
+  onSend: (
+    content: string,
+    replyTo?: string,
+    media?: MessageMedia[],
+    type?: string,
+  ) => Promise<void>;
   replyTo?: Message | null;
   onCancelReply: () => void;
   disabled?: boolean;
@@ -50,15 +55,15 @@ export default function MessageComposer({
   onTypingStart,
   onTypingStop,
 }: MessageComposerProps) {
-  const [content, setContent]             = useState('');
-  const [sending, setSending]             = useState(false);
+  const [content, setContent] = useState('');
+  const [sending, setSending] = useState(false);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
-  const [pendingFiles, setPendingFiles]   = useState<File[]>([]);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 
-  const textareaRef       = useRef<HTMLTextAreaElement>(null);
-  const typingTimerRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingEmitRef = useRef<number>(0);
-  const isTypingRef       = useRef(false);
+  const isTypingRef = useRef(false);
 
   const { upload, uploadVoiceNote } = useUpload();
   const {
@@ -123,22 +128,32 @@ export default function MessageComposer({
           const result = await upload(file, { conversationId });
           if (!result) continue;
           const msgType =
-            result.type === 'image' ? 'image'
-            : result.type === 'video' ? 'video'
-            : result.type === 'audio' ? 'audio'
-            : 'file';
-          await onSend('', replyTo?._id, [{
-            url:          result.url,
-            publicId:     result.publicId,
-            mimeType:     result.mimeType,
-            size:         result.size,
-            originalName: result.originalName,
-            width:        result.width,
-            height:       result.height,
-            duration:     result.duration,
-            thumbnail:    result.thumbnail,
-            type:         result.type,
-          }], msgType);
+            result.type === 'image'
+              ? 'image'
+              : result.type === 'video'
+                ? 'video'
+                : result.type === 'audio'
+                  ? 'audio'
+                  : 'file';
+          await onSend(
+            '',
+            replyTo?._id,
+            [
+              {
+                url: result.url,
+                publicId: result.publicId,
+                mimeType: result.mimeType,
+                size: result.size,
+                originalName: result.originalName,
+                width: result.width,
+                height: result.height,
+                duration: result.duration,
+                thumbnail: result.thumbnail,
+                type: result.type,
+              },
+            ],
+            msgType,
+          );
         }
         setPendingFiles([]);
         if (text) {
@@ -152,7 +167,17 @@ export default function MessageComposer({
     } finally {
       setSending(false);
     }
-  }, [content, pendingFiles, sending, disabled, onSend, replyTo, stopTyping, upload, conversationId]);
+  }, [
+    content,
+    pendingFiles,
+    sending,
+    disabled,
+    onSend,
+    replyTo,
+    stopTyping,
+    upload,
+    conversationId,
+  ]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -172,15 +197,22 @@ export default function MessageComposer({
         try {
           const result = await uploadVoiceNote(audioBlob, { conversationId });
           if (result) {
-            await onSend('', replyTo?._id, [{
-              url:          result.url,
-              publicId:     result.publicId,
-              mimeType:     result.mimeType,
-              size:         result.size,
-              originalName: result.originalName,
-              duration:     result.duration,
-              type:         result.type,
-            }], 'voice_note');
+            await onSend(
+              '',
+              replyTo?._id,
+              [
+                {
+                  url: result.url,
+                  publicId: result.publicId,
+                  mimeType: result.mimeType,
+                  size: result.size,
+                  originalName: result.originalName,
+                  duration: result.duration,
+                  type: result.type,
+                },
+              ],
+              'voice_note',
+            );
           }
         } finally {
           setSending(false);
@@ -222,15 +254,13 @@ export default function MessageComposer({
 
   const handleLocationShare = useCallback(() => {
     if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const payload = JSON.stringify({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-        });
-        void onSend(payload, replyTo?._id, undefined, 'location');
-      },
-    );
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const payload = JSON.stringify({
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+      });
+      void onSend(payload, replyTo?._id, undefined, 'location');
+    });
   }, [onSend, replyTo]);
 
   // Cleanup on unmount
@@ -297,7 +327,9 @@ export default function MessageComposer({
         </Box>
 
         {/* Timer */}
-        <Typography sx={{ fontSize: 13, color: C.txt2, fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+        <Typography
+          sx={{ fontSize: 13, color: C.txt2, fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}
+        >
           {formatDuration(duration)}
         </Typography>
 
@@ -500,7 +532,9 @@ export default function MessageComposer({
             <IconButton
               size="small"
               disabled={disabled}
-              onClick={() => { void startRecording(); }}
+              onClick={() => {
+                void startRecording();
+              }}
               sx={{
                 mb: 0.25,
                 width: 38,
@@ -519,7 +553,9 @@ export default function MessageComposer({
           </Tooltip>
         ) : (
           <IconButton
-            onClick={() => { void handleSend(); }}
+            onClick={() => {
+              void handleSend();
+            }}
             disabled={!canSend}
             sx={{
               mb: 0.25,
@@ -552,8 +588,12 @@ export default function MessageComposer({
         open={mediaPickerOpen}
         onClose={() => setMediaPickerOpen(false)}
         onFilesSelected={handleFilesSelected}
-        onStickerSelected={(s) => { void handleStickerSelected(s); }}
-        onGifSelected={(g) => { void handleGifSelected(g); }}
+        onStickerSelected={(s) => {
+          void handleStickerSelected(s);
+        }}
+        onGifSelected={(g) => {
+          void handleGifSelected(g);
+        }}
         onLocationShare={handleLocationShare}
       />
     </Box>

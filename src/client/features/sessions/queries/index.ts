@@ -59,8 +59,7 @@ export function useRevokeSession() {
   const removeSession = useSessionStore((s) => s.removeSession);
 
   return useMutation({
-    mutationFn: (sessionId: string) =>
-      apiService.del<MessageApiResponse>(`/sessions/${sessionId}`),
+    mutationFn: (sessionId: string) => apiService.del<MessageApiResponse>(`/sessions/${sessionId}`),
     onSuccess: (_response, sessionId) => {
       removeSession(sessionId);
       queryClient.invalidateQueries({ queryKey: SESSION_KEYS.all });

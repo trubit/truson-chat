@@ -39,8 +39,7 @@ export const useDiscoveryStore = create<DiscoveryStore>((set) => ({
   recentSearches: [],
   isSearching: false,
 
-  setSearchResults: (searchResults, meta) =>
-    set({ searchResults, searchMeta: meta }),
+  setSearchResults: (searchResults, meta) => set({ searchResults, searchMeta: meta }),
 
   setSearchQuery: (searchQuery) => set({ searchQuery }),
 

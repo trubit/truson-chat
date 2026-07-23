@@ -243,8 +243,9 @@ describe('PrivacyService.checkPrivacy', () => {
     const requesterId = newId();
     const service = makeService();
 
-    await expect(
-      service.checkPrivacy(requesterId, 'not-an-id'),
-    ).rejects.toMatchObject({ statusCode: 400, code: 'INVALID_ID' });
+    await expect(service.checkPrivacy(requesterId, 'not-an-id')).rejects.toMatchObject({
+      statusCode: 400,
+      code: 'INVALID_ID',
+    });
   });
 });

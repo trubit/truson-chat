@@ -4,7 +4,7 @@
 
 export interface CreateConversationDto {
   participantId: string; // for direct conversations
-  type?: 'direct';       // only direct supported now
+  type?: 'direct'; // only direct supported now
 }
 
 export interface UpdateConversationDto {

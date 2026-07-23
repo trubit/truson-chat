@@ -156,11 +156,7 @@ function ChangePasswordSection() {
           disabled={isLoading}
           sx={{ alignSelf: 'flex-start', minWidth: 160 }}
         >
-          {isLoading ? (
-            <CircularProgress size={20} color="inherit" />
-          ) : (
-            'Change password'
-          )}
+          {isLoading ? <CircularProgress size={20} color="inherit" /> : 'Change password'}
         </Button>
       </Box>
     </Box>
@@ -184,10 +180,18 @@ function NotificationsSection() {
   };
 
   const items: Array<{ key: string; label: string; description: string }> = [
-    { key: 'messages', label: 'New messages', description: 'Get notified when you receive a message' },
+    {
+      key: 'messages',
+      label: 'New messages',
+      description: 'Get notified when you receive a message',
+    },
     { key: 'mentions', label: 'Mentions', description: 'Get notified when someone mentions you' },
     { key: 'calls', label: 'Calls', description: 'Get notified for incoming calls' },
-    { key: 'systemUpdates', label: 'System updates', description: 'Important updates about your account' },
+    {
+      key: 'systemUpdates',
+      label: 'System updates',
+      description: 'Important updates about your account',
+    },
   ];
 
   if (isLoading) {
@@ -258,10 +262,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <Box
-      data-testid="page-settings"
-      sx={{ maxWidth: 800, mx: 'auto', p: { xs: 1, sm: 2 } }}
-    >
+    <Box data-testid="page-settings" sx={{ maxWidth: 800, mx: 'auto', p: { xs: 1, sm: 2 } }}>
       <Paper sx={{ borderRadius: 3, overflow: 'hidden' }}>
         <Box sx={{ p: { xs: 2, sm: 3 }, pb: 0 }}>
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
@@ -295,10 +296,7 @@ export default function SettingsPage() {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               Manage your public profile information, avatar, and cover image.
             </Typography>
-            <Button
-              variant="contained"
-              onClick={() => navigate('/settings/profile')}
-            >
+            <Button variant="contained" onClick={() => navigate('/settings/profile')}>
               Edit profile
             </Button>
           </TabPanel>
@@ -313,10 +311,7 @@ export default function SettingsPage() {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               Control who can see your information and how you appear to others.
             </Typography>
-            <Button
-              variant="contained"
-              onClick={() => navigate(ROUTES.SETTINGS_PRIVACY)}
-            >
+            <Button variant="contained" onClick={() => navigate(ROUTES.SETTINGS_PRIVACY)}>
               Manage privacy settings
             </Button>
           </TabPanel>
@@ -326,10 +321,7 @@ export default function SettingsPage() {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               View active sessions, trusted devices, and recent security events.
             </Typography>
-            <Button
-              variant="contained"
-              onClick={() => navigate(ROUTES.SETTINGS_SECURITY)}
-            >
+            <Button variant="contained" onClick={() => navigate(ROUTES.SETTINGS_SECURITY)}>
               View security center
             </Button>
             <Divider sx={{ my: 3 }} />

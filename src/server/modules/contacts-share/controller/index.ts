@@ -6,11 +6,20 @@ import { createSharedContactSchema } from '../validator/index.js';
 class SharedContactController {
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) { next(new AppError('Unauthorized', 401, 'UNAUTHORIZED')); return; }
+      if (!req.user) {
+        next(new AppError('Unauthorized', 401, 'UNAUTHORIZED'));
+        return;
+      }
 
       const parsed = createSharedContactSchema.safeParse(req.body);
       if (!parsed.success) {
-        next(new AppError(parsed.error.issues[0]?.message ?? 'Validation error', 400, 'VALIDATION_ERROR'));
+        next(
+          new AppError(
+            parsed.error.issues[0]?.message ?? 'Validation error',
+            400,
+            'VALIDATION_ERROR',
+          ),
+        );
         return;
       }
 
@@ -23,7 +32,10 @@ class SharedContactController {
 
   async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (!req.user) { next(new AppError('Unauthorized', 401, 'UNAUTHORIZED')); return; }
+      if (!req.user) {
+        next(new AppError('Unauthorized', 401, 'UNAUTHORIZED'));
+        return;
+      }
       const id = req.params['id'] as string;
       const result = await sharedContactService.getById(id);
       res.json({ success: true, data: result });

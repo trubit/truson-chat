@@ -1,13 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  TextField,
-  Button,
-  Alert,
-  CircularProgress,
-  Box,
-  Typography,
-} from '@mui/material';
+import { TextField, Button, Alert, CircularProgress, Box, Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import { AuthLayout } from '../components/AuthLayout';
 import { useSendPhoneOtp, useVerifyPhone } from '../queries';
@@ -37,9 +30,7 @@ export default function VerifyPhonePage() {
   const user = useAuthStore((s) => s.user);
   const existingPhone = user?.phone ?? '';
 
-  const [sentToPhone, setSentToPhone] = useState<string | null>(
-    existingPhone || null,
-  );
+  const [sentToPhone, setSentToPhone] = useState<string | null>(existingPhone || null);
   const [resendCountdown, setResendCountdown] = useState(0);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -97,10 +88,7 @@ export default function VerifyPhonePage() {
 
   const handleResend = () => {
     if (!sentToPhone) return;
-    sendOtpMutation.mutate(
-      { phone: sentToPhone },
-      { onSuccess: startCountdown },
-    );
+    sendOtpMutation.mutate({ phone: sentToPhone }, { onSuccess: startCountdown });
   };
 
   if (verifyPhoneMutation.isSuccess) {
@@ -116,9 +104,7 @@ export default function VerifyPhonePage() {
               gap: 2,
             }}
           >
-            <CheckCircleOutlineIcon
-              sx={{ fontSize: 56, color: 'success.main' }}
-            />
+            <CheckCircleOutlineIcon sx={{ fontSize: 56, color: 'success.main' }} />
             <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center' }}>
               Your phone number has been successfully verified.
             </Typography>
@@ -143,9 +129,7 @@ export default function VerifyPhonePage() {
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
             {sendOtpMutation.isError && (
-              <Alert severity="error">
-                {extractErrorMessage(sendOtpMutation.error)}
-              </Alert>
+              <Alert severity="error">{extractErrorMessage(sendOtpMutation.error)}</Alert>
             )}
 
             <TextField
@@ -194,14 +178,10 @@ export default function VerifyPhonePage() {
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
             {verifyPhoneMutation.isError && (
-              <Alert severity="error">
-                {extractErrorMessage(verifyPhoneMutation.error)}
-              </Alert>
+              <Alert severity="error">{extractErrorMessage(verifyPhoneMutation.error)}</Alert>
             )}
             {sendOtpMutation.isSuccess && (
-              <Alert severity="info">
-                Code sent to {sentToPhone}. It expires in 10 minutes.
-              </Alert>
+              <Alert severity="info">Code sent to {sentToPhone}. It expires in 10 minutes.</Alert>
             )}
 
             <TextField
@@ -264,11 +244,7 @@ export default function VerifyPhonePage() {
               )}
             </Box>
 
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => setSentToPhone(null)}
-            >
+            <Button variant="text" size="small" onClick={() => setSentToPhone(null)}>
               Use a different number
             </Button>
           </Box>

@@ -10,18 +10,10 @@ const router = Router();
 router.use(authenticate);
 
 // GET /security/logs — get paginated security logs for current user
-router.get(
-  '/logs',
-  validateQuery(securityLogsQuerySchema),
-  securityController.getSecurityLogs,
-);
+router.get('/logs', validateQuery(securityLogsQuerySchema), securityController.getSecurityLogs);
 
 // GET /security/audit — admin sees all audit logs; user sees own only
-router.get(
-  '/audit',
-  validateQuery(securityLogsQuerySchema),
-  securityController.getAuditLogs,
-);
+router.get('/audit', validateQuery(securityLogsQuerySchema), securityController.getAuditLogs);
 
 // GET /security/overview — security summary for current user
 router.get('/overview', securityController.getSecurityOverview);

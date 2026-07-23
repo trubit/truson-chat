@@ -13,9 +13,7 @@ export const objectIdSchema = z
   .regex(/^[0-9a-fA-F]{24}$/, 'Must be a valid MongoDB ObjectId');
 
 /** Validates a UUID v4 string. */
-export const uuidSchema = z
-  .string()
-  .uuid('Must be a valid UUID v4');
+export const uuidSchema = z.string().uuid('Must be a valid UUID v4');
 
 // ── Pagination ────────────────────────────────────────────────────────────────
 

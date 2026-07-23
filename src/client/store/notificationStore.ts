@@ -71,11 +71,10 @@ export const useNotificationStore = create<NotificationStore>()(
           return { notifications, unreadCount: computeUnread(notifications) };
         }),
 
-      clearAll: () =>
-        set({ notifications: [], unreadCount: 0 }),
+      clearAll: () => set({ notifications: [], unreadCount: 0 }),
     }),
     {
-      name: 'truson_notifications',
+      name: 'linkora_notifications',
       partialize: (state) => ({
         notifications: state.notifications.slice(0, 50),
         unreadCount: state.unreadCount,

@@ -24,9 +24,7 @@ export const useDeviceStore = create<DeviceStore>((set) => ({
 
   updateDevice: (id, changes) =>
     set((state) => ({
-      devices: state.devices.map((d) =>
-        d.id === id ? { ...d, ...changes } : d,
-      ),
+      devices: state.devices.map((d) => (d.id === id ? { ...d, ...changes } : d)),
     })),
 
   removeDevice: (id) =>

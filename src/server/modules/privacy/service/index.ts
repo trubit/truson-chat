@@ -4,11 +4,7 @@ import { FriendshipModel } from '../../../database/models/Friendship.js';
 import { ContactModel } from '../../../database/models/Contact.js';
 import { getDefaultPrivacySettings } from '../repository/index.js';
 import type { PrivacyRepository } from '../repository/index.js';
-import type {
-  IPrivacySettingsData,
-  UpdatePrivacyDto,
-  PrivacyCheckResult,
-} from '../types/index.js';
+import type { IPrivacySettingsData, UpdatePrivacyDto, PrivacyCheckResult } from '../types/index.js';
 import type { IPrivacySetting } from '../../../database/models/PrivacySetting.js';
 
 // ---------------------------------------------------------------------------

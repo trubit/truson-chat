@@ -108,11 +108,7 @@ async function shutdown(signal: string): Promise<void> {
     logger.info('HTTP server closed');
 
     try {
-      await Promise.all([
-        disconnectDatabase(),
-        disconnectRedis(),
-        closeAllQueues(),
-      ]);
+      await Promise.all([disconnectDatabase(), disconnectRedis(), closeAllQueues()]);
       logger.info('All connections closed — process exiting');
       process.exit(0);
     } catch (err) {
@@ -183,7 +179,7 @@ export async function start(): Promise<void> {
 
   await new Promise<void>((resolve) => {
     httpServer.listen(env.PORT, () => {
-      logger.info(`Truson-Chat server listening`, {
+      logger.info(`Linkora server listening`, {
         port: env.PORT,
         env: env.NODE_ENV,
         version: env.APP_VERSION,

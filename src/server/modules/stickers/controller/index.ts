@@ -16,7 +16,10 @@ class StickerController {
     try {
       const packId = req.params['packId'] as string;
       const pack = await stickerService.getPackStickers(packId);
-      if (!pack) { next(new AppError('Sticker pack not found', 404, 'NOT_FOUND')); return; }
+      if (!pack) {
+        next(new AppError('Sticker pack not found', 404, 'NOT_FOUND'));
+        return;
+      }
       res.json({ success: true, data: pack });
     } catch (err) {
       next(err);

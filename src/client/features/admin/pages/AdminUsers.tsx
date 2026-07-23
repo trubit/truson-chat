@@ -29,19 +29,19 @@ import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import { apiService } from '@/services/api';
 
 const C = {
-  bg:      '#060913',
-  card:    '#0A0D1F',
-  border:  'rgba(255,255,255,0.06)',
-  accent:  '#F59E0B',
-  violet:  '#9B6DFF',
-  teal:    '#22D3EE',
-  green:   '#10B981',
-  red:     '#EF4444',
-  amber:   '#FBBF24',
-  txt1:    '#F1F5F9',
-  txt2:    '#94A3B8',
-  txt3:    '#475569',
-  input:   'rgba(255,255,255,0.04)',
+  bg: '#060913',
+  card: '#0A0D1F',
+  border: 'rgba(255,255,255,0.06)',
+  accent: '#F59E0B',
+  violet: '#9B6DFF',
+  teal: '#22D3EE',
+  green: '#10B981',
+  red: '#EF4444',
+  amber: '#FBBF24',
+  txt1: '#F1F5F9',
+  txt2: '#94A3B8',
+  txt3: '#475569',
+  input: 'rgba(255,255,255,0.04)',
 };
 
 const FIELD_SX = {
@@ -64,7 +64,7 @@ const SELECT_SX = {
   '& .MuiSvgIcon-root': { color: C.txt2 },
 };
 
-type UserRole   = 'user' | 'admin' | 'business' | '';
+type UserRole = 'user' | 'admin' | 'business' | '';
 type UserStatus = 'active' | 'suspended' | 'pending_verification' | 'deleted' | '';
 
 interface AdminUser {
@@ -94,38 +94,54 @@ interface MutResponse {
 
 function roleChip(role: AdminUser['role']) {
   const map: Record<AdminUser['role'], { label: string; color: string; bg: string }> = {
-    admin:    { label: 'Admin',    color: C.accent, bg: 'rgba(245,158,11,0.12)' },
-    business: { label: 'Business', color: C.teal,   bg: 'rgba(34,211,238,0.12)' },
-    user:     { label: 'User',     color: C.txt2,   bg: 'rgba(255,255,255,0.06)' },
+    admin: { label: 'Admin', color: C.accent, bg: 'rgba(245,158,11,0.12)' },
+    business: { label: 'Business', color: C.teal, bg: 'rgba(34,211,238,0.12)' },
+    user: { label: 'User', color: C.txt2, bg: 'rgba(255,255,255,0.06)' },
   };
   const s = map[role];
   return (
     <Chip
       label={s.label}
       size="small"
-      sx={{ bgcolor: s.bg, color: s.color, border: `1px solid ${s.color}30`, fontSize: '0.7rem', height: 22 }}
+      sx={{
+        bgcolor: s.bg,
+        color: s.color,
+        border: `1px solid ${s.color}30`,
+        fontSize: '0.7rem',
+        height: 22,
+      }}
     />
   );
 }
 
 function statusChip(status: AdminUser['status']) {
   const map: Record<AdminUser['status'], { label: string; color: string; bg: string }> = {
-    active:               { label: 'Active',    color: C.green,  bg: 'rgba(16,185,129,0.12)' },
-    suspended:            { label: 'Suspended', color: C.red,    bg: 'rgba(239,68,68,0.12)' },
-    pending_verification: { label: 'Pending',   color: C.amber,  bg: 'rgba(251,191,36,0.12)' },
-    deleted:              { label: 'Deleted',   color: C.txt3,   bg: 'rgba(255,255,255,0.06)' },
+    active: { label: 'Active', color: C.green, bg: 'rgba(16,185,129,0.12)' },
+    suspended: { label: 'Suspended', color: C.red, bg: 'rgba(239,68,68,0.12)' },
+    pending_verification: { label: 'Pending', color: C.amber, bg: 'rgba(251,191,36,0.12)' },
+    deleted: { label: 'Deleted', color: C.txt3, bg: 'rgba(255,255,255,0.06)' },
   };
   const s = map[status];
   return (
     <Chip
       label={s.label}
       size="small"
-      sx={{ bgcolor: s.bg, color: s.color, border: `1px solid ${s.color}30`, fontSize: '0.7rem', height: 22 }}
+      sx={{
+        bgcolor: s.bg,
+        color: s.color,
+        border: `1px solid ${s.color}30`,
+        fontSize: '0.7rem',
+        height: 22,
+      }}
     />
   );
 }
 
-function UserRowActions({ user, onStatusChange, onRoleChange }: {
+function UserRowActions({
+  user,
+  onStatusChange,
+  onRoleChange,
+}: {
   user: AdminUser;
   onStatusChange: (id: string, status: 'active' | 'suspended') => void;
   onRoleChange: (id: string, role: 'user' | 'admin' | 'business') => void;
@@ -158,8 +174,8 @@ function UserRowActions({ user, onStatusChange, onRoleChange }: {
       </Select>
 
       {/* Suspend / Activate */}
-      {canToggle && (
-        user.status === 'active' ? (
+      {canToggle &&
+        (user.status === 'active' ? (
           <Tooltip title="Suspend user">
             <IconButton
               size="small"
@@ -179,17 +195,16 @@ function UserRowActions({ user, onStatusChange, onRoleChange }: {
               <CheckCircleOutlinedIcon sx={{ fontSize: 17 }} />
             </IconButton>
           </Tooltip>
-        )
-      )}
+        ))}
     </Box>
   );
 }
 
 export default function AdminUsers() {
   const [search, setSearch] = useState('');
-  const [role, setRole]     = useState<UserRole>('');
+  const [role, setRole] = useState<UserRole>('');
   const [status, setStatus] = useState<UserStatus>('');
-  const [page, setPage]     = useState(1);
+  const [page, setPage] = useState(1);
   const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -197,7 +212,7 @@ export default function AdminUsers() {
     queryFn: () => {
       const params = new URLSearchParams({ page: String(page), limit: '20' });
       if (search) params.set('search', search);
-      if (role)   params.set('role', role);
+      if (role) params.set('role', role);
       if (status) params.set('status', status);
       return apiService.get<UsersResponse>(`/admin/users?${params.toString()}`);
     },
@@ -247,7 +262,10 @@ export default function AdminUsers() {
         <TextField
           placeholder="Search username or email…"
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           size="small"
           sx={{ flex: 1, minWidth: 220 }}
           slotProps={{
@@ -267,7 +285,10 @@ export default function AdminUsers() {
           <Select
             label="Role"
             value={role}
-            onChange={(e: SelectChangeEvent) => { setRole(e.target.value as UserRole); setPage(1); }}
+            onChange={(e: SelectChangeEvent) => {
+              setRole(e.target.value as UserRole);
+              setPage(1);
+            }}
             sx={SELECT_SX}
           >
             <MenuItem value="">All roles</MenuItem>
@@ -278,11 +299,16 @@ export default function AdminUsers() {
         </FormControl>
 
         <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel sx={{ color: C.txt3, '&.Mui-focused': { color: C.accent } }}>Status</InputLabel>
+          <InputLabel sx={{ color: C.txt3, '&.Mui-focused': { color: C.accent } }}>
+            Status
+          </InputLabel>
           <Select
             label="Status"
             value={status}
-            onChange={(e: SelectChangeEvent) => { setStatus(e.target.value as UserStatus); setPage(1); }}
+            onChange={(e: SelectChangeEvent) => {
+              setStatus(e.target.value as UserStatus);
+              setPage(1);
+            }}
             sx={SELECT_SX}
           >
             <MenuItem value="">All statuses</MenuItem>
@@ -365,22 +391,38 @@ export default function AdminUsers() {
                               width: 30,
                               height: 30,
                               fontSize: '0.75rem',
-                              bgcolor: u.role === 'admin'
-                                ? 'rgba(245,158,11,0.2)'
-                                : u.role === 'business'
-                                ? 'rgba(34,211,238,0.2)'
-                                : 'rgba(155,109,255,0.2)',
-                              color: u.role === 'admin' ? C.accent : u.role === 'business' ? C.teal : C.violet,
+                              bgcolor:
+                                u.role === 'admin'
+                                  ? 'rgba(245,158,11,0.2)'
+                                  : u.role === 'business'
+                                    ? 'rgba(34,211,238,0.2)'
+                                    : 'rgba(155,109,255,0.2)',
+                              color:
+                                u.role === 'admin'
+                                  ? C.accent
+                                  : u.role === 'business'
+                                    ? C.teal
+                                    : C.violet,
                             }}
                           >
                             {u.username[0]?.toUpperCase()}
                           </Avatar>
-                          <Typography variant="body2" sx={{ color: C.txt1, fontWeight: 500, fontSize: '0.82rem' }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ color: C.txt1, fontWeight: 500, fontSize: '0.82rem' }}
+                          >
                             {u.username}
                           </Typography>
                         </Box>
                       </TableCell>
-                      <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <TableCell
+                        sx={{
+                          maxWidth: 200,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
                         {u.email}
                       </TableCell>
                       <TableCell>{roleChip(u.role)}</TableCell>

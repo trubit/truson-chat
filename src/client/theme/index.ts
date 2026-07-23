@@ -34,16 +34,21 @@ const baseTypography = {
   body2: { fontWeight: 400, fontSize: '0.875rem', lineHeight: 1.57 },
   button: { fontWeight: 600, fontSize: '0.875rem', textTransform: 'none' as const },
   caption: { fontWeight: 400, fontSize: '0.75rem', lineHeight: 1.5 },
-  overline: { fontWeight: 600, fontSize: '0.6875rem', letterSpacing: '0.08em', textTransform: 'uppercase' as const },
+  overline: {
+    fontWeight: 600,
+    fontSize: '0.6875rem',
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase' as const,
+  },
 };
 
 const baseShape = {
   borderRadius: 12,
 };
 
-const INPUT_BG_DARK   = 'rgba(255,255,255,0.04)';
-const INPUT_BG_LIGHT  = 'rgba(0,0,0,0.028)';
-const AUTOFILL_BG_DARK  = '#0D1B29';
+const INPUT_BG_DARK = 'rgba(255,255,255,0.04)';
+const INPUT_BG_LIGHT = 'rgba(0,0,0,0.028)';
+const AUTOFILL_BG_DARK = '#0D1B29';
 const AUTOFILL_BG_LIGHT = '#EAF9F5';
 
 const baseComponents = (mode: 'light' | 'dark') => ({
@@ -135,9 +140,10 @@ const baseComponents = (mode: 'light' | 'dark') => ({
           },
           '&.Mui-focused': {
             backgroundColor: mode === 'dark' ? 'rgba(16,196,160,0.04)' : 'rgba(16,196,160,0.025)',
-            boxShadow: mode === 'dark'
-              ? '0 0 0 3px rgba(16,196,160,0.18), 0 4px 20px rgba(16,196,160,0.06)'
-              : '0 0 0 3px rgba(16,196,160,0.12), 0 4px 16px rgba(16,196,160,0.06)',
+            boxShadow:
+              mode === 'dark'
+                ? '0 0 0 3px rgba(16,196,160,0.18), 0 4px 20px rgba(16,196,160,0.06)'
+                : '0 0 0 3px rgba(16,196,160,0.12), 0 4px 16px rgba(16,196,160,0.06)',
             '& fieldset': {
               borderWidth: 1.5,
               borderColor: '#10C4A0',
@@ -172,9 +178,8 @@ const baseComponents = (mode: 'light' | 'dark') => ({
         border: `1px solid ${mode === 'light' ? 'rgba(13,27,41,0.12)' : 'rgba(143,168,189,0.13)'}`,
         transition: 'box-shadow 0.2s ease',
         '&:hover': {
-          boxShadow: mode === 'light'
-            ? '0 4px 20px rgba(0,0,0,0.08)'
-            : '0 4px 20px rgba(0,0,0,0.3)',
+          boxShadow:
+            mode === 'light' ? '0 4px 20px rgba(0,0,0,0.08)' : '0 4px 20px rgba(0,0,0,0.3)',
         },
       },
     },

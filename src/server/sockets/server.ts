@@ -13,10 +13,13 @@ import { GroupMemberModel } from '../database/models/GroupMember.js';
 import { PresenceRepository } from '../modules/presence/repository/index.js';
 import { PresenceService } from '../modules/presence/service/index.js';
 import { messageService } from '../modules/messages/service/index.js';
-import { groupService }   from '../modules/groups/service/index.js';
+import { groupService } from '../modules/groups/service/index.js';
 import type { SendMessagePayload } from '../../shared/types/message.js';
 import type {
-  SendGroupMessagePayload, EditGroupMessagePayload, DeleteGroupMessagePayload, ReactGroupMessagePayload,
+  SendGroupMessagePayload,
+  EditGroupMessagePayload,
+  DeleteGroupMessagePayload,
+  ReactGroupMessagePayload,
 } from '../../shared/types/group.js';
 
 // ---------------------------------------------------------------------------
@@ -175,7 +178,9 @@ export async function setupSocketServer(
       const presenceRepo = new PresenceRepository();
       const presenceService = new PresenceService(presenceRepo);
       void presenceService.setUserOnline(socket.data.userId);
-    } catch { /* graceful */ }
+    } catch {
+      /* graceful */
+    }
     socket.broadcast.emit('presence:updated', {
       userId: socket.data.userId,
       status: 'online',
@@ -195,7 +200,9 @@ export async function setupSocketServer(
           userId: socket.data.userId,
           status: 'offline',
         });
-      } catch { /* graceful */ }
+      } catch {
+        /* graceful */
+      }
     });
 
     // Handle presence heartbeat
@@ -204,25 +211,30 @@ export async function setupSocketServer(
     });
 
     // Presence: allow clients to explicitly set their status
-    socket.on('presence:set_status', async (data: { status: string; customStatus?: string; statusMessage?: string }) => {
-      try {
-        const validStatuses = ['online', 'offline', 'away', 'busy', 'invisible'];
-        if (!validStatuses.includes(data.status)) return;
-        const presenceRepo = new PresenceRepository();
-        const presenceService = new PresenceService(presenceRepo);
-        await presenceService.updatePresence(socket.data.userId, {
-          status: data.status as 'online' | 'offline' | 'away' | 'busy' | 'invisible',
-          customStatus: data.customStatus,
-          statusMessage: data.statusMessage,
-        });
-        // Broadcast to friends (simple broadcast to room for now)
-        socket.broadcast.emit('presence:updated', {
-          userId: socket.data.userId,
-          status: data.status,
-          customStatus: data.customStatus,
-        });
-      } catch { /* graceful */ }
-    });
+    socket.on(
+      'presence:set_status',
+      async (data: { status: string; customStatus?: string; statusMessage?: string }) => {
+        try {
+          const validStatuses = ['online', 'offline', 'away', 'busy', 'invisible'];
+          if (!validStatuses.includes(data.status)) return;
+          const presenceRepo = new PresenceRepository();
+          const presenceService = new PresenceService(presenceRepo);
+          await presenceService.updatePresence(socket.data.userId, {
+            status: data.status as 'online' | 'offline' | 'away' | 'busy' | 'invisible',
+            customStatus: data.customStatus,
+            statusMessage: data.statusMessage,
+          });
+          // Broadcast to friends (simple broadcast to room for now)
+          socket.broadcast.emit('presence:updated', {
+            userId: socket.data.userId,
+            status: data.status,
+            customStatus: data.customStatus,
+          });
+        } catch {
+          /* graceful */
+        }
+      },
+    );
 
     // Friend request sent — notify recipient
     socket.on('friend:notify_request', async (data: { recipientId: string }) => {
@@ -231,7 +243,9 @@ export async function setupSocketServer(
         io.of('/notifications').to(`user:${data.recipientId}`).emit('friend:request_received', {
           senderId: socket.data.userId,
         });
-      } catch { /* graceful */ }
+      } catch {
+        /* graceful */
+      }
     });
 
     // ── Messaging event handlers ─────────────────────────────────────────────
@@ -264,7 +278,9 @@ export async function setupSocketServer(
         const groupMembers = await GroupMemberModel.find({
           userId: new mongoose.Types.ObjectId(userId),
           status: 'active',
-        }).select('groupId').lean();
+        })
+          .select('groupId')
+          .lean();
         for (const gm of groupMembers) {
           void socket.join(`group:${gm.groupId.toString()}`);
         }
@@ -279,10 +295,7 @@ export async function setupSocketServer(
     // 3. Handle message:send
     socket.on(
       'message:send',
-      async (
-        payload: SendMessagePayload,
-        callback: ((result: unknown) => void) | undefined,
-      ) => {
+      async (payload: SendMessagePayload, callback: ((result: unknown) => void) | undefined) => {
         try {
           const result = await messageService.sendMessage(userId, {
             conversationId: payload.conversationId,
@@ -290,15 +303,13 @@ export async function setupSocketServer(
             content: payload.content,
             replyTo: payload.replyTo,
             mentions: payload.mentions,
-            media: payload.media as import('../database/models/Message.js').IMessageMedia[] | undefined,
+            media: payload.media as
+              import('../database/models/Message.js').IMessageMedia[] | undefined,
           });
           // Emit to all members of the conversation
-          chat
-            .to(`conversation:${payload.conversationId}`)
-            .emit('message:new', result);
+          chat.to(`conversation:${payload.conversationId}`).emit('message:new', result);
           // ACK to sender
-          if (typeof callback === 'function')
-            callback({ success: true, message: result });
+          if (typeof callback === 'function') callback({ success: true, message: result });
         } catch (err) {
           logger.error('message:send error', {
             userId,
@@ -324,11 +335,8 @@ export async function setupSocketServer(
           const result = await messageService.editMessage(userId, payload.messageId, {
             content: payload.content,
           });
-          chat
-            .to(`conversation:${result.conversationId}`)
-            .emit('message:updated', result);
-          if (typeof callback === 'function')
-            callback({ success: true, message: result });
+          chat.to(`conversation:${result.conversationId}`).emit('message:updated', result);
+          if (typeof callback === 'function') callback({ success: true, message: result });
         } catch (err) {
           logger.error('message:edit error', {
             userId,
@@ -346,20 +354,14 @@ export async function setupSocketServer(
     // 5. Handle message:delete
     socket.on(
       'message:delete',
-      async (
-        payload: { messageId: string },
-        callback: ((result: unknown) => void) | undefined,
-      ) => {
+      async (payload: { messageId: string }, callback: ((result: unknown) => void) | undefined) => {
         try {
           const result = await messageService.deleteMessage(userId, payload.messageId);
-          chat
-            .to(`conversation:${result.conversationId}`)
-            .emit('message:deleted', {
-              messageId: result._id,
-              conversationId: result.conversationId,
-            });
-          if (typeof callback === 'function')
-            callback({ success: true, messageId: result._id });
+          chat.to(`conversation:${result.conversationId}`).emit('message:deleted', {
+            messageId: result._id,
+            conversationId: result.conversationId,
+          });
+          if (typeof callback === 'function') callback({ success: true, messageId: result._id });
         } catch (err) {
           logger.error('message:delete error', {
             userId,
@@ -382,20 +384,15 @@ export async function setupSocketServer(
         callback: ((result: unknown) => void) | undefined,
       ) => {
         try {
-          const result = await messageService.toggleReaction(
-            userId,
-            payload.messageId,
-            { emoji: payload.emoji },
-          );
-          chat
-            .to(`conversation:${payload.conversationId}`)
-            .emit('message:reaction', {
-              messageId: payload.messageId,
-              conversationId: payload.conversationId,
-              ...result,
-            });
-          if (typeof callback === 'function')
-            callback({ success: true, ...result });
+          const result = await messageService.toggleReaction(userId, payload.messageId, {
+            emoji: payload.emoji,
+          });
+          chat.to(`conversation:${payload.conversationId}`).emit('message:reaction', {
+            messageId: payload.messageId,
+            conversationId: payload.conversationId,
+            ...result,
+          });
+          if (typeof callback === 'function') callback({ success: true, ...result });
         } catch (err) {
           logger.error('message:react error', {
             userId,
@@ -411,95 +408,77 @@ export async function setupSocketServer(
     );
 
     // 7. Handle message:read
-    socket.on(
-      'message:read',
-      async (payload: { conversationId: string; messageId: string }) => {
-        try {
-          await messageService.markRead(
-            userId,
-            payload.conversationId,
-            payload.messageId,
-          );
-          // Notify other members that this user has read up to this message
-          socket.to(`conversation:${payload.conversationId}`).emit('message:read', {
-            conversationId: payload.conversationId,
-            messageId: payload.messageId,
-            userId,
-            readAt: new Date().toISOString(),
-          });
-        } catch (err) {
-          logger.error('message:read error', {
-            userId,
-            error: err instanceof Error ? err.message : String(err),
-          });
-        }
-      },
-    );
-
-    // 8. Handle typing:start
-    socket.on(
-      'typing:start',
-      async (payload: { conversationId: string }) => {
-        try {
-          const key = `typing:${payload.conversationId}:${userId}`;
-          await redisClient.setex(key, 8, '1');
-          socket
-            .to(`conversation:${payload.conversationId}`)
-            .emit('typing:start', {
-              conversationId: payload.conversationId,
-              userId,
-            });
-        } catch (err) {
-          logger.error('typing:start error', {
-            userId,
-            error: err instanceof Error ? err.message : String(err),
-          });
-        }
-      },
-    );
-
-    // 9. Handle typing:stop
-    socket.on(
-      'typing:stop',
-      async (payload: { conversationId: string }) => {
-        try {
-          const key = `typing:${payload.conversationId}:${userId}`;
-          await redisClient.del(key);
-          socket
-            .to(`conversation:${payload.conversationId}`)
-            .emit('typing:stop', {
-              conversationId: payload.conversationId,
-              userId,
-            });
-        } catch (err) {
-          logger.error('typing:stop error', {
-            userId,
-            error: err instanceof Error ? err.message : String(err),
-          });
-        }
-      },
-    );
-
-    // Media events
-    socket.on('media:upload_complete', async (payload: {
-      conversationId: string;
-      mediaId:        string;
-      type:           string;
-    }) => {
+    socket.on('message:read', async (payload: { conversationId: string; messageId: string }) => {
       try {
-        socket.to(`conversation:${payload.conversationId}`).emit('media:uploaded', {
+        await messageService.markRead(userId, payload.conversationId, payload.messageId);
+        // Notify other members that this user has read up to this message
+        socket.to(`conversation:${payload.conversationId}`).emit('message:read', {
           conversationId: payload.conversationId,
-          mediaId:        payload.mediaId,
-          type:           payload.type,
-          uploaderId:     userId,
+          messageId: payload.messageId,
+          userId,
+          readAt: new Date().toISOString(),
         });
       } catch (err) {
-        logger.error('media:upload_complete error', {
+        logger.error('message:read error', {
           userId,
           error: err instanceof Error ? err.message : String(err),
         });
       }
     });
+
+    // 8. Handle typing:start
+    socket.on('typing:start', async (payload: { conversationId: string }) => {
+      try {
+        const key = `typing:${payload.conversationId}:${userId}`;
+        await redisClient.setex(key, 8, '1');
+        socket.to(`conversation:${payload.conversationId}`).emit('typing:start', {
+          conversationId: payload.conversationId,
+          userId,
+        });
+      } catch (err) {
+        logger.error('typing:start error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    });
+
+    // 9. Handle typing:stop
+    socket.on('typing:stop', async (payload: { conversationId: string }) => {
+      try {
+        const key = `typing:${payload.conversationId}:${userId}`;
+        await redisClient.del(key);
+        socket.to(`conversation:${payload.conversationId}`).emit('typing:stop', {
+          conversationId: payload.conversationId,
+          userId,
+        });
+      } catch (err) {
+        logger.error('typing:stop error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    });
+
+    // Media events
+    socket.on(
+      'media:upload_complete',
+      async (payload: { conversationId: string; mediaId: string; type: string }) => {
+        try {
+          socket.to(`conversation:${payload.conversationId}`).emit('media:uploaded', {
+            conversationId: payload.conversationId,
+            mediaId: payload.mediaId,
+            type: payload.type,
+            uploaderId: userId,
+          });
+        } catch (err) {
+          logger.error('media:upload_complete error', {
+            userId,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        }
+      },
+    );
 
     // ── Explicit conversation room join (handles new conversations created after socket connect) ─
 
@@ -507,14 +486,20 @@ export async function setupSocketServer(
       try {
         const member = await ConversationMemberModel.findOne({
           conversationId: new mongoose.Types.ObjectId(payload.conversationId),
-          userId:         new mongoose.Types.ObjectId(userId),
-          leftAt:         null,
+          userId: new mongoose.Types.ObjectId(userId),
+          leftAt: null,
         }).lean();
-        if (!member) { callback?.({ success: false, error: 'Not a member' }); return; }
+        if (!member) {
+          callback?.({ success: false, error: 'Not a member' });
+          return;
+        }
         await socket.join(`conversation:${payload.conversationId}`);
         callback?.({ success: true });
       } catch (err) {
-        logger.error('conversation:join error', { userId, error: err instanceof Error ? err.message : String(err) });
+        logger.error('conversation:join error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
         callback?.({ success: false, error: 'Failed to join conversation room' });
       }
     });
@@ -526,14 +511,20 @@ export async function setupSocketServer(
         const m = await import('../database/models/GroupMember.js');
         const member = await m.GroupMemberModel.findOne({
           groupId: new mongoose.Types.ObjectId(payload.groupId),
-          userId:  new mongoose.Types.ObjectId(userId),
-          status:  'active',
+          userId: new mongoose.Types.ObjectId(userId),
+          status: 'active',
         }).lean();
-        if (!member) { callback?.({ success: false, error: 'Not a member' }); return; }
+        if (!member) {
+          callback?.({ success: false, error: 'Not a member' });
+          return;
+        }
         await socket.join(`group:${payload.groupId}`);
         callback?.({ success: true });
       } catch (err) {
-        logger.error('group:join error', { userId, error: err instanceof Error ? err.message : String(err) });
+        logger.error('group:join error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
         callback?.({ success: false, error: 'Failed to join group room' });
       }
     });
@@ -552,8 +543,14 @@ export async function setupSocketServer(
         }
         callback?.({ success: true, message: msg });
       } catch (err) {
-        logger.error('group:message:send error', { userId, error: err instanceof Error ? err.message : String(err) });
-        callback?.({ success: false, error: err instanceof Error ? err.message : 'Error sending message' });
+        logger.error('group:message:send error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+        callback?.({
+          success: false,
+          error: err instanceof Error ? err.message : 'Error sending message',
+        });
       }
     });
 
@@ -561,12 +558,22 @@ export async function setupSocketServer(
       try {
         const msg = await groupService.editMessage(userId, payload.messageId, payload.content);
         chat.to(`group:${msg.groupId}`).emit('group:message:updated', {
-          _id: msg._id, groupId: msg.groupId, content: msg.content, isEdited: msg.isEdited, editedAt: msg.editedAt,
+          _id: msg._id,
+          groupId: msg.groupId,
+          content: msg.content,
+          isEdited: msg.isEdited,
+          editedAt: msg.editedAt,
         });
         callback?.({ success: true });
       } catch (err) {
-        logger.error('group:message:edit error', { userId, error: err instanceof Error ? err.message : String(err) });
-        callback?.({ success: false, error: err instanceof Error ? err.message : 'Error editing message' });
+        logger.error('group:message:edit error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+        callback?.({
+          success: false,
+          error: err instanceof Error ? err.message : 'Error editing message',
+        });
       }
     });
 
@@ -574,12 +581,20 @@ export async function setupSocketServer(
       try {
         const msg = await groupService.deleteMessage(userId, payload.messageId);
         chat.to(`group:${msg.groupId}`).emit('group:message:deleted', {
-          messageId: msg._id, groupId: msg.groupId, deletedBy: userId,
+          messageId: msg._id,
+          groupId: msg.groupId,
+          deletedBy: userId,
         });
         callback?.({ success: true });
       } catch (err) {
-        logger.error('group:message:delete error', { userId, error: err instanceof Error ? err.message : String(err) });
-        callback?.({ success: false, error: err instanceof Error ? err.message : 'Error deleting message' });
+        logger.error('group:message:delete error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+        callback?.({
+          success: false,
+          error: err instanceof Error ? err.message : 'Error deleting message',
+        });
       }
     });
 
@@ -588,16 +603,22 @@ export async function setupSocketServer(
         const result = await groupService.reactToMessage(userId, payload.messageId, payload.emoji);
         chat.to(`group:${payload.groupId}`).emit('group:message:reaction', {
           messageId: payload.messageId,
-          groupId:   payload.groupId,
-          emoji:     payload.emoji,
+          groupId: payload.groupId,
+          emoji: payload.emoji,
           userId,
-          action:    result.action,
-          count:     result.count,
+          action: result.action,
+          count: result.count,
         });
         callback?.({ success: true });
       } catch (err) {
-        logger.error('group:message:react error', { userId, error: err instanceof Error ? err.message : String(err) });
-        callback?.({ success: false, error: err instanceof Error ? err.message : 'Error reacting' });
+        logger.error('group:message:react error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
+        callback?.({
+          success: false,
+          error: err instanceof Error ? err.message : 'Error reacting',
+        });
       }
     });
 
@@ -605,32 +626,57 @@ export async function setupSocketServer(
       try {
         await groupService.markRead(userId, payload.groupId, payload.lastMessageId);
         socket.to(`group:${payload.groupId}`).emit('group:message:read', {
-          groupId: payload.groupId, userId, lastMessageId: payload.lastMessageId, lastReadAt: new Date().toISOString(),
+          groupId: payload.groupId,
+          userId,
+          lastMessageId: payload.lastMessageId,
+          lastReadAt: new Date().toISOString(),
         });
       } catch (err) {
-        logger.error('group:message:read error', { userId, error: err instanceof Error ? err.message : String(err) });
+        logger.error('group:message:read error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     });
 
     socket.on('group:typing:start', async (payload: { groupId: string; channelId?: string }) => {
       try {
-        const room = payload.channelId ? `channel:${payload.channelId}` : `group:${payload.groupId}`;
-        const key  = `g-typing:${payload.channelId ?? payload.groupId}:${userId}`;
+        const room = payload.channelId
+          ? `channel:${payload.channelId}`
+          : `group:${payload.groupId}`;
+        const key = `g-typing:${payload.channelId ?? payload.groupId}:${userId}`;
         await redisClient.setex(key, 8, '1');
-        socket.to(room).emit('group:typing:start', { groupId: payload.groupId, channelId: payload.channelId, userId, displayName: '' });
+        socket.to(room).emit('group:typing:start', {
+          groupId: payload.groupId,
+          channelId: payload.channelId,
+          userId,
+          displayName: '',
+        });
       } catch (err) {
-        logger.error('group:typing:start error', { userId, error: err instanceof Error ? err.message : String(err) });
+        logger.error('group:typing:start error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     });
 
     socket.on('group:typing:stop', async (payload: { groupId: string; channelId?: string }) => {
       try {
-        const room = payload.channelId ? `channel:${payload.channelId}` : `group:${payload.groupId}`;
-        const key  = `g-typing:${payload.channelId ?? payload.groupId}:${userId}`;
+        const room = payload.channelId
+          ? `channel:${payload.channelId}`
+          : `group:${payload.groupId}`;
+        const key = `g-typing:${payload.channelId ?? payload.groupId}:${userId}`;
         await redisClient.del(key);
-        socket.to(room).emit('group:typing:stop', { groupId: payload.groupId, channelId: payload.channelId, userId });
+        socket.to(room).emit('group:typing:stop', {
+          groupId: payload.groupId,
+          channelId: payload.channelId,
+          userId,
+        });
       } catch (err) {
-        logger.error('group:typing:stop error', { userId, error: err instanceof Error ? err.message : String(err) });
+        logger.error('group:typing:stop error', {
+          userId,
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     });
 
@@ -692,12 +738,6 @@ export async function setupSocketServer(
  * Called by service-layer code to push session/device/security events
  * to the client without requiring client-initiated socket events.
  */
-export function emitToUser(
-  io: Server,
-  userId: string,
-  event: string,
-  data: unknown,
-): void {
+export function emitToUser(io: Server, userId: string, event: string, data: unknown): void {
   io.of('/notifications').to(`user:${userId}`).emit(event, data);
 }
-

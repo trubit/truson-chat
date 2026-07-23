@@ -23,9 +23,7 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
 
   updatePreferences: (partial) =>
     set((state) => ({
-      preferences: state.preferences
-        ? { ...state.preferences, ...partial }
-        : null,
+      preferences: state.preferences ? { ...state.preferences, ...partial } : null,
     })),
 
   clearPreferences: () => set({ preferences: null }),

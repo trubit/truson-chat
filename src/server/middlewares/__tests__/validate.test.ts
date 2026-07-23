@@ -12,22 +12,14 @@ import express, { type RequestHandler } from 'express';
 import request from 'supertest';
 import { z, type ZodTypeAny } from 'zod';
 
-import {
-  validate,
-  validateBody,
-  validateQuery,
-  validateParams,
-} from '../validate';
+import { validate, validateBody, validateQuery, validateParams } from '../validate';
 import { errorHandler } from '../errorHandler';
 
 // ---------------------------------------------------------------------------
 // Helper — build a test app
 // ---------------------------------------------------------------------------
 
-function makeApp(
-  schema: ZodTypeAny,
-  target: 'body' | 'query' | 'params' = 'body',
-) {
+function makeApp(schema: ZodTypeAny, target: 'body' | 'query' | 'params' = 'body') {
   const app = express();
   app.use(express.json());
 
@@ -60,9 +52,7 @@ describe('validate middleware — body', () => {
   it('passes valid body through and returns the parsed value', async () => {
     const app = makeApp(schema);
 
-    const res = await request(app)
-      .post('/test')
-      .send({ name: 'Alice', age: 30 });
+    const res = await request(app).post('/test').send({ name: 'Alice', age: 30 });
 
     expect(res.status).toBe(200);
     expect(res.body.parsed).toEqual({ name: 'Alice', age: 30 });
@@ -82,9 +72,7 @@ describe('validate middleware — body', () => {
   it('responds 422 for an invalid body', async () => {
     const app = makeApp(schema);
 
-    const res = await request(app)
-      .post('/test')
-      .send({ name: 'X', age: -1 }); // name too short, age non-positive
+    const res = await request(app).post('/test').send({ name: 'X', age: -1 }); // name too short, age non-positive
 
     expect(res.status).toBe(422);
     expect(res.body).toMatchObject({
@@ -108,10 +96,7 @@ describe('validate middleware — body', () => {
   it('responds 422 when body is empty (no JSON sent)', async () => {
     const app = makeApp(schema);
 
-    const res = await request(app)
-      .post('/test')
-      .set('Content-Type', 'application/json')
-      .send('');
+    const res = await request(app).post('/test').set('Content-Type', 'application/json').send('');
 
     expect(res.status).toBe(422);
   });
@@ -144,15 +129,16 @@ describe('validate middleware — coercion', () => {
 describe('validate middleware — transform', () => {
   it('applies schema transform and exposes the transformed value downstream', async () => {
     const schema = z.object({
-      email: z.string().email().transform((v) => v.toLowerCase()),
+      email: z
+        .string()
+        .email()
+        .transform((v) => v.toLowerCase()),
       role: z.string().transform((v) => v.toUpperCase()),
     });
 
     const app = makeApp(schema);
 
-    const res = await request(app)
-      .post('/test')
-      .send({ email: 'USER@EXAMPLE.COM', role: 'admin' });
+    const res = await request(app).post('/test').send({ email: 'USER@EXAMPLE.COM', role: 'admin' });
 
     expect(res.status).toBe(200);
     expect(res.body.parsed.email).toBe('user@example.com');

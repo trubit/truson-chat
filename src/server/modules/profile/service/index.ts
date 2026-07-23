@@ -20,13 +20,8 @@ import type { ProfileRepository } from '../repository/index.js';
 
 function isCloudinaryConfigured(): boolean {
   const env = getEnv();
-  return Boolean(
-    env.CLOUDINARY_CLOUD_NAME &&
-      env.CLOUDINARY_API_KEY &&
-      env.CLOUDINARY_API_SECRET,
-  );
+  return Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET);
 }
-
 
 function toProfileResponse(profile: IProfile): ProfileResponse {
   const response: ProfileResponse = {
@@ -53,10 +48,7 @@ function toProfileResponse(profile: IProfile): ProfileResponse {
   return response;
 }
 
-function applyPrivacyFilters(
-  profile: IProfile,
-  viewerId: string | undefined,
-): ProfileResponse {
+function applyPrivacyFilters(profile: IProfile, viewerId: string | undefined): ProfileResponse {
   const base = toProfileResponse(profile);
   const ownerId = profile.userId.toString();
 
@@ -138,10 +130,7 @@ async function cleanupTempFile(file: Express.Multer.File): Promise<void> {
 export class ProfileService {
   constructor(private repo: ProfileRepository) {}
 
-  async getProfile(
-    viewerId: string | undefined,
-    targetUserId: string,
-  ): Promise<ProfileResponse> {
+  async getProfile(viewerId: string | undefined, targetUserId: string): Promise<ProfileResponse> {
     const profile = await this.repo.findByUserId(targetUserId);
     if (!profile) {
       throw new AppError('Profile not found', 404, 'PROFILE_NOT_FOUND');
@@ -239,7 +228,7 @@ export class ProfileService {
     }
 
     const uploadResult = await uploadToCloudinary(buffer, {
-      folder: 'truson-chat/avatars',
+      folder: 'linkora/avatars',
       maxWidth: 400,
       maxHeight: 400,
     });
@@ -342,7 +331,7 @@ export class ProfileService {
     }
 
     const uploadResult = await uploadToCloudinary(buffer, {
-      folder: 'truson-chat/covers',
+      folder: 'linkora/covers',
       maxWidth: 1200,
       maxHeight: 400,
     });

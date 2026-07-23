@@ -11,10 +11,7 @@ import express, { type RequestHandler } from 'express';
 import request from 'supertest';
 import { z } from 'zod';
 import { Error as MongooseError } from 'mongoose';
-import {
-  JsonWebTokenError,
-  TokenExpiredError,
-} from 'jsonwebtoken';
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
 import { errorHandler, AppError } from '../errorHandler';
 

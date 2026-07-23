@@ -31,9 +31,13 @@ function ChatWelcome() {
     >
       <Box
         sx={{
-          width: 72, height: 72, borderRadius: '50%',
+          width: 72,
+          height: 72,
+          borderRadius: '50%',
           background: 'linear-gradient(135deg, #7C3AED 0%, #9B6DFF 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           boxShadow: `0 0 40px ${alpha(C.accent, 0.3)}`,
           mb: 1,
         }}
@@ -41,17 +45,24 @@ function ChatWelcome() {
         <ChatBubbleOutlineIcon sx={{ fontSize: 34, color: '#fff' }} />
       </Box>
       <Typography variant="h6" sx={{ color: C.txt1, fontWeight: 700, textAlign: 'center' }}>
-        TrusonChat
+        Linkora
       </Typography>
-      <Typography variant="body2" sx={{ color: C.txt2, textAlign: 'center', maxWidth: 280, lineHeight: 1.6 }}>
+      <Typography
+        variant="body2"
+        sx={{ color: C.txt2, textAlign: 'center', maxWidth: 280, lineHeight: 1.6 }}
+      >
         Select a conversation to start messaging. Your messages are end-to-end encrypted.
       </Typography>
       <Box
         sx={{
-          mt: 1, px: 2, py: 0.75,
+          mt: 1,
+          px: 2,
+          py: 0.75,
           border: `1px solid rgba(139,92,246,0.2)`,
           borderRadius: '20px',
-          display: 'flex', alignItems: 'center', gap: 0.75,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.75,
         }}
       >
         <LockIcon sx={{ fontSize: 13, color: C.accent }} />
@@ -63,7 +74,14 @@ function ChatWelcome() {
 
 export default function ChatPage() {
   const { id } = useParams<{ id?: string }>();
-  const { sendMessage, sendTypingStart, sendTypingStop, sendRead, sendDeleteMessage, sendReactToMessage } = useChatSocket();
+  const {
+    sendMessage,
+    sendTypingStart,
+    sendTypingStop,
+    sendRead,
+    sendDeleteMessage,
+    sendReactToMessage,
+  } = useChatSocket();
 
   if (!id) {
     return <ChatWelcome />;

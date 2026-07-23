@@ -65,8 +65,8 @@ test.describe('Page titles and document', () => {
 
   test('page uses UTF-8 charset', async ({ page }) => {
     await page.goto('/chat');
-    const charset = await page.evaluate(() =>
-      document.querySelector('meta[charset]')?.getAttribute('charset') ?? '',
+    const charset = await page.evaluate(
+      () => document.querySelector('meta[charset]')?.getAttribute('charset') ?? '',
     );
     expect(charset.toLowerCase()).toBe('utf-8');
   });

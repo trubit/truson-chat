@@ -45,21 +45,21 @@ const PrivacyPage = lazy(() => import('./features/privacy/pages/PrivacyPage'));
 // ---------------------------------------------------------------------------
 
 const AdminDashboard = lazy(() => import('./features/admin/pages/AdminDashboard'));
-const AdminUsers     = lazy(() => import('./features/admin/pages/AdminUsers'));
-const AdminSystem    = lazy(() => import('./features/admin/pages/AdminSystem'));
+const AdminUsers = lazy(() => import('./features/admin/pages/AdminUsers'));
+const AdminSystem = lazy(() => import('./features/admin/pages/AdminSystem'));
 
 // ---------------------------------------------------------------------------
 // Chat (Phase 5 real-time messaging)
 // ---------------------------------------------------------------------------
 
-const ChatPage      = lazy(() => import('./features/chat/pages/ChatPage'));
+const ChatPage = lazy(() => import('./features/chat/pages/ChatPage'));
 const GroupChatPage = lazy(() => import('./features/groups/pages/GroupChatPage'));
 
 // ---------------------------------------------------------------------------
 // Phase 7 — Groups & Communities
 // ---------------------------------------------------------------------------
 
-const GroupsPage      = lazy(() => import('./features/groups/pages/GroupsPage'));
+const GroupsPage = lazy(() => import('./features/groups/pages/GroupsPage'));
 const CommunitiesPage = lazy(() => import('./features/groups/pages/CommunitiesPage'));
 
 function NotFoundPage() {
@@ -73,7 +73,9 @@ function NotFoundPage() {
 
 function PageLoading() {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+    <Box
+      sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}
+    >
       <CircularProgress />
     </Box>
   );
@@ -111,10 +113,10 @@ export default function App() {
               <Route path={ROUTES.CHAT_GROUP} element={<GroupChatPage />} />
 
               {/* Phase 7 — Groups & Communities */}
-              <Route path={ROUTES.GROUPS}      element={<GroupsPage />} />
-              <Route path={ROUTES.GROUP}       element={<GroupsPage />} />
+              <Route path={ROUTES.GROUPS} element={<GroupsPage />} />
+              <Route path={ROUTES.GROUP} element={<GroupsPage />} />
               <Route path={ROUTES.COMMUNITIES} element={<CommunitiesPage />} />
-              <Route path={ROUTES.COMMUNITY}   element={<CommunitiesPage />} />
+              <Route path={ROUTES.COMMUNITY} element={<CommunitiesPage />} />
 
               {/* Phase 4 — social */}
               <Route path={ROUTES.CONTACTS} element={<ContactsPage />} />
@@ -136,8 +138,8 @@ export default function App() {
           {/* Admin routes — requires admin role */}
           <Route element={<AdminGuard />}>
             <Route element={<AdminLayout />}>
-              <Route path={ROUTES.ADMIN}        element={<AdminDashboard />} />
-              <Route path={ROUTES.ADMIN_USERS}  element={<AdminUsers />} />
+              <Route path={ROUTES.ADMIN} element={<AdminDashboard />} />
+              <Route path={ROUTES.ADMIN_USERS} element={<AdminUsers />} />
               <Route path={ROUTES.ADMIN_SYSTEM} element={<AdminSystem />} />
             </Route>
           </Route>

@@ -1,10 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Box, Typography, Paper, TextField, InputAdornment,
-  Avatar, Chip, IconButton, Button, CircularProgress,
-  Alert, Tooltip, List, ListItem, ListItemAvatar,
-  ListItemText, ListItemSecondaryAction, Divider, Badge,
+  Box,
+  Typography,
+  Paper,
+  TextField,
+  InputAdornment,
+  Avatar,
+  Chip,
+  IconButton,
+  Button,
+  CircularProgress,
+  Alert,
+  Tooltip,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  ListItemSecondaryAction,
+  Divider,
+  Badge,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
@@ -32,10 +47,7 @@ function ContactItem({ contact }: { contact: IContactWithUser }) {
   return (
     <ListItem alignItems="flex-start" divider>
       <ListItemAvatar>
-        <Badge
-          overlap="circular"
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        >
+        <Badge overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
           <Avatar src={contact.avatar} alt={contact.displayName} sx={{ bgcolor: 'primary.main' }}>
             {initials}
           </Avatar>
@@ -48,7 +60,13 @@ function ContactItem({ contact }: { contact: IContactWithUser }) {
               {contact.displayName}
             </Typography>
             {contact.labels.map((label) => (
-              <Chip key={label} label={label} size="small" variant="outlined" sx={{ height: 18, fontSize: 10 }} />
+              <Chip
+                key={label}
+                label={label}
+                size="small"
+                variant="outlined"
+                sx={{ height: 18, fontSize: 10 }}
+              />
             ))}
           </Box>
         }
@@ -67,9 +85,11 @@ function ContactItem({ contact }: { contact: IContactWithUser }) {
             disabled={createConversation.isPending}
             aria-label="Send message"
           >
-            {createConversation.isPending
-              ? <CircularProgress size={16} />
-              : <ChatIcon fontSize="small" color="primary" />}
+            {createConversation.isPending ? (
+              <CircularProgress size={16} />
+            ) : (
+              <ChatIcon fontSize="small" color="primary" />
+            )}
           </IconButton>
         </Tooltip>
         <Tooltip title={contact.isFavorite ? 'Remove from favourites' : 'Add to favourites'}>
@@ -109,7 +129,9 @@ export default function ContactsPage() {
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>Contacts</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            Contacts
+          </Typography>
           {meta && (
             <Typography variant="caption" color="text.secondary">
               {meta.total} contact{meta.total !== 1 ? 's' : ''}
@@ -149,7 +171,9 @@ export default function ContactsPage() {
           </IconButton>
         </Tooltip>
         <Tooltip title="Filter">
-          <IconButton aria-label="Filter contacts"><FilterListIcon /></IconButton>
+          <IconButton aria-label="Filter contacts">
+            <FilterListIcon />
+          </IconButton>
         </Tooltip>
       </Paper>
 
@@ -161,12 +185,16 @@ export default function ContactsPage() {
           </Box>
         )}
         {isError && (
-          <Alert severity="error" sx={{ m: 2 }}>Failed to load contacts.</Alert>
+          <Alert severity="error" sx={{ m: 2 }}>
+            Failed to load contacts.
+          </Alert>
         )}
         {!isLoading && contacts.length === 0 && (
           <Box sx={{ p: 4, textAlign: 'center' }}>
             <Typography color="text.secondary">
-              {search ? 'No contacts match your search.' : 'No contacts yet. Add someone to get started!'}
+              {search
+                ? 'No contacts match your search.'
+                : 'No contacts yet. Add someone to get started!'}
             </Typography>
           </Box>
         )}

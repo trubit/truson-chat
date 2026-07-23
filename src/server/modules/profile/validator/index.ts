@@ -26,9 +26,7 @@ export const updatePrivacySchema = z.object({
 });
 
 export const userIdParamSchema = z.object({
-  userId: z
-    .string()
-    .regex(OBJECT_ID_REGEX, 'Invalid user ID format'),
+  userId: z.string().regex(OBJECT_ID_REGEX, 'Invalid user ID format'),
 });
 
 export const usernameParamSchema = z.object({

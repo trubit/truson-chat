@@ -74,7 +74,7 @@ const AUDIO_MIME_TYPES = new Set([
   'audio/x-aac',
   'audio/flac',
   'audio/x-m4a',
-  'audio/mp4',   // M4A files reported by Chrome
+  'audio/mp4', // M4A files reported by Chrome
   'audio/opus',
   'audio/x-ms-wma',
 ]);
@@ -105,19 +105,12 @@ const ALL_MEDIA_MIME_TYPES = new Set([
 // ---------------------------------------------------------------------------
 
 function buildFileFilter(allowed: Set<string>) {
-  return (
-    _req: Request,
-    file: Express.Multer.File,
-    cb: FileFilterCallback,
-  ): void => {
+  return (_req: Request, file: Express.Multer.File, cb: FileFilterCallback): void => {
     if (allowed.has(file.mimetype)) {
       cb(null, true);
     } else {
       cb(
-        new multer.MulterError(
-          'LIMIT_UNEXPECTED_FILE',
-          `Unsupported MIME type: ${file.mimetype}`,
-        ),
+        new multer.MulterError('LIMIT_UNEXPECTED_FILE', `Unsupported MIME type: ${file.mimetype}`),
       );
     }
   };

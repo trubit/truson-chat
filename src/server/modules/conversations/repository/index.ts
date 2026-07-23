@@ -20,10 +20,7 @@ export class ConversationRepository {
     return ConversationModel.findOne({
       type: 'direct',
       participants: {
-        $all: [
-          new mongoose.Types.ObjectId(userId1),
-          new mongoose.Types.ObjectId(userId2),
-        ],
+        $all: [new mongoose.Types.ObjectId(userId1), new mongoose.Types.ObjectId(userId2)],
         $size: 2,
       },
       status: 'active',
@@ -40,10 +37,7 @@ export class ConversationRepository {
   async createDirect(userId1: string, userId2: string): Promise<IConversation> {
     const conversation = await ConversationModel.create({
       type: 'direct',
-      participants: [
-        new mongoose.Types.ObjectId(userId1),
-        new mongoose.Types.ObjectId(userId2),
-      ],
+      participants: [new mongoose.Types.ObjectId(userId1), new mongoose.Types.ObjectId(userId2)],
       createdBy: new mongoose.Types.ObjectId(userId1),
       lastActivity: new Date(),
       metadata: { isReadOnly: false },
@@ -70,10 +64,7 @@ export class ConversationRepository {
   }
 
   // Update conversation metadata
-  async update(
-    id: string,
-    data: Partial<IConversation>,
-  ): Promise<IConversation | null> {
+  async update(id: string, data: Partial<IConversation>): Promise<IConversation | null> {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
     return ConversationModel.findByIdAndUpdate(
       new mongoose.Types.ObjectId(id),
@@ -89,26 +80,21 @@ export class ConversationRepository {
     lastActivity: Date,
   ): Promise<void> {
     if (!mongoose.Types.ObjectId.isValid(id)) return;
-    await ConversationModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(id),
-      { $set: { lastMessage: lastMsg, lastActivity } },
-    ).exec();
+    await ConversationModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id), {
+      $set: { lastMessage: lastMsg, lastActivity },
+    }).exec();
   }
 
   // Soft delete
   async delete(id: string): Promise<void> {
     if (!mongoose.Types.ObjectId.isValid(id)) return;
-    await ConversationModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(id),
-      { $set: { status: 'deleted', deletedAt: new Date() } },
-    ).exec();
+    await ConversationModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id), {
+      $set: { status: 'deleted', deletedAt: new Date() },
+    }).exec();
   }
 
   // Get a member record
-  async getMember(
-    conversationId: string,
-    userId: string,
-  ): Promise<IConversationMember | null> {
+  async getMember(conversationId: string, userId: string): Promise<IConversationMember | null> {
     if (
       !mongoose.Types.ObjectId.isValid(conversationId) ||
       !mongoose.Types.ObjectId.isValid(userId)
@@ -207,19 +193,14 @@ export class ConversationRepository {
     }
 
     results.sort(
-      (a, b) =>
-        new Date(b.conv.lastActivity).getTime() -
-        new Date(a.conv.lastActivity).getTime(),
+      (a, b) => new Date(b.conv.lastActivity).getTime() - new Date(a.conv.lastActivity).getTime(),
     );
 
     return { conversations: results, total };
   }
 
   // Increment unread for all members except excludeUserId
-  async incrementUnread(
-    conversationId: string,
-    excludeUserId: string,
-  ): Promise<void> {
+  async incrementUnread(conversationId: string, excludeUserId: string): Promise<void> {
     if (!mongoose.Types.ObjectId.isValid(conversationId)) return;
     await ConversationMemberModel.updateMany(
       {

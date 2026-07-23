@@ -3,11 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiService } from '@/services/api';
 import { useAuthStore } from '@/store/authStore';
 import { ROUTES } from '@/routes/index';
-import type {
-  AuthResponse,
-  SafeUser,
-  TokenResponse,
-} from '@/types/auth';
+import type { AuthResponse, SafeUser, TokenResponse } from '@/types/auth';
 
 // ---------------------------------------------------------------------------
 // Query keys
@@ -59,8 +55,7 @@ export function useRegister() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: RegisterInput) =>
-      apiService.post<AuthApiResponse>('/auth/register', data),
+    mutationFn: (data: RegisterInput) => apiService.post<AuthApiResponse>('/auth/register', data),
     onSuccess: (response) => {
       login(response.data);
       queryClient.invalidateQueries({ queryKey: AUTH_KEYS.me });
@@ -87,8 +82,7 @@ export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: LoginInput) =>
-      apiService.post<AuthApiResponse>('/auth/login', data),
+    mutationFn: (data: LoginInput) => apiService.post<AuthApiResponse>('/auth/login', data),
     onSuccess: (response) => {
       login(response.data);
       queryClient.invalidateQueries({ queryKey: AUTH_KEYS.me });
@@ -107,8 +101,7 @@ export function useLogout() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () =>
-      apiService.post<MessageApiResponse>('/auth/logout'),
+    mutationFn: () => apiService.post<MessageApiResponse>('/auth/logout'),
     onSuccess: () => {
       logout();
       queryClient.clear();
@@ -166,8 +159,7 @@ export function useRefreshToken() {
   const refreshToken = useAuthStore((s) => s.refreshToken);
 
   return useMutation({
-    mutationFn: () =>
-      apiService.post<RefreshApiResponse>('/auth/refresh', { refreshToken }),
+    mutationFn: () => apiService.post<RefreshApiResponse>('/auth/refresh', { refreshToken }),
     onSuccess: (response) => {
       setToken(response.data.accessToken);
     },
@@ -223,8 +215,7 @@ export function useVerifyEmail() {
 
 export function useResendVerification() {
   return useMutation({
-    mutationFn: () =>
-      apiService.post<MessageApiResponse>('/auth/resend-verification'),
+    mutationFn: () => apiService.post<MessageApiResponse>('/auth/resend-verification'),
   });
 }
 

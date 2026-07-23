@@ -15,12 +15,7 @@ export class AppError extends Error {
   public readonly code: string;
   public readonly isOperational: boolean;
 
-  constructor(
-    message: string,
-    statusCode = 500,
-    code = 'INTERNAL_ERROR',
-    isOperational = true,
-  ) {
+  constructor(message: string, statusCode = 500, code = 'INTERNAL_ERROR', isOperational = true) {
     super(message);
     this.name = 'AppError';
     this.statusCode = statusCode;
@@ -50,12 +45,7 @@ function sendError(
 // errorHandler — must be 4-argument for Express to treat it as error handler
 // ---------------------------------------------------------------------------
 
-export function errorHandler(
-  err: unknown,
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-): void {
+export function errorHandler(err: unknown, req: Request, res: Response, _next: NextFunction): void {
   // ── Zod validation ────────────────────────────────────────────────────────
   if (err instanceof ZodError) {
     const flat = err.flatten();

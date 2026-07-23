@@ -39,7 +39,7 @@ export interface MessageQuery {
   conversationId: string;
   limit?: number;
   before?: string; // messageId for cursor (fetch older)
-  after?: string;  // messageId for cursor (fetch newer)
+  after?: string; // messageId for cursor (fetch newer)
 }
 
 export interface MessageSearchQuery {

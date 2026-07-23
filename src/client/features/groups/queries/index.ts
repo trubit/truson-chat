@@ -1,22 +1,37 @@
-import {
-  useQuery, useMutation, useQueryClient, useInfiniteQuery,
-} from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { apiService } from '@/services/api';
 import { getChatSocket } from '@/features/chat/hooks/useChatSocket';
-import { useGroupStore }        from '@/store/groupStore';
-import { useCommunityStore }    from '@/store/communityStore';
-import { useChannelStore }      from '@/store/channelStore';
+import { useGroupStore } from '@/store/groupStore';
+import { useCommunityStore } from '@/store/communityStore';
+import { useChannelStore } from '@/store/channelStore';
 import { useAnnouncementStore } from '@/store/announcementStore';
 import type {
-  GroupSummary, GroupDetail, GroupMessage, GroupMemberSummary,
-  CommunitySummary, CommunityDetail, ChannelSummary, AnnouncementSummary,
-  CreateGroupPayload, UpdateGroupPayload, SendGroupMessagePayload,
-  CreateCommunityPayload, UpdateCommunityPayload, CreateChannelPayload, UpdateChannelPayload,
-  CreateAnnouncementPayload, CreateInvitePayload, ReviewJoinRequestPayload,
-  GroupInvitationSummary, GroupJoinRequestSummary,
+  GroupSummary,
+  GroupDetail,
+  GroupMessage,
+  GroupMemberSummary,
+  CommunitySummary,
+  CommunityDetail,
+  ChannelSummary,
+  AnnouncementSummary,
+  CreateGroupPayload,
+  UpdateGroupPayload,
+  SendGroupMessagePayload,
+  CreateCommunityPayload,
+  UpdateCommunityPayload,
+  CreateChannelPayload,
+  UpdateChannelPayload,
+  CreateAnnouncementPayload,
+  CreateInvitePayload,
+  ReviewJoinRequestPayload,
+  GroupInvitationSummary,
+  GroupJoinRequestSummary,
 } from '@shared/types';
 
-interface Api<T> { success: boolean; data: T; }
+interface Api<T> {
+  success: boolean;
+  data: T;
+}
 
 // ============ GROUPS ============
 
@@ -25,7 +40,10 @@ export function useMyGroups() {
   return useQuery({
     queryKey: ['groups', 'me'],
     queryFn: async () => {
-      const res = await apiService.get<Api<{ groups: GroupSummary[]; total: number; hasMore: boolean }>>('/groups/me');
+      const res =
+        await apiService.get<Api<{ groups: GroupSummary[]; total: number; hasMore: boolean }>>(
+          '/groups/me',
+        );
       setGroups(res.data.groups);
       return res.data;
     },
@@ -37,7 +55,9 @@ export function useDiscoverGroups(q?: string) {
   return useQuery({
     queryKey: ['groups', 'discover', q],
     queryFn: () =>
-      apiService.get<Api<{ groups: GroupSummary[]; total: number }>>(`/groups/discover?limit=24${q ? `&q=${encodeURIComponent(q)}` : ''}`),
+      apiService.get<Api<{ groups: GroupSummary[]; total: number }>>(
+        `/groups/discover?limit=24${q ? `&q=${encodeURIComponent(q)}` : ''}`,
+      ),
     staleTime: 60_000,
   });
 }
@@ -60,8 +80,7 @@ export function useCreateGroup() {
   const qc = useQueryClient();
   const upsert = useGroupStore((s) => s.upsertGroup);
   return useMutation({
-    mutationFn: (dto: CreateGroupPayload) =>
-      apiService.post<Api<GroupDetail>>('/groups', dto),
+    mutationFn: (dto: CreateGroupPayload) => apiService.post<Api<GroupDetail>>('/groups', dto),
     onSuccess: (res) => {
       upsert(res.data);
       void qc.invalidateQueries({ queryKey: ['groups', 'me'] });
@@ -124,13 +143,16 @@ export function useGroupMessages(groupId: string | null, channelId?: string) {
       const qs = new URLSearchParams();
       if (channelId) qs.set('channelId', channelId);
       if (pageParam) qs.set('before', pageParam as string);
-      const res = await apiService.get<Api<{ messages: GroupMessage[]; hasMore: boolean }>>(`/groups/${groupId!}/messages?${qs.toString()}`);
+      const res = await apiService.get<Api<{ messages: GroupMessage[]; hasMore: boolean }>>(
+        `/groups/${groupId!}/messages?${qs.toString()}`,
+      );
       if (channelId) addChanMessages(channelId, res.data.messages, true);
       else addMessages(groupId!, res.data.messages, true);
       return res.data;
     },
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (page) => page.hasMore && page.messages.length > 0 ? page.messages[0]._id : undefined,
+    getNextPageParam: (page) =>
+      page.hasMore && page.messages.length > 0 ? page.messages[0]._id : undefined,
     enabled: Boolean(groupId),
   });
 }
@@ -153,7 +175,8 @@ export function useSendGroupMessage() {
           );
         } else {
           // REST fallback when socket unavailable — sender sees it, others don't until refresh
-          apiService.post<Api<GroupMessage>>(`/groups/${dto.groupId}/messages`, dto)
+          apiService
+            .post<Api<GroupMessage>>(`/groups/${dto.groupId}/messages`, dto)
             .then((res) => resolve(res.data))
             .catch(reject);
         }
@@ -174,7 +197,9 @@ export function useGroupMembers(groupId: string | null) {
   return useQuery({
     queryKey: ['group-members', groupId],
     queryFn: async () => {
-      const res = await apiService.get<Api<{ members: GroupMemberSummary[]; total: number }>>(`/groups/${groupId!}/members`);
+      const res = await apiService.get<Api<{ members: GroupMemberSummary[]; total: number }>>(
+        `/groups/${groupId!}/members`,
+      );
       setMembers(groupId!, res.data.members);
       return res.data;
     },
@@ -187,7 +212,9 @@ export function useUpdateMemberRole(groupId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ userId, role }: { userId: string; role: string }) =>
-      apiService.patch<Api<GroupMemberSummary>>(`/groups/${groupId}/members/${userId}/role`, { role }),
+      apiService.patch<Api<GroupMemberSummary>>(`/groups/${groupId}/members/${userId}/role`, {
+        role,
+      }),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['group-members', groupId] }),
   });
 }
@@ -216,7 +243,15 @@ export function useAddMember(groupId: string) {
 export function useBanMember(groupId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ userId, reason, expiresAt }: { userId: string; reason?: string; expiresAt?: string }) =>
+    mutationFn: ({
+      userId,
+      reason,
+      expiresAt,
+    }: {
+      userId: string;
+      reason?: string;
+      expiresAt?: string;
+    }) =>
       apiService.post<Api<null>>(`/groups/${groupId}/members/${userId}/ban`, { reason, expiresAt }),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['group-members', groupId] }),
   });
@@ -238,15 +273,15 @@ export function useCreateInvitation() {
   return useMutation({
     mutationFn: (dto: CreateInvitePayload) =>
       apiService.post<Api<GroupInvitationSummary>>('/group-invitations', dto),
-    onSuccess: (_res, vars) => void qc.invalidateQueries({ queryKey: ['group-invitations', vars.groupId] }),
+    onSuccess: (_res, vars) =>
+      void qc.invalidateQueries({ queryKey: ['group-invitations', vars.groupId] }),
   });
 }
 
 export function useAcceptInvitation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (token: string) =>
-      apiService.post<Api<null>>(`/group-invitations/accept/${token}`),
+    mutationFn: (token: string) => apiService.post<Api<null>>(`/group-invitations/accept/${token}`),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['groups', 'me'] }),
   });
 }
@@ -256,7 +291,8 @@ export function useRevokeInvitation() {
   return useMutation({
     mutationFn: ({ inviteId, groupId: _groupId }: { inviteId: string; groupId: string }) =>
       apiService.del<Api<null>>(`/group-invitations/${inviteId}`),
-    onSuccess: (_res, vars) => void qc.invalidateQueries({ queryKey: ['group-invitations', vars.groupId] }),
+    onSuccess: (_res, vars) =>
+      void qc.invalidateQueries({ queryKey: ['group-invitations', vars.groupId] }),
   });
 }
 
@@ -266,7 +302,9 @@ export function useGroupJoinRequests(groupId: string | null) {
   return useQuery({
     queryKey: ['group-join-requests', groupId],
     queryFn: () =>
-      apiService.get<Api<{ requests: GroupJoinRequestSummary[]; total: number }>>(`/group-join-requests?groupId=${groupId!}`),
+      apiService.get<Api<{ requests: GroupJoinRequestSummary[]; total: number }>>(
+        `/group-join-requests?groupId=${groupId!}`,
+      ),
     enabled: Boolean(groupId),
   });
 }
@@ -276,7 +314,8 @@ export function useRequestToJoin() {
   return useMutation({
     mutationFn: ({ groupId, message }: { groupId: string; message?: string }) =>
       apiService.post<Api<GroupJoinRequestSummary>>('/group-join-requests', { groupId, message }),
-    onSuccess: (_res, vars) => void qc.invalidateQueries({ queryKey: ['group-join-requests', vars.groupId] }),
+    onSuccess: (_res, vars) =>
+      void qc.invalidateQueries({ queryKey: ['group-join-requests', vars.groupId] }),
   });
 }
 
@@ -284,7 +323,10 @@ export function useReviewJoinRequest(groupId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ requestId, action, rejectReason }: ReviewJoinRequestPayload) =>
-      apiService.patch<Api<GroupJoinRequestSummary>>(`/group-join-requests/${requestId}/review`, { action, rejectReason }),
+      apiService.patch<Api<GroupJoinRequestSummary>>(`/group-join-requests/${requestId}/review`, {
+        action,
+        rejectReason,
+      }),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['group-join-requests', groupId] }),
   });
 }
@@ -296,7 +338,10 @@ export function useMyCommunities() {
   return useQuery({
     queryKey: ['communities', 'me'],
     queryFn: async () => {
-      const res = await apiService.get<Api<{ communities: CommunitySummary[]; total: number }>>('/communities/me');
+      const res =
+        await apiService.get<Api<{ communities: CommunitySummary[]; total: number }>>(
+          '/communities/me',
+        );
       setCommunities(res.data.communities);
       return res.data;
     },
@@ -308,7 +353,9 @@ export function useDiscoverCommunities(q?: string) {
   return useQuery({
     queryKey: ['communities', 'discover', q],
     queryFn: () =>
-      apiService.get<Api<{ communities: CommunitySummary[]; total: number }>>(`/communities/discover?limit=24${q ? `&q=${encodeURIComponent(q)}` : ''}`),
+      apiService.get<Api<{ communities: CommunitySummary[]; total: number }>>(
+        `/communities/discover?limit=24${q ? `&q=${encodeURIComponent(q)}` : ''}`,
+      ),
     staleTime: 60_000,
   });
 }
@@ -416,8 +463,15 @@ export function useAnnouncements(scope: string, scopeId: string | null) {
   return useQuery({
     queryKey: ['announcements', scope, scopeId],
     queryFn: async () => {
-      const param = scope === 'group' ? `groupId=${scopeId}` : scope === 'community' ? `communityId=${scopeId}` : `channelId=${scopeId}`;
-      const res = await apiService.get<Api<{ announcements: AnnouncementSummary[]; total: number }>>(`/announcements?scope=${scope}&${param}`);
+      const param =
+        scope === 'group'
+          ? `groupId=${scopeId}`
+          : scope === 'community'
+            ? `communityId=${scopeId}`
+            : `channelId=${scopeId}`;
+      const res = await apiService.get<
+        Api<{ announcements: AnnouncementSummary[]; total: number }>
+      >(`/announcements?scope=${scope}&${param}`);
       setAnnouncements(scopeKey, res.data.announcements);
       return res.data;
     },
@@ -442,6 +496,7 @@ export function useDeleteAnnouncement() {
   return useMutation({
     mutationFn: ({ announcementId, scope: _scope }: { announcementId: string; scope: string }) =>
       apiService.del<Api<null>>(`/announcements/${announcementId}`),
-    onSuccess: (_res, vars) => void qc.invalidateQueries({ queryKey: ['announcements', vars.scope] }),
+    onSuccess: (_res, vars) =>
+      void qc.invalidateQueries({ queryKey: ['announcements', vars.scope] }),
   });
 }

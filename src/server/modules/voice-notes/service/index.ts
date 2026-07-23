@@ -17,10 +17,10 @@ export class VoiceNoteService {
     try {
       cloudResult = await cloudinaryService.upload(file.path, {
         userId,
-        mediaType:    'voice_note',
-        mimeType:     file.mimetype,
+        mediaType: 'voice_note',
+        mimeType: file.mimetype,
         originalName: file.originalname,
-        tags:         ['voice-note'],
+        tags: ['voice-note'],
       });
     } catch (err) {
       logger.error('Cloudinary voice note upload failed', { err, userId });
@@ -29,18 +29,18 @@ export class VoiceNoteService {
     }
 
     const createData: Record<string, unknown> = {
-      uploaderId:   new mongoose.Types.ObjectId(userId),
-      type:         'voice_note',
-      url:          cloudResult.url,
-      secureUrl:    cloudResult.secureUrl,
-      publicId:     cloudResult.publicId,
+      uploaderId: new mongoose.Types.ObjectId(userId),
+      type: 'voice_note',
+      url: cloudResult.url,
+      secureUrl: cloudResult.secureUrl,
+      publicId: cloudResult.publicId,
       resourceType: cloudResult.resourceType,
-      mimeType:     file.mimetype,
-      size:         file.size,
+      mimeType: file.mimetype,
+      size: file.size,
       originalName: file.originalname,
-      duration:     cloudResult.duration,
-      waveform:     [],
-      status:       'ready',
+      duration: cloudResult.duration,
+      waveform: [],
+      status: 'ready',
     };
 
     if (opts.conversationId && mongoose.Types.ObjectId.isValid(opts.conversationId)) {
@@ -57,15 +57,15 @@ export class VoiceNoteService {
     }
 
     return {
-      _id:       mediaFile._id.toString(),
-      url:       mediaFile.secureUrl,
+      _id: mediaFile._id.toString(),
+      url: mediaFile.secureUrl,
       secureUrl: mediaFile.secureUrl,
-      publicId:  mediaFile.publicId,
-      mimeType:  mediaFile.mimeType,
-      size:      mediaFile.size,
-      duration:  mediaFile.duration,
-      waveform:  mediaFile.waveform ?? [],
-      status:    mediaFile.status,
+      publicId: mediaFile.publicId,
+      mimeType: mediaFile.mimeType,
+      size: mediaFile.size,
+      duration: mediaFile.duration,
+      waveform: mediaFile.waveform ?? [],
+      status: mediaFile.status,
       createdAt: mediaFile.createdAt.toISOString(),
     };
   }
@@ -81,18 +81,19 @@ export class VoiceNoteService {
     }).exec();
 
     if (!file) throw new AppError('Voice note not found', 404, 'NOT_FOUND');
-    if (file.uploaderId.toString() !== userId) throw new AppError('Access denied', 403, 'FORBIDDEN');
+    if (file.uploaderId.toString() !== userId)
+      throw new AppError('Access denied', 403, 'FORBIDDEN');
 
     return {
-      _id:       file._id.toString(),
-      url:       file.secureUrl,
+      _id: file._id.toString(),
+      url: file.secureUrl,
       secureUrl: file.secureUrl,
-      publicId:  file.publicId,
-      mimeType:  file.mimeType,
-      size:      file.size,
-      duration:  file.duration,
-      waveform:  file.waveform ?? [],
-      status:    file.status,
+      publicId: file.publicId,
+      mimeType: file.mimeType,
+      size: file.size,
+      duration: file.duration,
+      waveform: file.waveform ?? [],
+      status: file.status,
       createdAt: file.createdAt.toISOString(),
     };
   }

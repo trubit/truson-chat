@@ -6,11 +6,7 @@ function toNum(val: unknown, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
-export async function getStats(
-  _req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> {
+export async function getStats(_req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const data = await adminService.getStats();
     res.json({ success: true, data });
@@ -32,20 +28,13 @@ export async function getGrowthData(
   }
 }
 
-export async function listUsers(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> {
+export async function listUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const page = toNum(req.query['page'], 1);
     const limit = Math.min(toNum(req.query['limit'], 20), 100);
-    const search =
-      typeof req.query['search'] === 'string' ? req.query['search'] : undefined;
-    const role =
-      typeof req.query['role'] === 'string' ? req.query['role'] : undefined;
-    const status =
-      typeof req.query['status'] === 'string' ? req.query['status'] : undefined;
+    const search = typeof req.query['search'] === 'string' ? req.query['search'] : undefined;
+    const role = typeof req.query['role'] === 'string' ? req.query['role'] : undefined;
+    const status = typeof req.query['status'] === 'string' ? req.query['status'] : undefined;
 
     const data = await adminService.listUsers({ page, limit, search, role, status });
     res.json({ success: true, data });
@@ -84,11 +73,7 @@ export async function updateUserRole(
   }
 }
 
-export function getSystemInfo(
-  _req: Request,
-  res: Response,
-  next: NextFunction,
-): void {
+export function getSystemInfo(_req: Request, res: Response, next: NextFunction): void {
   try {
     const data = adminService.getSystemInfo();
     res.json({ success: true, data });

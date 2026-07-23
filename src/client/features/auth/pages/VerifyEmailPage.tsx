@@ -1,12 +1,6 @@
 import { useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Alert,
-  CircularProgress,
-  Typography,
-} from '@mui/material';
+import { Box, Button, Alert, CircularProgress, Typography } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
 import { AuthLayout } from '../components/AuthLayout';
@@ -65,12 +59,7 @@ export default function VerifyEmailPage() {
           <Alert severity="error" sx={{ mb: 3 }}>
             {extractErrorMessage(verifyEmailMutation.error)}
           </Alert>
-          <Button
-            variant="outlined"
-            component={RouterLink}
-            to={ROUTES.LOGIN}
-            fullWidth
-          >
+          <Button variant="outlined" component={RouterLink} to={ROUTES.LOGIN} fullWidth>
             Back to sign in
           </Button>
         </>
@@ -80,26 +69,14 @@ export default function VerifyEmailPage() {
     if (verifyEmailMutation.isSuccess) {
       return (
         <>
-          <CheckCircleOutlineIcon
-            sx={{ fontSize: 56, color: 'success.main', mb: 2 }}
-          />
+          <CheckCircleOutlineIcon sx={{ fontSize: 56, color: 'success.main', mb: 2 }} />
           <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
             Email verified!
           </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ textAlign: 'center', mb: 3 }}
-          >
-            Your email address has been successfully verified. You can now sign
-            in.
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 3 }}>
+            Your email address has been successfully verified. You can now sign in.
           </Typography>
-          <Button
-            variant="contained"
-            component={RouterLink}
-            to={ROUTES.LOGIN}
-            fullWidth
-          >
+          <Button variant="contained" component={RouterLink} to={ROUTES.LOGIN} fullWidth>
             Go to sign in
           </Button>
         </>

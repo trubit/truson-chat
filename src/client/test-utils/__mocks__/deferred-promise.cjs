@@ -1,7 +1,7 @@
 'use strict';
 
 function createDeferredExecutor() {
-  const executor = (function (resolve, reject) {
+  const executor = function (resolve, reject) {
     executor.state = 'pending';
     executor.resolve = function (data) {
       if (executor.state !== 'pending') return;
@@ -10,9 +10,7 @@ function createDeferredExecutor() {
         executor.state = 'fulfilled';
         return value;
       };
-      return resolve(
-        data instanceof Promise ? data : Promise.resolve(data).then(onFulfilled),
-      );
+      return resolve(data instanceof Promise ? data : Promise.resolve(data).then(onFulfilled));
     };
     executor.reject = function (reason) {
       if (executor.state !== 'pending') return;
@@ -21,7 +19,7 @@ function createDeferredExecutor() {
       });
       return reject((executor.rejectionReason = reason));
     };
-  });
+  };
   return executor;
 }
 

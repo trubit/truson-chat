@@ -63,15 +63,9 @@ export default function LoginPage() {
 
   return (
     <Box data-testid="page-login">
-      <AuthLayout
-        title="Welcome back 👋"
-        subtitle="Sign in to continue to Truson-Chat"
-      >
+      <AuthLayout title="Welcome back 👋" subtitle="Sign in to continue to Linkora">
         {loginMutation.isError && (
-          <Alert
-            severity="error"
-            sx={{ mb: 3, borderRadius: 2 }}
-          >
+          <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
             {extractErrorMessage(loginMutation.error)}
           </Alert>
         )}
@@ -217,17 +211,17 @@ export default function LoginPage() {
             }}
             aria-label="Sign in"
           >
-            {isLoading ? (
-              <CircularProgress size={22} color="inherit" />
-            ) : (
-              'Sign in'
-            )}
+            {isLoading ? <CircularProgress size={22} color="inherit" /> : 'Sign in'}
           </Button>
         </Box>
 
         {/* Divider */}
         <Divider sx={{ my: 3 }}>
-          <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 600, letterSpacing: '0.08em' }}>
+          <Typography
+            variant="caption"
+            color="text.disabled"
+            sx={{ fontWeight: 600, letterSpacing: '0.08em' }}
+          >
             OR
           </Typography>
         </Divider>

@@ -15,7 +15,9 @@ import { authenticate } from './authenticate.js';
  *   router.delete('/users/:id', authorize('admin'), handler);
  *   router.post('/plans', authorize('admin', 'business'), handler);
  */
-export function authorize(...roles: string[]): (req: Request, res: Response, next: NextFunction) => void {
+export function authorize(
+  ...roles: string[]
+): (req: Request, res: Response, next: NextFunction) => void {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       // authenticate was not run upstream — run it now, then re-enter
@@ -41,13 +43,7 @@ function checkRole(req: Request, next: NextFunction, roles: string[]): void {
   }
 
   if (!roles.includes(req.user.role)) {
-    next(
-      new AppError(
-        `Access denied. Required role(s): ${roles.join(', ')}`,
-        403,
-        'FORBIDDEN',
-      ),
-    );
+    next(new AppError(`Access denied. Required role(s): ${roles.join(', ')}`, 403, 'FORBIDDEN'));
     return;
   }
 

@@ -3,11 +3,7 @@ import { SecurityLogModel } from '../../../database/models/SecurityLog.js';
 import { AuditLogModel } from '../../../database/models/AuditLog.js';
 import { SessionModel } from '../../../database/models/Session.js';
 import { DeviceModel } from '../../../database/models/Device.js';
-import type {
-  AuditLogResponse,
-  SecurityLogResponse,
-  SecurityLogsQuery,
-} from '../types/index.js';
+import type { AuditLogResponse, SecurityLogResponse, SecurityLogsQuery } from '../types/index.js';
 import type { PaginationMeta } from '../../../../shared/types/api.js';
 
 // ---------------------------------------------------------------------------
@@ -56,11 +52,7 @@ function formatAuditLog(log: {
   };
 }
 
-function buildPaginationMeta(
-  total: number,
-  page: number,
-  limit: number,
-): PaginationMeta {
+function buildPaginationMeta(total: number, page: number, limit: number): PaginationMeta {
   return {
     total,
     page,
@@ -102,11 +94,7 @@ export class SecurityService {
     }
 
     const [logs, total] = await Promise.all([
-      SecurityLogModel.find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      SecurityLogModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
       SecurityLogModel.countDocuments(filter),
     ]);
 
@@ -151,11 +139,7 @@ export class SecurityService {
     }
 
     const [logs, total] = await Promise.all([
-      AuditLogModel.find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      AuditLogModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
       AuditLogModel.countDocuments(filter),
     ]);
 
@@ -184,34 +168,30 @@ export class SecurityService {
     const userObjId = new mongoose.Types.ObjectId(userId);
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1_000);
 
-    const [recentEvents, failedLogins, activeSessions, trustedDevices] =
-      await Promise.all([
-        // Last 5 security events
-        SecurityLogModel.find({ userId: userObjId })
-          .sort({ createdAt: -1 })
-          .limit(5)
-          .lean(),
+    const [recentEvents, failedLogins, activeSessions, trustedDevices] = await Promise.all([
+      // Last 5 security events
+      SecurityLogModel.find({ userId: userObjId }).sort({ createdAt: -1 }).limit(5).lean(),
 
-        // Failed logins in the last 7 days
-        SecurityLogModel.countDocuments({
-          userId: userObjId,
-          eventType: 'login_failed',
-          createdAt: { $gte: sevenDaysAgo },
-        }),
+      // Failed logins in the last 7 days
+      SecurityLogModel.countDocuments({
+        userId: userObjId,
+        eventType: 'login_failed',
+        createdAt: { $gte: sevenDaysAgo },
+      }),
 
-        // Active sessions count
-        SessionModel.countDocuments({
-          userId: userObjId,
-          isActive: true,
-        }),
+      // Active sessions count
+      SessionModel.countDocuments({
+        userId: userObjId,
+        isActive: true,
+      }),
 
-        // Trusted devices count (non-revoked)
-        DeviceModel.countDocuments({
-          userId: userObjId,
-          trusted: true,
-          revokedAt: { $exists: false },
-        }),
-      ]);
+      // Trusted devices count (non-revoked)
+      DeviceModel.countDocuments({
+        userId: userObjId,
+        trusted: true,
+        revokedAt: { $exists: false },
+      }),
+    ]);
 
     return {
       recentEvents: recentEvents.map((l) =>

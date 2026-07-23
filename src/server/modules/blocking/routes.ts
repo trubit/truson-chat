@@ -54,12 +54,7 @@ router.post(
 );
 
 // DELETE /blocking/:userId
-router.delete(
-  '/:userId',
-  authenticate,
-  validateParams(userIdParamSchema),
-  controller.unblockUser,
-);
+router.delete('/:userId', authenticate, validateParams(userIdParamSchema), controller.unblockUser);
 
 // GET /blocking/:userId/status
 router.get(

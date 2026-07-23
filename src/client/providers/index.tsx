@@ -11,9 +11,7 @@ export function AppProviders({ children }: AppProvidersProps) {
   return (
     <QueryProvider>
       <AppThemeProvider>
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
+        <BrowserRouter>{children}</BrowserRouter>
       </AppThemeProvider>
     </QueryProvider>
   );

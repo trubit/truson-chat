@@ -14,10 +14,7 @@ type ValidationTarget = 'body' | 'query' | 'params';
  * On failure a ZodError is forwarded to the next error handler which turns it
  * into a 422 response via errorHandler.
  */
-export function validate<T extends ZodTypeAny>(
-  schema: T,
-  target: ValidationTarget = 'body',
-) {
+export function validate<T extends ZodTypeAny>(schema: T, target: ValidationTarget = 'body') {
   return (req: Request, _res: Response, next: NextFunction): void => {
     const result = schema.safeParse(req[target]);
 

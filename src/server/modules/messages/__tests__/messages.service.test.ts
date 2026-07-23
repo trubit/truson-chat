@@ -66,9 +66,9 @@ function makeService() {
 describe('MessageService.sendMessage', () => {
   it('creates a message and returns a response', async () => {
     const alice = await createUser('alice1');
-    const bob   = await createUser('bob1');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob1');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const result = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -85,9 +85,9 @@ describe('MessageService.sendMessage', () => {
 
   it('updates conversation lastMessage snapshot after send', async () => {
     const alice = await createUser('alice2');
-    const bob   = await createUser('bob2');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob2');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -102,9 +102,9 @@ describe('MessageService.sendMessage', () => {
 
   it('increments unread for the other member', async () => {
     const alice = await createUser('alice3');
-    const bob   = await createUser('bob3');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob3');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -120,11 +120,11 @@ describe('MessageService.sendMessage', () => {
   });
 
   it('throws NOT_FOUND when user is not a member', async () => {
-    const alice   = await createUser('alice4');
-    const bob     = await createUser('bob4');
+    const alice = await createUser('alice4');
+    const bob = await createUser('bob4');
     const charlie = await createUser('charlie4');
-    const conv    = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc     = makeService();
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     await expect(
       svc.sendMessage(charlie._id.toString(), {
@@ -137,9 +137,9 @@ describe('MessageService.sendMessage', () => {
 
   it('throws BLOCKED when block exists in either direction', async () => {
     const alice = await createUser('alice5');
-    const bob   = await createUser('bob5');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob5');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     await BlockedUserModel.create({ blockerId: bob._id, blockedId: alice._id });
 
@@ -154,7 +154,7 @@ describe('MessageService.sendMessage', () => {
 
   it('throws INVALID_ID for a malformed conversation ID', async () => {
     const alice = await createUser('alice6');
-    const svc   = makeService();
+    const svc = makeService();
 
     await expect(
       svc.sendMessage(alice._id.toString(), {
@@ -167,9 +167,9 @@ describe('MessageService.sendMessage', () => {
 
   it('stores replyTo when provided', async () => {
     const alice = await createUser('alice7');
-    const bob   = await createUser('bob7');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob7');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const original = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -195,9 +195,9 @@ describe('MessageService.sendMessage', () => {
 describe('MessageService.editMessage', () => {
   it('edits message content and saves old content to editHistory', async () => {
     const alice = await createUser('alice8');
-    const bob   = await createUser('bob8');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob8');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -218,9 +218,9 @@ describe('MessageService.editMessage', () => {
 
   it('throws FORBIDDEN when non-sender tries to edit', async () => {
     const alice = await createUser('alice9');
-    const bob   = await createUser('bob9');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob9');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -235,9 +235,9 @@ describe('MessageService.editMessage', () => {
 
   it('throws MESSAGE_DELETED when editing a deleted message', async () => {
     const alice = await createUser('alice10');
-    const bob   = await createUser('bob10');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob10');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -253,7 +253,7 @@ describe('MessageService.editMessage', () => {
 
   it('throws NOT_FOUND for a non-existent message', async () => {
     const alice = await createUser('alice11');
-    const svc   = makeService();
+    const svc = makeService();
     const fakeId = new mongoose.Types.ObjectId().toString();
 
     await expect(
@@ -269,9 +269,9 @@ describe('MessageService.editMessage', () => {
 describe('MessageService.deleteMessage', () => {
   it('soft-deletes a message — content is redacted in response', async () => {
     const alice = await createUser('alice12');
-    const bob   = await createUser('bob12');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob12');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -290,9 +290,9 @@ describe('MessageService.deleteMessage', () => {
 
   it('throws FORBIDDEN when non-sender tries to delete', async () => {
     const alice = await createUser('alice13');
-    const bob   = await createUser('bob13');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob13');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -300,16 +300,17 @@ describe('MessageService.deleteMessage', () => {
       content: 'Alice only',
     });
 
-    await expect(
-      svc.deleteMessage(bob._id.toString(), msg._id),
-    ).rejects.toMatchObject({ statusCode: 403, code: 'FORBIDDEN' });
+    await expect(svc.deleteMessage(bob._id.toString(), msg._id)).rejects.toMatchObject({
+      statusCode: 403,
+      code: 'FORBIDDEN',
+    });
   });
 
   it('throws ALREADY_DELETED on a second delete attempt', async () => {
     const alice = await createUser('alice14');
-    const bob   = await createUser('bob14');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob14');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -318,9 +319,10 @@ describe('MessageService.deleteMessage', () => {
     });
     await svc.deleteMessage(alice._id.toString(), msg._id);
 
-    await expect(
-      svc.deleteMessage(alice._id.toString(), msg._id),
-    ).rejects.toMatchObject({ statusCode: 400, code: 'ALREADY_DELETED' });
+    await expect(svc.deleteMessage(alice._id.toString(), msg._id)).rejects.toMatchObject({
+      statusCode: 400,
+      code: 'ALREADY_DELETED',
+    });
   });
 });
 
@@ -331,9 +333,9 @@ describe('MessageService.deleteMessage', () => {
 describe('MessageService.toggleReaction', () => {
   it('adds a reaction when user has not reacted yet', async () => {
     const alice = await createUser('alice15');
-    const bob   = await createUser('bob15');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob15');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -352,9 +354,9 @@ describe('MessageService.toggleReaction', () => {
 
   it('removes a reaction when user already reacted with same emoji', async () => {
     const alice = await createUser('alice16');
-    const bob   = await createUser('bob16');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob16');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -372,9 +374,9 @@ describe('MessageService.toggleReaction', () => {
 
   it('multiple users can react with the same emoji', async () => {
     const alice = await createUser('alice17');
-    const bob   = await createUser('bob17');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob17');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -398,9 +400,9 @@ describe('MessageService.toggleReaction', () => {
 describe('MessageService.getMessages', () => {
   it('returns messages newest-first from the DB with hasMore flag', async () => {
     const alice = await createUser('alice18');
-    const bob   = await createUser('bob18');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob18');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     for (let i = 0; i < 5; i++) {
       await svc.sendMessage(alice._id.toString(), {
@@ -421,9 +423,9 @@ describe('MessageService.getMessages', () => {
 
   it('returns hasMore=false when all messages fit in the page', async () => {
     const alice = await createUser('alice19');
-    const bob   = await createUser('bob19');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob19');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -441,11 +443,11 @@ describe('MessageService.getMessages', () => {
   });
 
   it('throws NOT_FOUND for non-members', async () => {
-    const alice   = await createUser('alice20');
-    const bob     = await createUser('bob20');
+    const alice = await createUser('alice20');
+    const bob = await createUser('bob20');
     const charlie = await createUser('charlie20');
-    const conv    = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc     = makeService();
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     await expect(
       svc.getMessages(charlie._id.toString(), conv._id.toString(), {
@@ -462,9 +464,9 @@ describe('MessageService.getMessages', () => {
 describe('MessageService.markRead', () => {
   it('resets unread count for the conversation member', async () => {
     const alice = await createUser('alice21');
-    const bob   = await createUser('bob21');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob21');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     // Alice sends a message — increments bob's unread
     const msg = await svc.sendMessage(alice._id.toString(), {
@@ -488,9 +490,9 @@ describe('MessageService.markRead', () => {
 describe('MessageService.markDelivered', () => {
   it('marks messages as delivered without throwing', async () => {
     const alice = await createUser('alice22');
-    const bob   = await createUser('bob22');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob22');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -511,9 +513,9 @@ describe('MessageService.markDelivered', () => {
 describe('MessageService.getMessage', () => {
   it('returns a single message for a member', async () => {
     const alice = await createUser('alice23');
-    const bob   = await createUser('bob23');
-    const conv  = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc   = makeService();
+    const bob = await createUser('bob23');
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const sent = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -527,11 +529,11 @@ describe('MessageService.getMessage', () => {
   });
 
   it('throws NOT_FOUND for a non-member', async () => {
-    const alice   = await createUser('alice24');
-    const bob     = await createUser('bob24');
+    const alice = await createUser('alice24');
+    const bob = await createUser('bob24');
     const charlie = await createUser('charlie24');
-    const conv    = await createConversation(alice._id.toString(), bob._id.toString());
-    const svc     = makeService();
+    const conv = await createConversation(alice._id.toString(), bob._id.toString());
+    const svc = makeService();
 
     const msg = await svc.sendMessage(alice._id.toString(), {
       conversationId: conv._id.toString(),
@@ -539,8 +541,9 @@ describe('MessageService.getMessage', () => {
       content: 'Secret',
     });
 
-    await expect(
-      svc.getMessage(charlie._id.toString(), msg._id),
-    ).rejects.toMatchObject({ statusCode: 404, code: 'NOT_FOUND' });
+    await expect(svc.getMessage(charlie._id.toString(), msg._id)).rejects.toMatchObject({
+      statusCode: 404,
+      code: 'NOT_FOUND',
+    });
   });
 });

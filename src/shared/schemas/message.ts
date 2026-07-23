@@ -3,7 +3,18 @@ import { LIMITS } from '../constants/limits.js';
 
 export const sendMessageSchema = z.object({
   conversationId: z.string().min(1),
-  type: z.enum(['text', 'image', 'video', 'audio', 'file', 'sticker', 'gif', 'location', 'contact', 'poll']),
+  type: z.enum([
+    'text',
+    'image',
+    'video',
+    'audio',
+    'file',
+    'sticker',
+    'gif',
+    'location',
+    'contact',
+    'poll',
+  ]),
   content: z.string().max(LIMITS.MAX_MESSAGE_LENGTH),
   replyTo: z.string().optional(),
   mentions: z.array(z.string()).max(50).optional(),

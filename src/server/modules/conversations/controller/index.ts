@@ -6,11 +6,7 @@ import { conversationService } from '../service/index.js';
 // ---------------------------------------------------------------------------
 
 export class ConversationController {
-  async getOrCreateDirect(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async getOrCreateDirect(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const { participantId } = req.body as { participantId: string };
@@ -21,11 +17,7 @@ export class ConversationController {
     }
   }
 
-  async getConversations(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async getConversations(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const query = req.query as {
@@ -44,11 +36,7 @@ export class ConversationController {
     }
   }
 
-  async getConversation(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async getConversation(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!.id;
       const id = req.params.id as string;

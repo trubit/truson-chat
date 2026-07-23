@@ -62,9 +62,7 @@ export function useFriends(query?: FriendListQuery) {
       if (query?.search) params.set('search', query.search);
 
       const qs = params.toString();
-      const res = await apiService.get<FriendListResponse>(
-        `/friends${qs ? `?${qs}` : ''}`,
-      );
+      const res = await apiService.get<FriendListResponse>(`/friends${qs ? `?${qs}` : ''}`);
       setFriends(res.data.items, res.data.meta);
       return res.data;
     },
@@ -192,8 +190,7 @@ export function useRemoveFriend() {
   const removeFriend = useFriendsStore((s) => s.removeFriend);
 
   return useMutation({
-    mutationFn: (friendId: string) =>
-      apiService.del<{ success: boolean }>(`/friends/${friendId}`),
+    mutationFn: (friendId: string) => apiService.del<{ success: boolean }>(`/friends/${friendId}`),
     onSuccess: (_, friendId) => {
       removeFriend(friendId);
       queryClient.invalidateQueries({ queryKey: FRIEND_KEYS.list() });

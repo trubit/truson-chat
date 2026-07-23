@@ -22,5 +22,12 @@
     }
   },
   "include": ["src/server", "src/shared", "src/types"],
-  "exclude": ["node_modules", "dist", "src/client", "**/__tests__/**", "**/test-utils/**", "**/*.test.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/client",
+    "**/__tests__/**",
+    "**/test-utils/**",
+    "**/*.test.ts"
+  ]
 }

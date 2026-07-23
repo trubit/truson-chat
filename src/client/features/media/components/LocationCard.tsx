@@ -4,12 +4,12 @@ import PlaceIcon from '@mui/icons-material/Place';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 const C = {
-  border:  'rgba(139,92,246,0.12)',
-  txt1:    '#F1F5F9',
-  txt2:    '#94A3B8',
-  txt3:    '#475569',
-  bg:      'rgba(13,18,37,0.9)',
-  accent:  '#9B6DFF',
+  border: 'rgba(139,92,246,0.12)',
+  txt1: '#F1F5F9',
+  txt2: '#94A3B8',
+  txt3: '#475569',
+  bg: 'rgba(13,18,37,0.9)',
+  accent: '#9B6DFF',
 } as const;
 
 export function LocationCard({
@@ -23,7 +23,7 @@ export function LocationCard({
   name?: string;
   address?: string;
 }) {
-  const mapUrl    = `https://maps.google.com/?q=${latitude},${longitude}`;
+  const mapUrl = `https://maps.google.com/?q=${latitude},${longitude}`;
   const staticImg = `https://staticmap.openstreetmap.de/staticmap.php?center=${latitude},${longitude}&zoom=15&size=280x140&markers=${latitude},${longitude}`;
 
   return (

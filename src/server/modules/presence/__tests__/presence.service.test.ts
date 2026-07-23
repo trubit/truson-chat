@@ -297,9 +297,10 @@ describe('PresenceService.getPresence', () => {
     const requesterId = newId();
     const service = makeService();
 
-    await expect(
-      service.getPresence(requesterId, 'not-an-id'),
-    ).rejects.toMatchObject({ statusCode: 400, code: 'INVALID_ID' });
+    await expect(service.getPresence(requesterId, 'not-an-id')).rejects.toMatchObject({
+      statusCode: 400,
+      code: 'INVALID_ID',
+    });
   });
 });
 

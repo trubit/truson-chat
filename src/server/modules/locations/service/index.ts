@@ -6,17 +6,17 @@ import type { ISharedLocation } from '../../../database/models/SharedLocation.js
 
 function toResponse(doc: ISharedLocation): SharedLocationResponse {
   return {
-    _id:            doc._id.toString(),
-    sharedBy:       doc.sharedBy.toString(),
+    _id: doc._id.toString(),
+    sharedBy: doc.sharedBy.toString(),
     conversationId: doc.conversationId.toString(),
-    latitude:       doc.latitude,
-    longitude:      doc.longitude,
-    accuracy:       doc.accuracy,
-    altitude:       doc.altitude,
-    name:           doc.name,
-    address:        doc.address,
-    isLive:         doc.isLive,
-    createdAt:      doc.createdAt.toISOString(),
+    latitude: doc.latitude,
+    longitude: doc.longitude,
+    accuracy: doc.accuracy,
+    altitude: doc.altitude,
+    name: doc.name,
+    address: doc.address,
+    isLive: doc.isLive,
+    createdAt: doc.createdAt.toISOString(),
   };
 }
 
@@ -29,15 +29,15 @@ export class SharedLocationService {
     }
 
     const doc = await this.repo.create({
-      sharedBy:       new mongoose.Types.ObjectId(userId),
+      sharedBy: new mongoose.Types.ObjectId(userId),
       conversationId: new mongoose.Types.ObjectId(dto.conversationId),
-      latitude:       dto.latitude,
-      longitude:      dto.longitude,
-      accuracy:       dto.accuracy,
-      altitude:       dto.altitude,
-      name:           dto.name,
-      address:        dto.address,
-      isLive:         false,
+      latitude: dto.latitude,
+      longitude: dto.longitude,
+      accuracy: dto.accuracy,
+      altitude: dto.altitude,
+      name: dto.name,
+      address: dto.address,
+      isLive: false,
     });
 
     return toResponse(doc);

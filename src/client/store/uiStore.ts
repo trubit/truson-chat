@@ -28,8 +28,7 @@ export const useUiStore = create<UiStore>((set) => ({
   activeModal: null,
   modalData: null,
 
-  setActiveConversation: (activeConversationId) =>
-    set({ activeConversationId }),
+  setActiveConversation: (activeConversationId) => set({ activeConversationId }),
 
   setSearch: (searchQuery) => set({ searchQuery }),
 
@@ -41,9 +40,7 @@ export const useUiStore = create<UiStore>((set) => ({
 
   setMobile: (isMobile) => set({ isMobile }),
 
-  openModal: (activeModal, modalData = null) =>
-    set({ activeModal, modalData }),
+  openModal: (activeModal, modalData = null) => set({ activeModal, modalData }),
 
-  closeModal: () =>
-    set({ activeModal: null, modalData: null }),
+  closeModal: () => set({ activeModal: null, modalData: null }),
 }));

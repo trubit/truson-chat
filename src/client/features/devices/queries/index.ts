@@ -76,8 +76,7 @@ export function useRemoveDevice() {
   const removeDevice = useDeviceStore((s) => s.removeDevice);
 
   return useMutation({
-    mutationFn: (deviceId: string) =>
-      apiService.del<MessageApiResponse>(`/devices/${deviceId}`),
+    mutationFn: (deviceId: string) => apiService.del<MessageApiResponse>(`/devices/${deviceId}`),
     onSuccess: (_response, deviceId) => {
       removeDevice(deviceId);
       queryClient.invalidateQueries({ queryKey: DEVICE_KEYS.all });

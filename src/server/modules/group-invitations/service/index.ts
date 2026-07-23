@@ -2,12 +2,15 @@ import mongoose from 'mongoose';
 import { randomUUID } from 'crypto';
 import { AppError } from '../../../middlewares/errorHandler.js';
 import {
-  GroupInvitationModel, GroupMemberModel, GroupModel,
+  GroupInvitationModel,
+  GroupMemberModel,
+  GroupModel,
 } from '../../../database/models/index.js';
 import { groupRepository } from '../../groups/repository/index.js';
 import type { IGroupInvitation } from '../../../database/models/GroupInvitation.js';
 import type {
-  GroupInvitationSummary, CreateInvitePayload,
+  GroupInvitationSummary,
+  CreateInvitePayload,
 } from '../../../../shared/types/group.js';
 
 // ---------------------------------------------------------------------------
@@ -16,17 +19,17 @@ import type {
 
 function toSummary(inv: IGroupInvitation): GroupInvitationSummary {
   return {
-    _id:        inv._id.toString(),
-    groupId:    inv.groupId.toString(),
-    type:       inv.type,
-    status:     inv.status,
-    token:      inv.token,
-    invitedBy:  inv.createdBy.toString(),
-    inviteeId:  inv.inviteeId?.toString(),
-    maxUses:    inv.maxUses,
-    usedCount:  inv.usedCount,
-    expiresAt:  inv.expiresAt?.toISOString(),
-    createdAt:  inv.createdAt.toISOString(),
+    _id: inv._id.toString(),
+    groupId: inv.groupId.toString(),
+    type: inv.type,
+    status: inv.status,
+    token: inv.token,
+    invitedBy: inv.createdBy.toString(),
+    inviteeId: inv.inviteeId?.toString(),
+    maxUses: inv.maxUses,
+    usedCount: inv.usedCount,
+    expiresAt: inv.expiresAt?.toISOString(),
+    createdAt: inv.createdAt.toISOString(),
   };
 }
 
@@ -35,11 +38,12 @@ function toSummary(inv: IGroupInvitation): GroupInvitationSummary {
 // ---------------------------------------------------------------------------
 
 export class GroupInvitationService {
-
   async createInvite(userId: string, dto: CreateInvitePayload): Promise<GroupInvitationSummary> {
     const membership = await groupRepository.findMember(dto.groupId, userId);
-    if (!membership || membership.status !== 'active') throw new AppError('Not a member', 403, 'NOT_MEMBER');
-    if (!['owner', 'admin', 'moderator'].includes(membership.role)) throw new AppError('Insufficient permissions', 403, 'FORBIDDEN');
+    if (!membership || membership.status !== 'active')
+      throw new AppError('Not a member', 403, 'NOT_MEMBER');
+    if (!['owner', 'admin', 'moderator'].includes(membership.role))
+      throw new AppError('Insufficient permissions', 403, 'FORBIDDEN');
 
     const group = await groupRepository.findById(dto.groupId);
     if (!group) throw new AppError('Group not found', 404, 'NOT_FOUND');
@@ -47,17 +51,18 @@ export class GroupInvitationService {
     // For direct invites — check invitee is not already a member
     if (dto.type === 'direct' && dto.inviteeId) {
       const existing = await groupRepository.findMember(dto.groupId, dto.inviteeId);
-      if (existing && existing.status === 'active') throw new AppError('User is already a member', 409, 'ALREADY_MEMBER');
+      if (existing && existing.status === 'active')
+        throw new AppError('User is already a member', 409, 'ALREADY_MEMBER');
     }
 
     const inv = await GroupInvitationModel.create({
-      groupId:   new mongoose.Types.ObjectId(dto.groupId),
+      groupId: new mongoose.Types.ObjectId(dto.groupId),
       createdBy: new mongoose.Types.ObjectId(userId),
       inviteeId: dto.inviteeId ? new mongoose.Types.ObjectId(dto.inviteeId) : undefined,
-      type:      dto.type,
-      status:    'pending',
-      token:     randomUUID(),
-      maxUses:   dto.type === 'link' ? (dto.maxUses ?? 0) : 1,
+      type: dto.type,
+      status: 'pending',
+      token: randomUUID(),
+      maxUses: dto.type === 'link' ? (dto.maxUses ?? 0) : 1,
       expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : undefined,
     });
 
@@ -73,7 +78,9 @@ export class GroupInvitationService {
     const docs = await GroupInvitationModel.find({
       groupId: new mongoose.Types.ObjectId(groupId),
       status: 'pending',
-    }).sort({ createdAt: -1 }).exec();
+    })
+      .sort({ createdAt: -1 })
+      .exec();
 
     return docs.map(toSummary);
   }
@@ -115,14 +122,23 @@ export class GroupInvitationService {
 
     // Check membership
     const existing = await groupRepository.findMember(inv.groupId.toString(), userId);
-    if (existing && existing.status === 'active') throw new AppError('Already a member', 409, 'ALREADY_MEMBER');
+    if (existing && existing.status === 'active')
+      throw new AppError('Already a member', 409, 'ALREADY_MEMBER');
 
-    if (group.memberCount >= group.maxMembers) throw new AppError('Group is full', 409, 'GROUP_FULL');
+    if (group.memberCount >= group.maxMembers)
+      throw new AppError('Group is full', 409, 'GROUP_FULL');
 
     if (existing) {
-      await GroupMemberModel.findByIdAndUpdate(existing._id, { $set: { status: 'active', leftAt: null } }).exec();
+      await GroupMemberModel.findByIdAndUpdate(existing._id, {
+        $set: { status: 'active', leftAt: null },
+      }).exec();
     } else {
-      await groupRepository.addMember({ groupId: inv.groupId.toString(), userId, role: 'member', addedBy: inv.createdBy.toString() });
+      await groupRepository.addMember({
+        groupId: inv.groupId.toString(),
+        userId,
+        role: 'member',
+        addedBy: inv.createdBy.toString(),
+      });
       await groupRepository.incrementMemberCount(inv.groupId.toString(), 1);
     }
 

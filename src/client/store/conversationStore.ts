@@ -30,10 +30,7 @@ interface ConversationActions {
   setConversations: (convs: ConversationWithMeta[]) => void;
   upsertConversation: (conv: ConversationWithMeta) => void;
   setActiveConversation: (id: string | null) => void;
-  updateLastMessage: (
-    conversationId: string,
-    lastMessage: Conversation['lastMessage'],
-  ) => void;
+  updateLastMessage: (conversationId: string, lastMessage: Conversation['lastMessage']) => void;
   incrementUnread: (conversationId: string) => void;
   resetUnread: (conversationId: string) => void;
   removeConversation: (id: string) => void;
@@ -149,8 +146,7 @@ export const useConversationStore = create<ConversationStore>()((set) => ({
         conversations: updated,
         orderedIds: state.orderedIds.filter((oid) => oid !== id),
         totalUnread: computeTotalUnread(updated),
-        activeConversationId:
-          state.activeConversationId === id ? null : state.activeConversationId,
+        activeConversationId: state.activeConversationId === id ? null : state.activeConversationId,
       };
     });
   },
@@ -167,5 +163,4 @@ export const useConversationStore = create<ConversationStore>()((set) => ({
       isLoading: false,
     });
   },
-
 }));

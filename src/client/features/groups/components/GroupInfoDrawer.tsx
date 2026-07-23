@@ -1,30 +1,45 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Drawer, Box, Typography, Avatar, IconButton, CircularProgress,
-  Divider, Button, Dialog, DialogTitle, DialogContent, DialogActions,
-  Menu, MenuItem, alpha,
+  Drawer,
+  Box,
+  Typography,
+  Avatar,
+  IconButton,
+  CircularProgress,
+  Divider,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Menu,
+  MenuItem,
+  alpha,
 } from '@mui/material';
-import CloseIcon          from '@mui/icons-material/Close';
-import MoreVertIcon       from '@mui/icons-material/MoreVert';
-import ExitToAppIcon      from '@mui/icons-material/ExitToApp';
+import CloseIcon from '@mui/icons-material/Close';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import PersonAddIcon      from '@mui/icons-material/PersonAdd';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {
-  useGroup, useGroupMembers, useLeaveGroup,
-  useDeleteGroup, useKickMember,
+  useGroup,
+  useGroupMembers,
+  useLeaveGroup,
+  useDeleteGroup,
+  useKickMember,
 } from '../queries/index';
 import AddMemberDialog from './AddMemberDialog';
 
 const C = {
-  panel:  '#0C1722',
-  bg:     '#07101C',
+  panel: '#0C1722',
+  bg: '#07101C',
   border: 'rgba(134,150,160,0.12)',
   accent: '#10C4A0',
   copper: '#E87830',
   danger: '#ef4444',
-  txt1:   '#E9EDEF',
-  txt2:   '#8696A0',
+  txt1: '#E9EDEF',
+  txt2: '#8696A0',
 } as const;
 
 const ROLE_LABEL: Record<string, string> = {
@@ -33,26 +48,28 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 interface Props {
-  open:    boolean;
+  open: boolean;
   onClose: () => void;
   groupId: string;
-  myId:    string;
+  myId: string;
 }
 
 export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props) {
   const navigate = useNavigate();
-  const { data: groupDetail }            = useGroup(groupId);
+  const { data: groupDetail } = useGroup(groupId);
   const { data: membersData, isLoading } = useGroupMembers(open ? groupId : null);
 
-  const leaveGroup  = useLeaveGroup(groupId);
+  const leaveGroup = useLeaveGroup(groupId);
   const deleteGroup = useDeleteGroup(groupId);
-  const kickMember  = useKickMember(groupId);
+  const kickMember = useKickMember(groupId);
 
-  const [confirmLeave,  setConfirmLeave]  = useState(false);
+  const [confirmLeave, setConfirmLeave] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [memberMenu, setMemberMenu] = useState<{
-    anchorEl: HTMLElement; userId: string; name: string;
+    anchorEl: HTMLElement;
+    userId: string;
+    name: string;
   } | null>(null);
 
   const memberIds = membersData?.members.map((m) => m.userId) ?? [];
@@ -60,14 +77,20 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
   function handleLeaveConfirmed() {
     setConfirmLeave(false);
     leaveGroup.mutate(undefined, {
-      onSuccess: () => { onClose(); navigate('/chat'); },
+      onSuccess: () => {
+        onClose();
+        navigate('/chat');
+      },
     });
   }
 
   function handleDeleteConfirmed() {
     setConfirmDelete(false);
     deleteGroup.mutate(undefined, {
-      onSuccess: () => { onClose(); navigate('/chat'); },
+      onSuccess: () => {
+        onClose();
+        navigate('/chat');
+      },
     });
   }
 
@@ -85,37 +108,55 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
         slotProps={{
           paper: {
             sx: {
-              width: 340, bgcolor: C.bg,
+              width: 340,
+              bgcolor: C.bg,
               borderLeft: `1px solid ${C.border}`,
-              display: 'flex', flexDirection: 'column',
+              display: 'flex',
+              flexDirection: 'column',
             },
           },
         }}
       >
         {/* ── Header ─────────────────────────────────────────────── */}
-        <Box sx={{
-          px: 2, py: 1.5, display: 'flex', alignItems: 'center', gap: 1,
-          bgcolor: C.panel, borderBottom: `1px solid ${C.border}`, flexShrink: 0,
-        }}>
+        <Box
+          sx={{
+            px: 2,
+            py: 1.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            bgcolor: C.panel,
+            borderBottom: `1px solid ${C.border}`,
+            flexShrink: 0,
+          }}
+        >
           <IconButton size="small" onClick={onClose} sx={{ color: C.txt2 }}>
             <CloseIcon />
           </IconButton>
-          <Typography sx={{ color: C.txt1, fontWeight: 700, fontSize: 16 }}>
-            Group info
-          </Typography>
+          <Typography sx={{ color: C.txt1, fontWeight: 700, fontSize: 16 }}>Group info</Typography>
         </Box>
 
         <Box sx={{ flex: 1, overflowY: 'auto' }}>
-
           {/* ── Group identity ─────────────────────────────────────── */}
-          <Box sx={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            bgcolor: C.panel, pt: 3, pb: 2.5, px: 2, gap: 1.5,
-          }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              bgcolor: C.panel,
+              pt: 3,
+              pb: 2.5,
+              px: 2,
+              gap: 1.5,
+            }}
+          >
             <Avatar
               src={groupDetail?.avatar?.url}
               sx={{
-                width: 84, height: 84, fontSize: 34, fontWeight: 700,
+                width: 84,
+                height: 84,
+                fontSize: 34,
+                fontWeight: 700,
                 background: 'linear-gradient(135deg, #10C4A0, #0D9E80)',
                 boxShadow: `0 0 0 3px ${C.bg}, 0 0 0 5px ${alpha(C.accent, 0.35)}`,
               }}
@@ -131,10 +172,16 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
               </Typography>
             </Box>
             {groupDetail?.description && (
-              <Typography sx={{
-                color: C.txt2, fontSize: 13, textAlign: 'center',
-                maxWidth: 260, lineHeight: 1.6, mt: 0.5,
-              }}>
+              <Typography
+                sx={{
+                  color: C.txt2,
+                  fontSize: 13,
+                  textAlign: 'center',
+                  maxWidth: 260,
+                  lineHeight: 1.6,
+                  mt: 0.5,
+                }}
+              >
                 {groupDetail.description}
               </Typography>
             )}
@@ -149,8 +196,13 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
               startIcon={<PersonAddIcon sx={{ fontSize: 20 }} />}
               onClick={() => setAddMemberOpen(true)}
               sx={{
-                justifyContent: 'flex-start', px: 2.5, py: 1.6,
-                color: C.accent, textTransform: 'none', fontSize: 14.5, fontWeight: 600,
+                justifyContent: 'flex-start',
+                px: 2.5,
+                py: 1.6,
+                color: C.accent,
+                textTransform: 'none',
+                fontSize: 14.5,
+                fontWeight: 600,
                 borderRadius: 0,
                 '&:hover': { bgcolor: alpha(C.accent, 0.08) },
               }}
@@ -163,10 +215,18 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
 
           {/* ── Participants ───────────────────────────────────────── */}
           <Box sx={{ bgcolor: C.panel, mt: 1 }}>
-            <Typography sx={{
-              color: C.txt2, fontSize: 11.5, fontWeight: 700, letterSpacing: 0.8,
-              px: 2.5, pt: 1.5, pb: 0.75, textTransform: 'uppercase',
-            }}>
+            <Typography
+              sx={{
+                color: C.txt2,
+                fontSize: 11.5,
+                fontWeight: 700,
+                letterSpacing: 0.8,
+                px: 2.5,
+                pt: 1.5,
+                pb: 0.75,
+                textTransform: 'uppercase',
+              }}
+            >
               {membersData?.members.length ?? 0} participants
             </Typography>
 
@@ -178,17 +238,20 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
 
             {membersData?.members.map((m) => {
               const roleLabel = ROLE_LABEL[m.role];
-              const isMe      = m.userId === myId;
-              const label     = isMe ? 'You' : (m.displayName || m.username || 'Unknown');
-              const initial   = label[0]?.toUpperCase() ?? '?';
-              const canKick   = !isMe && m.role !== 'owner';
+              const isMe = m.userId === myId;
+              const label = isMe ? 'You' : m.displayName || m.username || 'Unknown';
+              const initial = label[0]?.toUpperCase() ?? '?';
+              const canKick = !isMe && m.role !== 'owner';
 
               return (
                 <Box
                   key={m.userId}
                   sx={{
-                    display: 'flex', alignItems: 'center', gap: 1.5,
-                    px: 2.5, py: 1.25,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1.5,
+                    px: 2.5,
+                    py: 1.25,
                     '&:hover': { bgcolor: alpha(C.accent, 0.04) },
                     transition: 'background 0.15s',
                   }}
@@ -216,12 +279,18 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
                   {canKick && (
                     <IconButton
                       size="small"
-                      onClick={(e) => setMemberMenu({
-                        anchorEl: e.currentTarget,
-                        userId: m.userId,
-                        name: label,
-                      })}
-                      sx={{ color: C.txt2, opacity: 0.55, '&:hover': { opacity: 1, color: C.txt1 } }}
+                      onClick={(e) =>
+                        setMemberMenu({
+                          anchorEl: e.currentTarget,
+                          userId: m.userId,
+                          name: label,
+                        })
+                      }
+                      sx={{
+                        color: C.txt2,
+                        opacity: 0.55,
+                        '&:hover': { opacity: 1, color: C.txt1 },
+                      }}
                     >
                       <MoreVertIcon sx={{ fontSize: 18 }} />
                     </IconButton>
@@ -242,8 +311,13 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
               onClick={() => setConfirmLeave(true)}
               disabled={leaveGroup.isPending}
               sx={{
-                justifyContent: 'flex-start', px: 2.5, py: 1.6,
-                color: C.danger, textTransform: 'none', fontSize: 14.5, fontWeight: 600,
+                justifyContent: 'flex-start',
+                px: 2.5,
+                py: 1.6,
+                color: C.danger,
+                textTransform: 'none',
+                fontSize: 14.5,
+                fontWeight: 600,
                 borderRadius: 0,
                 '&:hover': { bgcolor: alpha(C.danger, 0.08) },
               }}
@@ -260,8 +334,13 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
               onClick={() => setConfirmDelete(true)}
               disabled={deleteGroup.isPending}
               sx={{
-                justifyContent: 'flex-start', px: 2.5, py: 1.6,
-                color: C.danger, textTransform: 'none', fontSize: 14.5, fontWeight: 600,
+                justifyContent: 'flex-start',
+                px: 2.5,
+                py: 1.6,
+                color: C.danger,
+                textTransform: 'none',
+                fontSize: 14.5,
+                fontWeight: 600,
                 borderRadius: 0,
                 '&:hover': { bgcolor: alpha(C.danger, 0.08) },
               }}
@@ -280,8 +359,10 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
         slotProps={{
           paper: {
             sx: {
-              bgcolor: '#1A2636', border: `1px solid ${C.border}`,
-              borderRadius: '10px', minWidth: 170,
+              bgcolor: '#1A2636',
+              border: `1px solid ${C.border}`,
+              borderRadius: '10px',
+              minWidth: 170,
             },
           },
         }}
@@ -306,7 +387,16 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
       <Dialog
         open={confirmLeave}
         onClose={() => setConfirmLeave(false)}
-        slotProps={{ paper: { sx: { bgcolor: '#0C1722', border: `1px solid ${C.border}`, borderRadius: '16px', minWidth: 300 } } }}
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: '#0C1722',
+              border: `1px solid ${C.border}`,
+              borderRadius: '16px',
+              minWidth: 300,
+            },
+          },
+        }}
       >
         <DialogTitle sx={{ color: C.txt1, fontWeight: 700 }}>Exit group?</DialogTitle>
         <DialogContent>
@@ -315,13 +405,22 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
-          <Button onClick={() => setConfirmLeave(false)} sx={{ color: C.txt2, textTransform: 'none' }}>
+          <Button
+            onClick={() => setConfirmLeave(false)}
+            sx={{ color: C.txt2, textTransform: 'none' }}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleLeaveConfirmed}
             variant="contained"
-            sx={{ bgcolor: C.danger, color: '#fff', textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#dc2626' } }}
+            sx={{
+              bgcolor: C.danger,
+              color: '#fff',
+              textTransform: 'none',
+              fontWeight: 700,
+              '&:hover': { bgcolor: '#dc2626' },
+            }}
           >
             Exit
           </Button>
@@ -332,23 +431,45 @@ export default function GroupInfoDrawer({ open, onClose, groupId, myId }: Props)
       <Dialog
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
-        slotProps={{ paper: { sx: { bgcolor: '#0C1722', border: `1px solid ${C.border}`, borderRadius: '16px', minWidth: 300 } } }}
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: '#0C1722',
+              border: `1px solid ${C.border}`,
+              borderRadius: '16px',
+              minWidth: 300,
+            },
+          },
+        }}
       >
         <DialogTitle sx={{ color: C.txt1, fontWeight: 700 }}>Delete group?</DialogTitle>
         <DialogContent>
           <Typography sx={{ color: C.txt2, fontSize: 14 }}>
-            This will permanently delete <Typography component="span" sx={{ color: C.txt1, fontWeight: 700 }}>{groupDetail?.name}</Typography> and all its messages for everyone. This cannot be undone.
+            This will permanently delete{' '}
+            <Typography component="span" sx={{ color: C.txt1, fontWeight: 700 }}>
+              {groupDetail?.name}
+            </Typography>{' '}
+            and all its messages for everyone. This cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
-          <Button onClick={() => setConfirmDelete(false)} sx={{ color: C.txt2, textTransform: 'none' }}>
+          <Button
+            onClick={() => setConfirmDelete(false)}
+            sx={{ color: C.txt2, textTransform: 'none' }}
+          >
             Cancel
           </Button>
           <Button
             onClick={handleDeleteConfirmed}
             variant="contained"
             disabled={deleteGroup.isPending}
-            sx={{ bgcolor: C.danger, color: '#fff', textTransform: 'none', fontWeight: 700, '&:hover': { bgcolor: '#dc2626' } }}
+            sx={{
+              bgcolor: C.danger,
+              color: '#fff',
+              textTransform: 'none',
+              fontWeight: 700,
+              '&:hover': { bgcolor: '#dc2626' },
+            }}
           >
             {deleteGroup.isPending ? 'Deleting…' : 'Delete'}
           </Button>

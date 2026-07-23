@@ -22,7 +22,7 @@ function VerificationBanner() {
           zIndex: 1300,
           '@keyframes slideDown': {
             from: { opacity: 0, transform: 'translateY(-100%)' },
-            to:   { opacity: 1, transform: 'translateY(0)' },
+            to: { opacity: 1, transform: 'translateY(0)' },
           },
           animation: 'slideDown 0.35s cubic-bezier(.22,.68,0,1.2) both',
           background: 'linear-gradient(135deg, #1a1200 0%, #2a1e00 40%, #1f1500 100%)',
@@ -74,10 +74,7 @@ function VerificationBanner() {
 
           {/* Text content */}
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography
-              variant="body2"
-              sx={{ color: '#ffe082', fontWeight: 700, lineHeight: 1.4 }}
-            >
+            <Typography variant="body2" sx={{ color: '#ffe082', fontWeight: 700, lineHeight: 1.4 }}>
               Verify your email address
             </Typography>
             <Typography

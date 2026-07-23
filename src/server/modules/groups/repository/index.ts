@@ -1,34 +1,42 @@
 import mongoose from 'mongoose';
 import { randomUUID } from 'crypto';
 import {
-  GroupModel,     type IGroup,
-  GroupMemberModel, type IGroupMember,
-  GroupMessageModel, type IGroupMessage,
+  GroupModel,
+  type IGroup,
+  GroupMemberModel,
+  type IGroupMember,
+  GroupMessageModel,
+  type IGroupMessage,
   GroupMessageReadModel,
 } from '../../../database/models/index.js';
-import type { CreateGroupDto, UpdateGroupDto, GroupQuery, GroupMessageQuery, SendGroupMessageDto } from '../types/index.js';
+import type {
+  CreateGroupDto,
+  UpdateGroupDto,
+  GroupQuery,
+  GroupMessageQuery,
+  SendGroupMessageDto,
+} from '../types/index.js';
 
 // ---------------------------------------------------------------------------
 // GroupRepository — all Mongoose queries for groups
 // ---------------------------------------------------------------------------
 
 export class GroupRepository {
-
   // ——— Groups ———
 
   async create(data: CreateGroupDto & { createdBy: string }): Promise<IGroup> {
     const doc = await GroupModel.create({
-      name:        data.name,
+      name: data.name,
       description: data.description,
-      handle:      data.handle,
-      type:        data.type,
+      handle: data.handle,
+      type: data.type,
       communityId: data.communityId ? new mongoose.Types.ObjectId(data.communityId) : undefined,
-      maxMembers:  data.maxMembers ?? 1024,
-      settings:    data.settings ?? {},
-      categories:  data.categories ?? [],
-      tags:        data.tags ?? [],
-      createdBy:   new mongoose.Types.ObjectId(data.createdBy),
-      inviteLink:  randomUUID(),
+      maxMembers: data.maxMembers ?? 1024,
+      settings: data.settings ?? {},
+      categories: data.categories ?? [],
+      tags: data.tags ?? [],
+      createdBy: new mongoose.Types.ObjectId(data.createdBy),
+      inviteLink: randomUUID(),
       memberCount: 1,
     });
     return doc;
@@ -48,14 +56,14 @@ export class GroupRepository {
   }
 
   async findMany(query: GroupQuery): Promise<{ groups: IGroup[]; total: number }> {
-    const page  = query.page  ?? 1;
+    const page = query.page ?? 1;
     const limit = query.limit ?? 20;
-    const skip  = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
     const filter: Record<string, unknown> = { deletedAt: null };
-    if (query.type)   filter['type']   = query.type;
+    if (query.type) filter['type'] = query.type;
     if (query.status) filter['status'] = query.status;
-    if (query.q)      filter['$text']  = { $search: query.q };
+    if (query.q) filter['$text'] = { $search: query.q };
 
     const [groups, total] = await Promise.all([
       GroupModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).exec(),
@@ -64,12 +72,17 @@ export class GroupRepository {
     return { groups, total };
   }
 
-  async findByUser(userId: string, opts: { page: number; limit: number }): Promise<{ groups: IGroup[]; total: number }> {
-    const skip  = (opts.page - 1) * opts.limit;
+  async findByUser(
+    userId: string,
+    opts: { page: number; limit: number },
+  ): Promise<{ groups: IGroup[]; total: number }> {
+    const skip = (opts.page - 1) * opts.limit;
     const userOid = new mongoose.Types.ObjectId(userId);
 
     const memberships = await GroupMemberModel.find({ userId: userOid, status: 'active' })
-      .select('groupId').lean().exec();
+      .select('groupId')
+      .lean()
+      .exec();
     const groupIds = memberships.map((m) => m.groupId);
 
     const filter = { _id: { $in: groupIds }, deletedAt: null };
@@ -83,13 +96,13 @@ export class GroupRepository {
   async update(id: string, data: UpdateGroupDto): Promise<IGroup | null> {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
     const $set: Record<string, unknown> = {};
-    if (data.name        !== undefined) $set['name']        = data.name;
+    if (data.name !== undefined) $set['name'] = data.name;
     if (data.description !== undefined) $set['description'] = data.description;
-    if (data.handle      !== undefined) $set['handle']      = data.handle?.toLowerCase();
-    if (data.type        !== undefined) $set['type']        = data.type;
-    if (data.maxMembers  !== undefined) $set['maxMembers']  = data.maxMembers;
-    if (data.categories  !== undefined) $set['categories']  = data.categories;
-    if (data.tags        !== undefined) $set['tags']        = data.tags;
+    if (data.handle !== undefined) $set['handle'] = data.handle?.toLowerCase();
+    if (data.type !== undefined) $set['type'] = data.type;
+    if (data.maxMembers !== undefined) $set['maxMembers'] = data.maxMembers;
+    if (data.categories !== undefined) $set['categories'] = data.categories;
+    if (data.tags !== undefined) $set['tags'] = data.tags;
     if (data.settings) {
       for (const [k, v] of Object.entries(data.settings)) {
         $set[`settings.${k}`] = v;
@@ -128,22 +141,26 @@ export class GroupRepository {
   // ——— Members ———
 
   async findMember(groupId: string, userId: string): Promise<IGroupMember | null> {
-    if (!mongoose.Types.ObjectId.isValid(groupId) || !mongoose.Types.ObjectId.isValid(userId)) return null;
+    if (!mongoose.Types.ObjectId.isValid(groupId) || !mongoose.Types.ObjectId.isValid(userId))
+      return null;
     return GroupMemberModel.findOne({
       groupId: new mongoose.Types.ObjectId(groupId),
-      userId:  new mongoose.Types.ObjectId(userId),
+      userId: new mongoose.Types.ObjectId(userId),
     }).exec();
   }
 
   async addMember(data: {
-    groupId: string; userId: string; role: IGroupMember['role']; addedBy?: string;
+    groupId: string;
+    userId: string;
+    role: IGroupMember['role'];
+    addedBy?: string;
   }): Promise<IGroupMember> {
     const doc = await GroupMemberModel.create({
       groupId: new mongoose.Types.ObjectId(data.groupId),
-      userId:  new mongoose.Types.ObjectId(data.userId),
-      role:    data.role,
+      userId: new mongoose.Types.ObjectId(data.userId),
+      role: data.role,
       addedBy: data.addedBy ? new mongoose.Types.ObjectId(data.addedBy) : undefined,
-      status:  'active',
+      status: 'active',
       joinedAt: new Date(),
     });
     return doc;
@@ -153,7 +170,7 @@ export class GroupRepository {
     await GroupMemberModel.findOneAndUpdate(
       {
         groupId: new mongoose.Types.ObjectId(groupId),
-        userId:  new mongoose.Types.ObjectId(userId),
+        userId: new mongoose.Types.ObjectId(userId),
       },
       { $set: { status: 'left', leftAt: new Date() } },
     ).exec();
@@ -163,23 +180,30 @@ export class GroupRepository {
 
   async createMessage(data: SendGroupMessageDto & { senderId: string }): Promise<IGroupMessage> {
     const doc = await GroupMessageModel.create({
-      groupId:   new mongoose.Types.ObjectId(data.groupId),
+      groupId: new mongoose.Types.ObjectId(data.groupId),
       channelId: data.channelId ? new mongoose.Types.ObjectId(data.channelId) : undefined,
-      senderId:  new mongoose.Types.ObjectId(data.senderId),
-      type:      data.type ?? 'text',
-      content:   data.content,
-      replyTo:   data.replyTo ? new mongoose.Types.ObjectId(data.replyTo) : undefined,
-      mentions:  (data.mentions ?? []).map((m) => ({ ...m, userId: new mongoose.Types.ObjectId(m.userId) })),
-      media:     data.media ?? [],
+      senderId: new mongoose.Types.ObjectId(data.senderId),
+      type: data.type ?? 'text',
+      content: data.content,
+      replyTo: data.replyTo ? new mongoose.Types.ObjectId(data.replyTo) : undefined,
+      mentions: (data.mentions ?? []).map((m) => ({
+        ...m,
+        userId: new mongoose.Types.ObjectId(m.userId),
+      })),
+      media: data.media ?? [],
     });
-    await GroupModel.findByIdAndUpdate(data.groupId, { $set: { lastMessageAt: new Date() } }).exec();
+    await GroupModel.findByIdAndUpdate(data.groupId, {
+      $set: { lastMessageAt: new Date() },
+    }).exec();
     return doc;
   }
 
-  async findMessages(query: GroupMessageQuery): Promise<{ messages: IGroupMessage[]; hasMore: boolean }> {
+  async findMessages(
+    query: GroupMessageQuery,
+  ): Promise<{ messages: IGroupMessage[]; hasMore: boolean }> {
     const limit = (query.limit ?? 30) + 1;
     const filter: Record<string, unknown> = {
-      groupId:   new mongoose.Types.ObjectId(query.groupId),
+      groupId: new mongoose.Types.ObjectId(query.groupId),
       deletedAt: null,
     };
     if (query.channelId) filter['channelId'] = new mongoose.Types.ObjectId(query.channelId);
@@ -224,12 +248,24 @@ export class GroupRepository {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
     return GroupMessageModel.findByIdAndUpdate(
       new mongoose.Types.ObjectId(id),
-      { $set: { status: 'deleted', content: '', media: [], deletedAt: new Date(), deletedBy: new mongoose.Types.ObjectId(deletedBy) } },
+      {
+        $set: {
+          status: 'deleted',
+          content: '',
+          media: [],
+          deletedAt: new Date(),
+          deletedBy: new mongoose.Types.ObjectId(deletedBy),
+        },
+      },
       { returnDocument: 'after' },
     ).exec();
   }
 
-  async toggleReaction(messageId: string, emoji: string, userId: string): Promise<{ message: IGroupMessage; action: 'add' | 'remove'; count: number }> {
+  async toggleReaction(
+    messageId: string,
+    emoji: string,
+    userId: string,
+  ): Promise<{ message: IGroupMessage; action: 'add' | 'remove'; count: number }> {
     const userOid = new mongoose.Types.ObjectId(userId);
     const msg = await GroupMessageModel.findById(new mongoose.Types.ObjectId(messageId)).exec();
     if (!msg) throw new Error('Message not found');
@@ -260,8 +296,13 @@ export class GroupRepository {
 
   async markRead(groupId: string, userId: string, lastMessageId: string): Promise<void> {
     await GroupMessageReadModel.findOneAndUpdate(
-      { groupId: new mongoose.Types.ObjectId(groupId), userId: new mongoose.Types.ObjectId(userId) },
-      { $set: { lastMessageId: new mongoose.Types.ObjectId(lastMessageId), lastReadAt: new Date() } },
+      {
+        groupId: new mongoose.Types.ObjectId(groupId),
+        userId: new mongoose.Types.ObjectId(userId),
+      },
+      {
+        $set: { lastMessageId: new mongoose.Types.ObjectId(lastMessageId), lastReadAt: new Date() },
+      },
       { upsert: true },
     ).exec();
   }
@@ -269,8 +310,10 @@ export class GroupRepository {
   async countUnread(groupId: string, userId: string): Promise<number> {
     const read = await GroupMessageReadModel.findOne({
       groupId: new mongoose.Types.ObjectId(groupId),
-      userId:  new mongoose.Types.ObjectId(userId),
-    }).lean().exec();
+      userId: new mongoose.Types.ObjectId(userId),
+    })
+      .lean()
+      .exec();
 
     const filter: Record<string, unknown> = {
       groupId: new mongoose.Types.ObjectId(groupId),

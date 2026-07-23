@@ -14,9 +14,12 @@ import { logger } from '../logger/index.js';
 function buildRedisStore(prefix: string): RedisStore {
   const sendCommand: SendCommandFn = (...args: string[]) => {
     if (redisClient.status !== 'ready') {
-      // Redis not yet connected — throw so express-rate-limit falls back to
-      // fail-open (allowing the request through) rather than crashing.
-      throw new Error('Redis not ready');
+      // Redis not yet connected. Return a resolved value so the store's init
+      // (loadIncrementScript) completes silently instead of logging a noisy
+      // async error. The `skip` function bypasses rate limiting in dev/test,
+      // so this path is safe. In production Redis is required and will be
+      // ready before any request arrives (start() throws if connectRedis fails).
+      return Promise.resolve('') as ReturnType<SendCommandFn>;
     }
     return redisClient.call(args[0], ...args.slice(1)) as ReturnType<SendCommandFn>;
   };
@@ -40,7 +43,7 @@ function buildOptions(
     windowMs,
     max,
     store: store as RateLimitOptions['store'],
-    standardHeaders: 'draft-7',  // RateLimit-* headers (RFC draft 7)
+    standardHeaders: 'draft-7', // RateLimit-* headers (RFC draft 7)
     legacyHeaders: false,
     message: { success: false, error: message },
     skipSuccessfulRequests: false,

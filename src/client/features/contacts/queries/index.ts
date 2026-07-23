@@ -65,9 +65,7 @@ export function useContacts(query?: ContactListQuery) {
       if (query?.order) params.set('order', query.order);
 
       const qs = params.toString();
-      const res = await apiService.get<ContactListResponse>(
-        `/contacts${qs ? `?${qs}` : ''}`,
-      );
+      const res = await apiService.get<ContactListResponse>(`/contacts${qs ? `?${qs}` : ''}`);
       setContacts(res.data.contacts, res.data.meta);
       return res.data;
     },
@@ -108,8 +106,7 @@ export function useAddContact() {
   const addContact = useContactsStore((s) => s.addContact);
 
   return useMutation({
-    mutationFn: (dto: CreateContactDto) =>
-      apiService.post<ContactResponse>('/contacts', dto),
+    mutationFn: (dto: CreateContactDto) => apiService.post<ContactResponse>('/contacts', dto),
     onSuccess: (res) => {
       addContact(res.data);
       queryClient.invalidateQueries({ queryKey: CONTACT_KEYS.all });

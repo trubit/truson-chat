@@ -46,14 +46,9 @@ function formatDevice(
 // ---------------------------------------------------------------------------
 
 export class DevicesService {
-  async listDevices(
-    userId: string,
-    currentSessionId: string,
-  ): Promise<DeviceResponse[]> {
+  async listDevices(userId: string, currentSessionId: string): Promise<DeviceResponse[]> {
     // Look up the current session to find its deviceId
-    const currentSession = await SessionModel.findById(currentSessionId)
-      .select('deviceId')
-      .lean();
+    const currentSession = await SessionModel.findById(currentSessionId).select('deviceId').lean();
 
     const currentDeviceId = currentSession?.deviceId?.toHexString();
 
@@ -94,20 +89,18 @@ export class DevicesService {
       throw new AppError('Access denied', 403, 'FORBIDDEN');
     }
 
-    return formatDevice(
-      {
-        _id: device._id,
-        userId: device.userId,
-        name: device.name,
-        type: device.type,
-        platform: device.platform,
-        browser: device.browser,
-        trusted: device.trusted,
-        ipAddress: device.ipAddress,
-        lastSeenAt: device.lastSeenAt,
-        createdAt: device.createdAt,
-      },
-    );
+    return formatDevice({
+      _id: device._id,
+      userId: device.userId,
+      name: device.name,
+      type: device.type,
+      platform: device.platform,
+      browser: device.browser,
+      trusted: device.trusted,
+      ipAddress: device.ipAddress,
+      lastSeenAt: device.lastSeenAt,
+      createdAt: device.createdAt,
+    });
   }
 
   async registerDevice(
@@ -252,12 +245,7 @@ export class DevicesService {
     });
   }
 
-  async removeDevice(
-    userId: string,
-    deviceId: string,
-    ip: string,
-    ua: string,
-  ): Promise<void> {
+  async removeDevice(userId: string, deviceId: string, ip: string, ua: string): Promise<void> {
     const device = await DeviceModel.findById(deviceId).lean();
 
     if (!device || device.revokedAt) {

@@ -5,7 +5,10 @@ import { useGifStore } from '@/store/gifStore';
 import type { StickerPack } from '@/store/stickerStore';
 import type { GifItem } from '@/store/gifStore';
 
-interface ApiResponse<T> { success: boolean; data: T; }
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+}
 
 export function useStickerPacks() {
   const setPacks = useStickerStore((s) => s.setPacks);
@@ -36,7 +39,10 @@ export function useTrendingGifs() {
 export function useGifSearch(query: string) {
   return useQuery({
     queryKey: ['gifs', 'search', query],
-    queryFn: () => apiService.get<ApiResponse<{ gifs: GifItem[] }>>(`/gifs/search?q=${encodeURIComponent(query)}`),
+    queryFn: () =>
+      apiService.get<ApiResponse<{ gifs: GifItem[] }>>(
+        `/gifs/search?q=${encodeURIComponent(query)}`,
+      ),
     enabled: query.length >= 2,
     staleTime: 30_000,
   });

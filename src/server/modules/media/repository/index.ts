@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
-import { MediaFileModel, type IMediaFile, type MediaFileType } from '../../../database/models/MediaFile.js';
+import {
+  MediaFileModel,
+  type IMediaFile,
+  type MediaFileType,
+} from '../../../database/models/MediaFile.js';
 
 export class MediaRepository {
   async create(data: Partial<IMediaFile>): Promise<IMediaFile> {
@@ -39,11 +43,9 @@ export class MediaRepository {
 
   async update(id: string, data: Partial<IMediaFile>): Promise<IMediaFile | null> {
     if (!mongoose.Types.ObjectId.isValid(id)) return null;
-    return MediaFileModel.findByIdAndUpdate(
-      new mongoose.Types.ObjectId(id),
-      data,
-      { new: true },
-    ).exec();
+    return MediaFileModel.findByIdAndUpdate(new mongoose.Types.ObjectId(id), data, {
+      new: true,
+    }).exec();
   }
 
   async softDelete(id: string): Promise<IMediaFile | null> {

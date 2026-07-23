@@ -63,6 +63,5 @@ export const useBlockingStore = create<BlockingStore>((set) => ({
       mutedMeta: { ...state.mutedMeta, total: Math.max(0, state.mutedMeta.total - 1) },
     })),
 
-  reset: () =>
-    set({ blocked: [], blockedMeta: emptyMeta, muted: [], mutedMeta: emptyMeta }),
+  reset: () => set({ blocked: [], blockedMeta: emptyMeta, muted: [], mutedMeta: emptyMeta }),
 }));

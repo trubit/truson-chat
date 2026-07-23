@@ -26,10 +26,10 @@ export const ROUTES = {
   SETTINGS_SECURITY: '/settings/security',
   PROFILE_EDIT: '/settings/profile',
   // Phase 7 — Groups, Communities, Channels
-  GROUPS:          '/groups',
-  GROUP:           '/groups/:groupId',
-  COMMUNITIES:     '/communities',
-  COMMUNITY:       '/communities/:communityId',
+  GROUPS: '/groups',
+  GROUP: '/groups/:groupId',
+  COMMUNITIES: '/communities',
+  COMMUNITY: '/communities/:communityId',
   // Admin
   ADMIN: '/admin',
   ADMIN_USERS: '/admin/users',

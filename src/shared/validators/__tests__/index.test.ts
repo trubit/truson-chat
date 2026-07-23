@@ -118,7 +118,7 @@ describe('phoneSchema', () => {
     expect(() => phoneSchema.parse('1234567')).not.toThrow();
   });
 
-  it("accepts a 15-digit number without + prefix", () => {
+  it('accepts a 15-digit number without + prefix', () => {
     expect(() => phoneSchema.parse('123456789012345')).not.toThrow();
   });
 
@@ -131,11 +131,11 @@ describe('phoneSchema', () => {
     expect(() => phoneSchema.parse('abc')).toThrow();
   });
 
-  it("rejects a number starting with 0", () => {
+  it('rejects a number starting with 0', () => {
     expect(() => phoneSchema.parse('0123456789')).toThrow();
   });
 
-  it("rejects an empty string", () => {
+  it('rejects an empty string', () => {
     expect(() => phoneSchema.parse('')).toThrow();
   });
 });
@@ -185,7 +185,7 @@ describe('usernameSchema', () => {
     expect(() => usernameSchema.parse('user.name_123')).not.toThrow();
   });
 
-  it("accepts a username with hyphens", () => {
+  it('accepts a username with hyphens', () => {
     expect(() => usernameSchema.parse('user-name')).not.toThrow();
   });
 
@@ -202,7 +202,7 @@ describe('usernameSchema', () => {
     expect(() => usernameSchema.parse('invalid user!')).toThrow();
   });
 
-  it("rejects a username with @", () => {
+  it('rejects a username with @', () => {
     expect(() => usernameSchema.parse('user@name')).toThrow();
   });
 

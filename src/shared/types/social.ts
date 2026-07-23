@@ -56,12 +56,7 @@ export interface ImportPrepResult {
 
 // ─── Friends ─────────────────────────────────────────────────────────────────
 
-export type FriendRequestStatus =
-  | 'pending'
-  | 'accepted'
-  | 'rejected'
-  | 'cancelled'
-  | 'expired';
+export type FriendRequestStatus = 'pending' | 'accepted' | 'rejected' | 'cancelled' | 'expired';
 
 export interface IFriendRequestData {
   id: string;

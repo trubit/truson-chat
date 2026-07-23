@@ -1,10 +1,17 @@
 import mongoose from 'mongoose';
 import { ProfileModel, type IProfile } from '../../../database/models/Profile.js';
 import { UserModel, type IUser } from '../../../database/models/User.js';
-import { UserPreferencesModel, type IUserPreferences } from '../../../database/models/UserPreferences.js';
+import {
+  UserPreferencesModel,
+  type IUserPreferences,
+} from '../../../database/models/UserPreferences.js';
 import { AuditLogModel } from '../../../database/models/AuditLog.js';
 import { logger } from '../../../logger/index.js';
-import type { UpdateProfileInput, UpdatePrivacyInput, UpdatePreferencesInput } from '../types/index.js';
+import type {
+  UpdateProfileInput,
+  UpdatePrivacyInput,
+  UpdatePreferencesInput,
+} from '../types/index.js';
 
 export class ProfileRepository {
   async findByUserId(userId: string): Promise<IProfile | null> {
@@ -22,10 +29,7 @@ export class ProfileRepository {
     return { profile, user };
   }
 
-  async updateProfile(
-    userId: string,
-    data: Partial<UpdateProfileInput>,
-  ): Promise<IProfile | null> {
+  async updateProfile(userId: string, data: Partial<UpdateProfileInput>): Promise<IProfile | null> {
     if (!mongoose.isValidObjectId(userId)) return null;
 
     const updateFields: Record<string, unknown> = {};
@@ -48,15 +52,11 @@ export class ProfileRepository {
   ): Promise<IProfile | null> {
     if (!mongoose.isValidObjectId(userId)) return null;
 
-    const update = avatar
-      ? { $set: { avatar } }
-      : { $unset: { avatar: '' } };
+    const update = avatar ? { $set: { avatar } } : { $unset: { avatar: '' } };
 
-    return ProfileModel.findOneAndUpdate(
-      { userId: new mongoose.Types.ObjectId(userId) },
-      update,
-      { returnDocument: 'after' },
-    ).exec();
+    return ProfileModel.findOneAndUpdate({ userId: new mongoose.Types.ObjectId(userId) }, update, {
+      returnDocument: 'after',
+    }).exec();
   }
 
   async updateCoverImage(
@@ -65,15 +65,11 @@ export class ProfileRepository {
   ): Promise<IProfile | null> {
     if (!mongoose.isValidObjectId(userId)) return null;
 
-    const update = coverImage
-      ? { $set: { coverImage } }
-      : { $unset: { coverImage: '' } };
+    const update = coverImage ? { $set: { coverImage } } : { $unset: { coverImage: '' } };
 
-    return ProfileModel.findOneAndUpdate(
-      { userId: new mongoose.Types.ObjectId(userId) },
-      update,
-      { returnDocument: 'after' },
-    ).exec();
+    return ProfileModel.findOneAndUpdate({ userId: new mongoose.Types.ObjectId(userId) }, update, {
+      returnDocument: 'after',
+    }).exec();
   }
 
   async updatePrivacySettings(

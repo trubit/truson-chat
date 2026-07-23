@@ -1,14 +1,30 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  Box, Typography, Paper, TextField, InputAdornment,
-  Avatar, Button, CircularProgress, Grid, Card,
-  CardContent, CardActions, Chip, Alert,
+  Box,
+  Typography,
+  Paper,
+  TextField,
+  InputAdornment,
+  Avatar,
+  Button,
+  CircularProgress,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
+  Alert,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CheckIcon from '@mui/icons-material/Check';
-import { useSearchUsers, useSuggestions, useRecentSearches, useClearRecentSearches } from '../queries/index';
+import {
+  useSearchUsers,
+  useSuggestions,
+  useRecentSearches,
+  useClearRecentSearches,
+} from '../queries/index';
 import { useSendFriendRequest } from '@/features/friends/queries/index';
 import { useAddContact } from '@/features/contacts/queries/index';
 import type { DiscoveredUser } from '@shared/types/social';
@@ -16,17 +32,17 @@ import type { DiscoveredUser } from '@shared/types/social';
 function UserCard({ user }: { user: DiscoveredUser }) {
   const queryClient = useQueryClient();
   const sendRequest = useSendFriendRequest();
-  const addContact  = useAddContact();
+  const addContact = useAddContact();
 
   // Local optimistic state so the UI updates immediately on click
-  const [friendSent,    setFriendSent]    = useState(user.pendingRequest === 'sent');
-  const [contactAdded,  setContactAdded]  = useState(user.isContact);
-  const [friendError,   setFriendError]   = useState('');
-  const [contactError,  setContactError]  = useState('');
+  const [friendSent, setFriendSent] = useState(user.pendingRequest === 'sent');
+  const [contactAdded, setContactAdded] = useState(user.isContact);
+  const [friendError, setFriendError] = useState('');
+  const [contactError, setContactError] = useState('');
 
-  const initials      = user.displayName.charAt(0).toUpperCase();
-  const isFriend      = user.isFriend;
-  const canAddFriend  = !isFriend && !friendSent && user.pendingRequest !== 'received';
+  const initials = user.displayName.charAt(0).toUpperCase();
+  const isFriend = user.isFriend;
+  const canAddFriend = !isFriend && !friendSent && user.pendingRequest !== 'received';
   const canAddContact = !isFriend && !contactAdded;
 
   const handleAddFriend = () => {
@@ -70,39 +86,78 @@ function UserCard({ user }: { user: DiscoveredUser }) {
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 2 }}>
       <CardContent sx={{ flex: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-          <Avatar src={user.avatar} alt={user.displayName} sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
+          <Avatar
+            src={user.avatar}
+            alt={user.displayName}
+            sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}
+          >
             {initials}
           </Avatar>
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="body1" sx={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <Typography
+              variant="body1"
+              sx={{
+                fontWeight: 700,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {user.displayName}
             </Typography>
-            <Typography variant="caption" color="text.secondary">@{user.username}</Typography>
+            <Typography variant="caption" color="text.secondary">
+              @{user.username}
+            </Typography>
           </Box>
         </Box>
         {user.bio && (
-          <Typography variant="caption" color="text.secondary" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
             {user.bio}
           </Typography>
         )}
         <Box sx={{ mt: 1, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-          {isFriend           && <Chip label="Friend"           size="small" color="primary" icon={<CheckIcon />} />}
-          {contactAdded       && <Chip label="Contact"          size="small" variant="outlined" />}
-          {friendSent         && <Chip label="Request sent"     size="small" color="info" />}
-          {user.pendingRequest === 'received' && <Chip label="Wants to connect" size="small" color="success" />}
+          {isFriend && <Chip label="Friend" size="small" color="primary" icon={<CheckIcon />} />}
+          {contactAdded && <Chip label="Contact" size="small" variant="outlined" />}
+          {friendSent && <Chip label="Request sent" size="small" color="info" />}
+          {user.pendingRequest === 'received' && (
+            <Chip label="Wants to connect" size="small" color="success" />
+          )}
           {user.mutualFriendCount > 0 && (
             <Chip label={`${user.mutualFriendCount} mutual`} size="small" variant="outlined" />
           )}
         </Box>
-        {friendError  && <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>{friendError}</Typography>}
-        {contactError && <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>{contactError}</Typography>}
+        {friendError && (
+          <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>
+            {friendError}
+          </Typography>
+        )}
+        {contactError && (
+          <Typography variant="caption" color="error" sx={{ mt: 0.5, display: 'block' }}>
+            {contactError}
+          </Typography>
+        )}
       </CardContent>
       <CardActions sx={{ px: 2, pb: 2, gap: 1 }}>
         {canAddFriend && (
           <Button
             size="small"
             variant="contained"
-            startIcon={sendRequest.isPending ? <CircularProgress size={14} color="inherit" /> : <PersonAddIcon />}
+            startIcon={
+              sendRequest.isPending ? (
+                <CircularProgress size={14} color="inherit" />
+              ) : (
+                <PersonAddIcon />
+              )
+            }
             onClick={handleAddFriend}
             disabled={sendRequest.isPending}
             fullWidth
@@ -114,7 +169,9 @@ function UserCard({ user }: { user: DiscoveredUser }) {
           <Button
             size="small"
             variant="outlined"
-            startIcon={addContact.isPending ? <CircularProgress size={14} color="inherit" /> : undefined}
+            startIcon={
+              addContact.isPending ? <CircularProgress size={14} color="inherit" /> : undefined
+            }
             onClick={handleAddContact}
             disabled={addContact.isPending}
             fullWidth
@@ -142,7 +199,9 @@ export default function DiscoveryPage() {
 
   return (
     <Box sx={{ maxWidth: 900, mx: 'auto', p: { xs: 1.5, sm: 2.5 } }}>
-      <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>Discover People</Typography>
+      <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
+        Discover People
+      </Typography>
 
       {/* Search bar */}
       <Paper sx={{ p: 1.5, mb: 3, borderRadius: 2 }}>
@@ -167,7 +226,10 @@ export default function DiscoveryPage() {
       {/* Search results */}
       {showResults && (
         <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.secondary' }}>
+          <Typography
+            variant="subtitle2"
+            sx={{ fontWeight: 700, mb: 1.5, color: 'text.secondary' }}
+          >
             Results
           </Typography>
           {searchResults.length === 0 && !isFetching && (
@@ -186,11 +248,17 @@ export default function DiscoveryPage() {
       {/* Recent searches */}
       {!showResults && recentSearches.length > 0 && (
         <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}
+          >
             <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.secondary' }}>
               Recent searches
             </Typography>
-            <Button size="small" onClick={() => clearRecent.mutate()} disabled={clearRecent.isPending}>
+            <Button
+              size="small"
+              onClick={() => clearRecent.mutate()}
+              disabled={clearRecent.isPending}
+            >
               Clear
             </Button>
           </Box>
@@ -211,7 +279,10 @@ export default function DiscoveryPage() {
       {/* Suggestions */}
       {!showResults && suggestions.length > 0 && (
         <Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.secondary' }}>
+          <Typography
+            variant="subtitle2"
+            sx={{ fontWeight: 700, mb: 1.5, color: 'text.secondary' }}
+          >
             People you may know
           </Typography>
           <Grid container spacing={2}>

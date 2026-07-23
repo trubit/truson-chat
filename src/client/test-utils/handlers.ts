@@ -40,17 +40,11 @@ export const handlers = [
   ),
 
   // Auth — logout
-  http.post('/api/v1/auth/logout', () =>
-    HttpResponse.json({ success: true }),
-  ),
+  http.post('/api/v1/auth/logout', () => HttpResponse.json({ success: true })),
 
   // Users — current user profile
-  http.get('/api/v1/users/me', () =>
-    HttpResponse.json({ data: TEST_USER }),
-  ),
+  http.get('/api/v1/users/me', () => HttpResponse.json({ data: TEST_USER })),
 
   // Health check
-  http.get('/health', () =>
-    HttpResponse.json({ status: 'ok', env: 'test' }),
-  ),
+  http.get('/health', () => HttpResponse.json({ status: 'ok', env: 'test' })),
 ];

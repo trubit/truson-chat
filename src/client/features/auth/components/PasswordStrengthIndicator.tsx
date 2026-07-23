@@ -28,14 +28,11 @@ function getStrength(password: string): StrengthResult {
 
   if (score <= 1) return { label: 'Weak', score, color: 'error', value: 20 };
   if (score === 2) return { label: 'Fair', score, color: 'warning', value: 45 };
-  if (score === 3 || score === 4)
-    return { label: 'Good', score, color: 'success', value: 70 };
+  if (score === 3 || score === 4) return { label: 'Good', score, color: 'success', value: 70 };
   return { label: 'Strong', score, color: 'success', value: 100 };
 }
 
-export function PasswordStrengthIndicator({
-  password,
-}: PasswordStrengthIndicatorProps) {
+export function PasswordStrengthIndicator({ password }: PasswordStrengthIndicatorProps) {
   const strength = useMemo(() => getStrength(password), [password]);
 
   if (!password) return null;

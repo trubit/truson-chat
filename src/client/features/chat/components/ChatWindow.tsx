@@ -7,29 +7,21 @@ import {
   useMemo,
   Fragment,
 } from 'react';
-import {
-  Box,
-  Typography,
-  Avatar,
-  IconButton,
-  Skeleton,
-  Badge,
-  Fab,
-} from '@mui/material';
-import MoreVertIcon            from '@mui/icons-material/MoreVert';
-import ArrowBackIcon           from '@mui/icons-material/ArrowBack';
-import KeyboardArrowDownIcon   from '@mui/icons-material/KeyboardArrowDown';
-import PhoneOutlinedIcon       from '@mui/icons-material/PhoneOutlined';
-import VideocamOutlinedIcon    from '@mui/icons-material/VideocamOutlined';
-import { useNavigate }    from 'react-router-dom';
-import { useAuthStore }         from '@/store/authStore';
+import { Box, Typography, Avatar, IconButton, Skeleton, Badge, Fab } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
+import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
 import { useConversationStore } from '@/store/conversationStore';
-import { useMessageStore }      from '@/store/messageStore';
-import { usePresenceStore }     from '@/store/presenceStore';
-import { useSocketStore }       from '@/store';
-import { getChatSocket }        from '../hooks/useChatSocket';
-import { useMessages }          from '../queries/index';
-import MessageBubble   from './MessageBubble';
+import { useMessageStore } from '@/store/messageStore';
+import { usePresenceStore } from '@/store/presenceStore';
+import { useSocketStore } from '@/store';
+import { getChatSocket } from '../hooks/useChatSocket';
+import { useMessages } from '../queries/index';
+import MessageBubble from './MessageBubble';
 import MessageComposer from './MessageComposer';
 import TypingIndicator from './TypingIndicator';
 import type { Message, MessageMedia } from '@shared/types';
@@ -38,24 +30,24 @@ import { ROUTES } from '@/routes/index';
 const EMPTY_MESSAGES: Message[] = [];
 
 const C = {
-  panelHdr:   '#0E1E2B',   // header bar — premium dark blue
-  main:       '#08111A',   // chat area — deep midnight
-  border:     'rgba(134,150,160,0.12)',
-  accent:     '#10C4A0',
+  panelHdr: '#0E1E2B', // header bar — premium dark blue
+  main: '#08111A', // chat area — deep midnight
+  border: 'rgba(134,150,160,0.12)',
+  accent: '#10C4A0',
   accentDark: '#0D9E80',
-  teal:       '#53BDEB',   // blue read-ticks
-  txt1:       '#E9EDEF',
-  txt2:       '#8696A0',
-  txt3:       '#567390',
-  badge:      '#10C4A0',
+  teal: '#53BDEB', // blue read-ticks
+  txt1: '#E9EDEF',
+  txt2: '#8696A0',
+  txt3: '#567390',
+  badge: '#10C4A0',
 } as const;
 
 function formatDateLabel(iso: string): string {
-  const d         = new Date(iso);
-  const today     = new Date();
+  const d = new Date(iso);
+  const today = new Date();
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
-  if (d.toDateString() === today.toDateString())     return 'Today';
+  if (d.toDateString() === today.toDateString()) return 'Today';
   if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
   return d.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
 }
@@ -81,19 +73,23 @@ function DateDivider({ label }: { label: string }) {
 }
 
 interface ChatWindowProps {
-  conversationId:     string;
-  sendMessage:        (payload: {
+  conversationId: string;
+  sendMessage: (payload: {
     conversationId: string;
-    type:    import('@shared/types').MessageType;
+    type: import('@shared/types').MessageType;
     content: string;
     replyTo?: string;
-    media?:  import('@shared/types').MessageMedia[];
+    media?: import('@shared/types').MessageMedia[];
   }) => Promise<{ success: boolean; message?: Message; error?: string }>;
-  sendTypingStart:    (conversationId: string) => void;
-  sendTypingStop:     (conversationId: string) => void;
-  sendRead:           (conversationId: string, messageId: string) => void;
-  sendDeleteMessage:  (messageId: string) => Promise<{ success: boolean; error?: string }>;
-  sendReactToMessage: (messageId: string, emoji: string, conversationId: string) => Promise<{ success: boolean; error?: string }>;
+  sendTypingStart: (conversationId: string) => void;
+  sendTypingStop: (conversationId: string) => void;
+  sendRead: (conversationId: string, messageId: string) => void;
+  sendDeleteMessage: (messageId: string) => Promise<{ success: boolean; error?: string }>;
+  sendReactToMessage: (
+    messageId: string,
+    emoji: string,
+    conversationId: string,
+  ) => Promise<{ success: boolean; error?: string }>;
 }
 
 export default function ChatWindow({
@@ -105,23 +101,23 @@ export default function ChatWindow({
   sendDeleteMessage,
   sendReactToMessage,
 }: ChatWindowProps) {
-  const navigate     = useNavigate();
-  const user         = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const conversation = useConversationStore((s) => s.conversations.get(conversationId));
-  const resetUnread  = useConversationStore((s) => s.resetUnread);
-  const messages     = useMessageStore((s) => s.messages[conversationId] ?? EMPTY_MESSAGES);
+  const resetUnread = useConversationStore((s) => s.resetUnread);
+  const messages = useMessageStore((s) => s.messages[conversationId] ?? EMPTY_MESSAGES);
   const presencesRef = usePresenceStore((s) => s.presences);
 
-  const [replyTo,     setReplyTo]     = useState<Message | null>(null);
+  const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [newMsgCount, setNewMsgCount] = useState(0);
-  const [isAtBottom,  setIsAtBottom]  = useState(true);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
-  const messagesEndRef       = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const topSentinelRef       = useRef<HTMLDivElement>(null);
-  const isAtBottomRef        = useRef(true);
+  const topSentinelRef = useRef<HTMLDivElement>(null);
+  const isAtBottomRef = useRef(true);
   // Tracks which conversation's initial scroll we have already done
-  const initialConvRef       = useRef<string>('');
+  const initialConvRef = useRef<string>('');
 
   const { isLoading, fetchNextPage, hasNextPage } = useMessages(conversationId);
   const isConnected = useSocketStore((s) => s.isConnected);
@@ -156,7 +152,7 @@ export default function ChatWindow({
     if (messages.length === 0) return;
     if (initialConvRef.current === conversationId) return; // already done
     initialConvRef.current = conversationId;
-    isAtBottomRef.current  = true;
+    isAtBottomRef.current = true;
     setIsAtBottom(true);
     setNewMsgCount(0);
     const el = messagesContainerRef.current;
@@ -181,7 +177,7 @@ export default function ChatWindow({
     } else {
       setNewMsgCount((c) => c + 1);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length, conversationId]);
 
   // ── Mark as read whenever the open conversation gets new messages ─────────
@@ -190,16 +186,18 @@ export default function ChatWindow({
     const lastMsg = messages[messages.length - 1];
     sendRead(conversationId, lastMsg._id);
     resetUnread(conversationId);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, messages.length]);
 
   // ── Infinite scroll — load older messages when sentinel enters viewport ───
   useEffect(() => {
-    const sentinel  = topSentinelRef.current;
+    const sentinel = topSentinelRef.current;
     const container = messagesContainerRef.current;
     if (!sentinel || !container) return;
     const observer = new IntersectionObserver(
-      (entries) => { if (entries[0]?.isIntersecting && hasNextPage) void fetchNextPage(); },
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasNextPage) void fetchNextPage();
+      },
       { root: container, threshold: 0.1 },
     );
     observer.observe(sentinel);
@@ -230,9 +228,9 @@ export default function ChatWindow({
         useMessageStore.getState().appendMessage(result.message);
         useConversationStore.getState().updateLastMessage(result.message.conversationId, {
           messageId: result.message._id,
-          content:   result.message.content,
-          senderId:  result.message.senderId,
-          type:      result.message.type,
+          content: result.message.content,
+          senderId: result.message.senderId,
+          type: result.message.type,
           timestamp: result.message.createdAt,
         });
       }
@@ -242,7 +240,9 @@ export default function ChatWindow({
   );
 
   const handleDelete = useCallback(
-    async (messageId: string) => { await sendDeleteMessage(messageId); },
+    async (messageId: string) => {
+      await sendDeleteMessage(messageId);
+    },
     [sendDeleteMessage],
   );
 
@@ -271,16 +271,18 @@ export default function ChatWindow({
   }, [conversation, user?._id]);
 
   const otherPresence = otherUserId ? presencesRef[otherUserId] : null;
-  const isOnline      = otherPresence?.status === 'online';
+  const isOnline = otherPresence?.status === 'online';
 
   // Group messages: avatar visibility + date separator
   const groupedMessages = useMemo(() => {
     return messages.map((msg, idx) => {
-      const prev       = messages[idx - 1];
-      const showAvatar = !prev || prev.senderId !== msg.senderId ||
+      const prev = messages[idx - 1];
+      const showAvatar =
+        !prev ||
+        prev.senderId !== msg.senderId ||
         new Date(msg.createdAt).getTime() - new Date(prev.createdAt).getTime() > 60_000 * 5;
-      const showDateSep = !prev ||
-        new Date(msg.createdAt).toDateString() !== new Date(prev.createdAt).toDateString();
+      const showDateSep =
+        !prev || new Date(msg.createdAt).toDateString() !== new Date(prev.createdAt).toDateString();
       return { msg, showAvatar, showDateSep };
     });
   }, [messages]);
@@ -288,7 +290,6 @@ export default function ChatWindow({
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', bgcolor: C.main }}>
-
       {/* ── Header ───────────────────────────────────────────────────────── */}
       <Box
         sx={{
@@ -318,9 +319,7 @@ export default function ChatWindow({
             flexShrink: 0,
             p: '2px',
             borderRadius: '50%',
-            background: isOnline
-              ? 'linear-gradient(135deg, #10C4A0, #0D9E80)'
-              : 'transparent',
+            background: isOnline ? 'linear-gradient(135deg, #10C4A0, #0D9E80)' : 'transparent',
             boxShadow: isOnline ? '0 0 12px rgba(16,196,160,0.4)' : 'none',
           }}
         >
@@ -339,11 +338,27 @@ export default function ChatWindow({
         </Box>
 
         <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Typography sx={{ fontSize: 14.5, fontWeight: 700, color: C.txt1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', letterSpacing: '-0.2px' }}>
+          <Typography
+            sx={{
+              fontSize: 14.5,
+              fontWeight: 700,
+              color: C.txt1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              letterSpacing: '-0.2px',
+            }}
+          >
             {convName}
           </Typography>
           {otherPresence ? (
-            <Typography sx={{ fontSize: 11.5, color: isOnline ? C.accent : C.txt3, fontWeight: isOnline ? 600 : 400 }}>
+            <Typography
+              sx={{
+                fontSize: 11.5,
+                color: isOnline ? C.accent : C.txt3,
+                fontWeight: isOnline ? 600 : 400,
+              }}
+            >
               {isOnline
                 ? '● Online'
                 : otherPresence.lastSeen
@@ -352,15 +367,23 @@ export default function ChatWindow({
             </Typography>
           ) : (
             <Typography sx={{ fontSize: 11.5, color: C.txt3 }}>
-              {conversation?.type === 'group' ? `${conversation.participants?.length ?? 0} members` : ''}
+              {conversation?.type === 'group'
+                ? `${conversation.participants?.length ?? 0} members`
+                : ''}
             </Typography>
           )}
         </Box>
 
-        <IconButton size="small" sx={{ color: C.txt2, '&:hover': { color: C.accent, bgcolor: 'rgba(16,196,160,0.08)' } }}>
+        <IconButton
+          size="small"
+          sx={{ color: C.txt2, '&:hover': { color: C.accent, bgcolor: 'rgba(16,196,160,0.08)' } }}
+        >
           <PhoneOutlinedIcon sx={{ fontSize: 19 }} />
         </IconButton>
-        <IconButton size="small" sx={{ color: C.txt2, '&:hover': { color: C.accent, bgcolor: 'rgba(16,196,160,0.08)' } }}>
+        <IconButton
+          size="small"
+          sx={{ color: C.txt2, '&:hover': { color: C.accent, bgcolor: 'rgba(16,196,160,0.08)' } }}
+        >
           <VideocamOutlinedIcon sx={{ fontSize: 20 }} />
         </IconButton>
         <IconButton size="small" sx={{ color: C.txt2, '&:hover': { color: C.txt1 } }}>
@@ -373,8 +396,15 @@ export default function ChatWindow({
         The outer wrapper is relative so the scroll-to-bottom FAB can float
         over the message list without affecting the layout.
       */}
-      <Box sx={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-
+      <Box
+        sx={{
+          flex: 1,
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Box
           ref={messagesContainerRef}
           onScroll={handleScroll}
@@ -393,9 +423,29 @@ export default function ChatWindow({
             /* Skeleton placeholders while the first page loads */
             <Box sx={{ px: 2, py: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
               {Array.from({ length: 7 }).map((_, i) => (
-                <Box key={i} sx={{ display: 'flex', justifyContent: i % 2 === 0 ? 'flex-start' : 'flex-end', gap: 1, alignItems: 'flex-end' }}>
-                  {i % 2 === 0 && <Skeleton variant="circular" width={28} height={28} sx={{ bgcolor: 'rgba(255,255,255,0.06)', flexShrink: 0 }} />}
-                  <Skeleton variant="rounded" width={`${38 + (i * 17 + 5) % 28}%`} height={36 + (i % 3) * 8} sx={{ borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.06)' }} />
+                <Box
+                  key={i}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: i % 2 === 0 ? 'flex-start' : 'flex-end',
+                    gap: 1,
+                    alignItems: 'flex-end',
+                  }}
+                >
+                  {i % 2 === 0 && (
+                    <Skeleton
+                      variant="circular"
+                      width={28}
+                      height={28}
+                      sx={{ bgcolor: 'rgba(255,255,255,0.06)', flexShrink: 0 }}
+                    />
+                  )}
+                  <Skeleton
+                    variant="rounded"
+                    width={`${38 + ((i * 17 + 5) % 28)}%`}
+                    height={36 + (i % 3) * 8}
+                    sx={{ borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.06)' }}
+                  />
                 </Box>
               ))}
             </Box>
@@ -415,7 +465,9 @@ export default function ChatWindow({
               <Box ref={topSentinelRef} sx={{ height: 2 }} />
 
               {messages.length === 0 ? (
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
+                <Box
+                  sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}
+                >
                   <Typography sx={{ fontSize: 13.5, color: C.txt3 }}>
                     No messages yet. Say hello! 👋
                   </Typography>

@@ -1,9 +1,4 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  useInfiniteQuery,
-} from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { apiService } from '@/services/api';
 import { useConversationStore } from '@/store/conversationStore';
 import { useMessageStore } from '@/store/messageStore';
@@ -35,8 +30,7 @@ export function useConversations(archived = false) {
 export function useConversation(id: string | null) {
   return useQuery({
     queryKey: ['conversations', id],
-    queryFn: () =>
-      apiService.get<ApiResponse<ConversationWithMeta>>(`/conversations/${id!}`),
+    queryFn: () => apiService.get<ApiResponse<ConversationWithMeta>>(`/conversations/${id!}`),
     enabled: Boolean(id),
   });
 }
@@ -58,17 +52,8 @@ export function useCreateConversation() {
 
 export function useMarkRead() {
   return useMutation({
-    mutationFn: ({
-      conversationId,
-      messageId,
-    }: {
-      conversationId: string;
-      messageId: string;
-    }) =>
-      apiService.post<ApiResponse<null>>(
-        `/conversations/${conversationId}/read`,
-        { messageId },
-      ),
+    mutationFn: ({ conversationId, messageId }: { conversationId: string; messageId: string }) =>
+      apiService.post<ApiResponse<null>>(`/conversations/${conversationId}/read`, { messageId }),
   });
 }
 
@@ -85,10 +70,7 @@ export function usePinConversation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, pin }: { id: string; pin: boolean }) =>
-      apiService.post<ApiResponse<null>>(
-        `/conversations/${id}/${pin ? 'pin' : 'unpin'}`,
-        {},
-      ),
+      apiService.post<ApiResponse<null>>(`/conversations/${id}/${pin ? 'pin' : 'unpin'}`, {}),
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['conversations'] }),
   });
 }
@@ -104,9 +86,7 @@ export function useMessages(conversationId: string | null) {
       const url = `/messages?conversationId=${conversationId!}&limit=30${
         pageParam ? `&before=${pageParam}` : ''
       }`;
-      const res = await apiService.get<
-        ApiResponse<{ messages: Message[]; hasMore: boolean }>
-      >(url);
+      const res = await apiService.get<ApiResponse<{ messages: Message[]; hasMore: boolean }>>(url);
       const msgs = res.data.messages;
       const hasMore = res.data.hasMore;
       // Server already returns messages in ascending order (oldest first).
@@ -140,8 +120,7 @@ export function useSendMessageMutation() {
       content: string;
       type?: string;
       replyTo?: string;
-    }) =>
-      apiService.post<ApiResponse<Message>>('/messages', { type: 'text', ...data }),
+    }) => apiService.post<ApiResponse<Message>>('/messages', { type: 'text', ...data }),
   });
 }
 

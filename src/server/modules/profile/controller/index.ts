@@ -1,7 +1,11 @@
 import type { RequestHandler } from 'express';
 import { AppError } from '../../../middlewares/errorHandler.js';
 import type { ProfileService } from '../service/index.js';
-import type { UpdateProfileInput, UpdatePrivacyInput, UpdatePreferencesInput } from '../types/index.js';
+import type {
+  UpdateProfileInput,
+  UpdatePrivacyInput,
+  UpdatePreferencesInput,
+} from '../types/index.js';
 
 export class ProfileController {
   constructor(private service: ProfileService) {}

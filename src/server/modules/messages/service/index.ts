@@ -57,10 +57,7 @@ export class MessageService {
     private convRepo: ConversationRepository,
   ) {}
 
-  async sendMessage(
-    userId: string,
-    dto: SendMessageDto,
-  ): Promise<MessageResponse> {
+  async sendMessage(userId: string, dto: SendMessageDto): Promise<MessageResponse> {
     if (!mongoose.Types.ObjectId.isValid(dto.conversationId)) {
       throw new AppError('Invalid conversation ID', 400, 'INVALID_ID');
     }
@@ -78,9 +75,7 @@ export class MessageService {
 
     // For direct conversations, check blocks
     if (conversation.type === 'direct') {
-      const otherParticipant = conversation.participants.find(
-        (p) => p.toString() !== userId,
-      );
+      const otherParticipant = conversation.participants.find((p) => p.toString() !== userId);
       if (otherParticipant) {
         const block = await BlockedUserModel.findOne({
           $or: [
@@ -99,11 +94,7 @@ export class MessageService {
           .exec();
 
         if (block) {
-          throw new AppError(
-            'Cannot send message to this user',
-            403,
-            'BLOCKED',
-          );
+          throw new AppError('Cannot send message to this user', 403, 'BLOCKED');
         }
       }
     }
@@ -176,10 +167,7 @@ export class MessageService {
     return toResponse(message);
   }
 
-  async deleteMessage(
-    userId: string,
-    messageId: string,
-  ): Promise<MessageResponse> {
+  async deleteMessage(userId: string, messageId: string): Promise<MessageResponse> {
     if (!mongoose.Types.ObjectId.isValid(messageId)) {
       throw new AppError('Invalid message ID', 400, 'INVALID_ID');
     }
@@ -190,11 +178,7 @@ export class MessageService {
     }
 
     if (message.senderId.toString() !== userId) {
-      throw new AppError(
-        'You can only delete your own messages',
-        403,
-        'FORBIDDEN',
-      );
+      throw new AppError('You can only delete your own messages', 403, 'FORBIDDEN');
     }
 
     if (message.deletedAt) {
@@ -222,11 +206,7 @@ export class MessageService {
       throw new AppError('Invalid message ID', 400, 'INVALID_ID');
     }
 
-    const { message, action } = await this.msgRepo.toggleReaction(
-      messageId,
-      dto.emoji,
-      userId,
-    );
+    const { message, action } = await this.msgRepo.toggleReaction(messageId, dto.emoji, userId);
 
     return {
       action,
@@ -255,10 +235,11 @@ export class MessageService {
     }
 
     const limit = query.limit ?? 30;
-    const { messages, hasMore } = await this.msgRepo.findByConversation(
-      conversationId,
-      { limit, before: query.before, after: query.after },
-    );
+    const { messages, hasMore } = await this.msgRepo.findByConversation(conversationId, {
+      limit,
+      before: query.before,
+      after: query.after,
+    });
 
     return {
       messages: messages.map(toResponse),
@@ -277,10 +258,7 @@ export class MessageService {
     }
 
     // Must be a member of the conversation
-    const member = await this.convRepo.getMember(
-      message.conversationId.toString(),
-      userId,
-    );
+    const member = await this.convRepo.getMember(message.conversationId.toString(), userId);
     if (!member || member.leftAt) {
       throw new AppError('Message not found', 404, 'NOT_FOUND');
     }
@@ -295,11 +273,7 @@ export class MessageService {
     await this.msgRepo.markAllDelivered(conversationId, userId);
   }
 
-  async markRead(
-    userId: string,
-    conversationId: string,
-    messageId: string,
-  ): Promise<void> {
+  async markRead(userId: string, conversationId: string, messageId: string): Promise<void> {
     if (!mongoose.Types.ObjectId.isValid(conversationId)) {
       throw new AppError('Invalid conversation ID', 400, 'INVALID_ID');
     }
@@ -330,10 +304,7 @@ export class MessageService {
       if (!mongoose.Types.ObjectId.isValid(query.conversationId)) {
         throw new AppError('Invalid conversation ID', 400, 'INVALID_ID');
       }
-      const member = await this.convRepo.getMember(
-        query.conversationId,
-        userId,
-      );
+      const member = await this.convRepo.getMember(query.conversationId, userId);
       if (!member || member.leftAt) {
         throw new AppError('Conversation not found', 404, 'NOT_FOUND');
       }

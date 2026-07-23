@@ -6,21 +6,24 @@ export class StickerService {
     const packs = await StickerPackModel.find({ isActive: true }).lean().exec();
 
     return packs.map((p) => ({
-      _id:           p._id.toString(),
-      name:          p.name,
-      description:   p.description,
-      coverUrl:      p.coverUrl,
-      isSystem:      p.isSystem,
+      _id: p._id.toString(),
+      name: p.name,
+      description: p.description,
+      coverUrl: p.coverUrl,
+      isSystem: p.isSystem,
       downloadCount: p.downloadCount,
-      stickers:      p.stickers.map((s) => ({
-        _id:     s._id.toString(),
-        name:    s.name,
-        url:     s.url,
-        publicId: s.publicId,
-        emoji:   s.emoji,
-        width:   s.width,
-        height:  s.height,
-      } as StickerItem)),
+      stickers: p.stickers.map(
+        (s) =>
+          ({
+            _id: s._id.toString(),
+            name: s.name,
+            url: s.url,
+            publicId: s.publicId,
+            emoji: s.emoji,
+            width: s.width,
+            height: s.height,
+          }) as StickerItem,
+      ),
     }));
   }
 
@@ -29,21 +32,24 @@ export class StickerService {
     if (!pack) return null;
 
     return {
-      _id:           pack._id.toString(),
-      name:          pack.name,
-      description:   pack.description,
-      coverUrl:      pack.coverUrl,
-      isSystem:      pack.isSystem,
+      _id: pack._id.toString(),
+      name: pack.name,
+      description: pack.description,
+      coverUrl: pack.coverUrl,
+      isSystem: pack.isSystem,
       downloadCount: pack.downloadCount,
-      stickers:      pack.stickers.map((s) => ({
-        _id:     s._id.toString(),
-        name:    s.name,
-        url:     s.url,
-        publicId: s.publicId,
-        emoji:   s.emoji,
-        width:   s.width,
-        height:  s.height,
-      } as StickerItem)),
+      stickers: pack.stickers.map(
+        (s) =>
+          ({
+            _id: s._id.toString(),
+            name: s.name,
+            url: s.url,
+            publicId: s.publicId,
+            emoji: s.emoji,
+            width: s.width,
+            height: s.height,
+          }) as StickerItem,
+      ),
     };
   }
 }

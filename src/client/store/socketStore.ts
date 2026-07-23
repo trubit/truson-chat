@@ -30,8 +30,7 @@ export const useSocketStore = create<SocketStore>((set) => ({
 
   setSocketId: (socketId) => set({ socketId }),
 
-  incrementReconnect: () =>
-    set((state) => ({ reconnectAttempts: state.reconnectAttempts + 1 })),
+  incrementReconnect: () => set((state) => ({ reconnectAttempts: state.reconnectAttempts + 1 })),
 
   resetReconnect: () => set({ reconnectAttempts: 0 }),
 }));

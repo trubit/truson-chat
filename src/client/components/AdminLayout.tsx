@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Drawer,
-  IconButton,
-  Typography,
-  Avatar,
-  Divider,
-  Tooltip,
-} from '@mui/material';
+import { Box, Drawer, IconButton, Typography, Avatar, Divider, Tooltip } from '@mui/material';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import MonitorOutlinedIcon from '@mui/icons-material/MonitorOutlined';
@@ -20,42 +12,43 @@ import { useAuthStore } from '@/store/authStore';
 import { ROUTES } from '@/routes/index';
 
 const C = {
-  bg:          '#05060E',
-  sidebar:     '#070911',
-  sidebarHdr:  '#0A0D1C',
-  border:      'rgba(245,158,11,0.12)',
-  accent:      '#F59E0B',
-  accentGlow:  'rgba(245,158,11,0.18)',
-  accentDark:  '#D97706',
-  violet:      '#9B6DFF',
-  teal:        '#22D3EE',
-  icon:        'rgba(255,255,255,0.38)',
-  iconHover:   '#F1F5F9',
-  txt1:        '#F1F5F9',
-  txt2:        '#94A3B8',
-  txt3:        '#475569',
+  bg: '#05060E',
+  sidebar: '#070911',
+  sidebarHdr: '#0A0D1C',
+  border: 'rgba(245,158,11,0.12)',
+  accent: '#F59E0B',
+  accentGlow: 'rgba(245,158,11,0.18)',
+  accentDark: '#D97706',
+  violet: '#9B6DFF',
+  teal: '#22D3EE',
+  icon: 'rgba(255,255,255,0.38)',
+  iconHover: '#F1F5F9',
+  txt1: '#F1F5F9',
+  txt2: '#94A3B8',
+  txt3: '#475569',
 };
 
 const SIDEBAR_W = 240;
 
 const NAV = [
-  { label: 'Overview',  to: ROUTES.ADMIN,        icon: DashboardOutlinedIcon,  exact: true },
-  { label: 'Users',     to: ROUTES.ADMIN_USERS,   icon: PeopleOutlinedIcon,     exact: false },
-  { label: 'System',    to: ROUTES.ADMIN_SYSTEM,  icon: MonitorOutlinedIcon,    exact: false },
+  { label: 'Overview', to: ROUTES.ADMIN, icon: DashboardOutlinedIcon, exact: true },
+  { label: 'Users', to: ROUTES.ADMIN_USERS, icon: PeopleOutlinedIcon, exact: false },
+  { label: 'System', to: ROUTES.ADMIN_SYSTEM, icon: MonitorOutlinedIcon, exact: false },
 ];
 
-function NavItem({ label, to, Icon, exact }: {
+function NavItem({
+  label,
+  to,
+  Icon,
+  exact,
+}: {
   label: string;
   to: string;
   Icon: React.ElementType;
   exact: boolean;
 }) {
   return (
-    <NavLink
-      to={to}
-      end={exact}
-      style={{ textDecoration: 'none' }}
-    >
+    <NavLink to={to} end={exact} style={{ textDecoration: 'none' }}>
       {({ isActive }) => (
         <Box
           sx={{
@@ -170,7 +163,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             Admin Panel
           </Typography>
           <Typography variant="caption" sx={{ color: C.txt3, fontSize: '0.7rem' }}>
-            TrusonChat
+            Linkora
           </Typography>
         </Box>
 
@@ -185,7 +178,15 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       <Box sx={{ flex: 1, overflowY: 'auto', pt: 1.5 }}>
         <Typography
           variant="caption"
-          sx={{ color: C.txt3, px: 3, mb: 1, display: 'block', letterSpacing: '0.08em', textTransform: 'uppercase', fontSize: '0.65rem' }}
+          sx={{
+            color: C.txt3,
+            px: 3,
+            mb: 1,
+            display: 'block',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            fontSize: '0.65rem',
+          }}
         >
           Management
         </Typography>
@@ -249,11 +250,22 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             <Box sx={{ minWidth: 0 }}>
               <Typography
                 variant="body2"
-                sx={{ color: C.txt1, fontWeight: 600, fontSize: '0.8rem', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                sx={{
+                  color: C.txt1,
+                  fontWeight: 600,
+                  fontSize: '0.8rem',
+                  lineHeight: 1.2,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
               >
                 {user.username}
               </Typography>
-              <Typography variant="caption" sx={{ color: C.accent, fontSize: '0.65rem', fontWeight: 700 }}>
+              <Typography
+                variant="caption"
+                sx={{ color: C.accent, fontSize: '0.65rem', fontWeight: 700 }}
+              >
                 Admin
               </Typography>
             </Box>
@@ -306,7 +318,13 @@ export default function AdminLayout() {
             gap: 1.5,
           }}
         >
-          <IconButton onClick={(e) => { (e.currentTarget as HTMLElement).blur(); setMobileOpen(true); }} sx={{ color: C.icon }}>
+          <IconButton
+            onClick={(e) => {
+              (e.currentTarget as HTMLElement).blur();
+              setMobileOpen(true);
+            }}
+            sx={{ color: C.icon }}
+          >
             <MenuIcon />
           </IconButton>
           <Typography variant="body1" sx={{ color: C.txt1, fontWeight: 700 }}>

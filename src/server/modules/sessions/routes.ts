@@ -19,10 +19,6 @@ router.get('/:id', validateParams(sessionIdParamSchema), sessionsController.getS
 router.delete('/', sessionsController.revokeAllSessions);
 
 // DELETE /sessions/:id — revoke a specific session
-router.delete(
-  '/:id',
-  validateParams(sessionIdParamSchema),
-  sessionsController.revokeSession,
-);
+router.delete('/:id', validateParams(sessionIdParamSchema), sessionsController.revokeSession);
 
 export default router;

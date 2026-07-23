@@ -151,11 +151,7 @@ describe('AuthService.register', () => {
     await service.register(BASE_REGISTER_INPUT, IP, UA);
 
     await expect(
-      service.register(
-        { ...BASE_REGISTER_INPUT, username: 'differentuser' },
-        IP,
-        UA,
-      ),
+      service.register({ ...BASE_REGISTER_INPUT, username: 'differentuser' }, IP, UA),
     ).rejects.toMatchObject({ statusCode: 409, code: 'CONFLICT' });
   });
 
@@ -164,11 +160,7 @@ describe('AuthService.register', () => {
     await service.register(BASE_REGISTER_INPUT, IP, UA);
 
     await expect(
-      service.register(
-        { ...BASE_REGISTER_INPUT, email: 'other@example.com' },
-        IP,
-        UA,
-      ),
+      service.register({ ...BASE_REGISTER_INPUT, email: 'other@example.com' }, IP, UA),
     ).rejects.toMatchObject({ statusCode: 409, code: 'CONFLICT' });
   });
 
@@ -197,11 +189,13 @@ describe('AuthService.register', () => {
 // ---------------------------------------------------------------------------
 
 describe('AuthService.login', () => {
-  async function seedUser(overrides: Partial<{
-    status: 'active' | 'suspended' | 'deleted' | 'pending_verification';
-    loginAttempts: number;
-    lockoutUntil: Date;
-  }> = {}) {
+  async function seedUser(
+    overrides: Partial<{
+      status: 'active' | 'suspended' | 'deleted' | 'pending_verification';
+      loginAttempts: number;
+      lockoutUntil: Date;
+    }> = {},
+  ) {
     const passwordHash = await bcrypt.hash('TestPass1!', 4);
     const user = await UserModel.create({
       username: 'loginuser',
@@ -347,17 +341,19 @@ describe('AuthService.refreshTokens', () => {
     await service.refreshTokens(auth.refreshToken, IP);
 
     // Second use of the same old token → TOKEN_INVALID
-    await expect(
-      service.refreshTokens(auth.refreshToken, IP),
-    ).rejects.toMatchObject({ statusCode: 401, code: 'TOKEN_INVALID' });
+    await expect(service.refreshTokens(auth.refreshToken, IP)).rejects.toMatchObject({
+      statusCode: 401,
+      code: 'TOKEN_INVALID',
+    });
   });
 
   it('throws 401 for an unknown token', async () => {
     const service = makeService();
 
-    await expect(
-      service.refreshTokens('totally.invalid.token', IP),
-    ).rejects.toMatchObject({ statusCode: 401, code: 'TOKEN_INVALID' });
+    await expect(service.refreshTokens('totally.invalid.token', IP)).rejects.toMatchObject({
+      statusCode: 401,
+      code: 'TOKEN_INVALID',
+    });
   });
 
   it('revokes all user tokens when a revoked token is reused (reuse detection)', async () => {
@@ -368,9 +364,10 @@ describe('AuthService.refreshTokens', () => {
     await service.refreshTokens(rotated.refreshToken, IP);
 
     // Now replay the already-revoked first token — should trigger reuse detection
-    await expect(
-      service.refreshTokens(auth.refreshToken, IP),
-    ).rejects.toMatchObject({ statusCode: 401, code: 'TOKEN_INVALID' });
+    await expect(service.refreshTokens(auth.refreshToken, IP)).rejects.toMatchObject({
+      statusCode: 401,
+      code: 'TOKEN_INVALID',
+    });
 
     // All tokens should now be revoked
     const activeTokens = await RefreshTokenModel.find({
@@ -463,9 +460,7 @@ describe('AuthService.forgotPassword', () => {
     const service = makeService();
 
     // Non-existent email — must not throw
-    await expect(
-      service.forgotPassword('nobody@example.com', IP),
-    ).resolves.toBeUndefined();
+    await expect(service.forgotPassword('nobody@example.com', IP)).resolves.toBeUndefined();
   });
 
   it('creates a PasswordResetToken and sends email for a known user', async () => {
@@ -521,9 +516,10 @@ describe('AuthService.resetPassword', () => {
   it('throws 400 for an invalid reset token', async () => {
     const service = makeService();
 
-    await expect(
-      service.resetPassword('bad-token', 'NewSecure99!@', IP),
-    ).rejects.toMatchObject({ statusCode: 400, code: 'TOKEN_INVALID' });
+    await expect(service.resetPassword('bad-token', 'NewSecure99!@', IP)).rejects.toMatchObject({
+      statusCode: 400,
+      code: 'TOKEN_INVALID',
+    });
   });
 
   it('throws 400 for an already-used reset token', async () => {
@@ -548,9 +544,10 @@ describe('AuthService.resetPassword', () => {
       usedAt: new Date(),
     });
 
-    await expect(
-      service.resetPassword(rawToken, 'NewSecure99!@', IP),
-    ).rejects.toMatchObject({ statusCode: 400, code: 'TOKEN_INVALID' });
+    await expect(service.resetPassword(rawToken, 'NewSecure99!@', IP)).rejects.toMatchObject({
+      statusCode: 400,
+      code: 'TOKEN_INVALID',
+    });
   });
 
   it('revokes all sessions after password reset', async () => {

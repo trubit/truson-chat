@@ -72,7 +72,9 @@ export function useChatSocket() {
       }
     };
 
-    const onMessageUpdated = (payload: Partial<Message> & { _id: string; conversationId: string }) => {
+    const onMessageUpdated = (
+      payload: Partial<Message> & { _id: string; conversationId: string },
+    ) => {
       useMessageStore.getState().updateMessage(payload);
     };
 
@@ -80,7 +82,11 @@ export function useChatSocket() {
       useMessageStore.getState().deleteMessage(payload.messageId, payload.conversationId);
     };
 
-    const onMessageReaction = (payload: { messageId: string; conversationId: string; reactions?: Message['reactions'] }) => {
+    const onMessageReaction = (payload: {
+      messageId: string;
+      conversationId: string;
+      reactions?: Message['reactions'];
+    }) => {
       useMessageStore.getState().updateMessage({
         _id: payload.messageId,
         conversationId: payload.conversationId,
@@ -98,7 +104,12 @@ export function useChatSocket() {
     };
 
     // Read receipts → update own message ticks to blue
-    const onMessageRead = (payload: { conversationId: string; messageId: string; userId: string; readAt: string }) => {
+    const onMessageRead = (payload: {
+      conversationId: string;
+      messageId: string;
+      userId: string;
+      readAt: string;
+    }) => {
       const myId = useAuthStore.getState().user?._id;
       if (!myId || payload.userId === myId) return; // ignore self-read events
       useMessageStore.getState().markMessagesRead(payload.conversationId, payload.messageId, myId);
@@ -125,7 +136,11 @@ export function useChatSocket() {
           toast(name + ' is now online', {
             icon: '🟢',
             duration: 3000,
-            style: { background: '#0D1225', color: '#F1F5F9', border: '1px solid rgba(139,92,246,0.2)' },
+            style: {
+              background: '#0D1225',
+              color: '#F1F5F9',
+              border: '1px solid rgba(139,92,246,0.2)',
+            },
           });
           break;
         }
@@ -142,7 +157,11 @@ export function useChatSocket() {
       });
     };
 
-    const onPresenceUpdated = (payload: { userId: string; status: PresenceStatus; lastSeen?: string }) => {
+    const onPresenceUpdated = (payload: {
+      userId: string;
+      status: PresenceStatus;
+      lastSeen?: string;
+    }) => {
       if (payload.status === 'online') {
         notifyOnline(payload.userId);
       } else {
@@ -265,7 +284,9 @@ export function useChatSocket() {
         chatSocketInstance.emit(
           'message:delete',
           { messageId },
-          (result: { success: boolean; error?: string }) => { resolve(result); },
+          (result: { success: boolean; error?: string }) => {
+            resolve(result);
+          },
         );
       });
     },
@@ -273,7 +294,11 @@ export function useChatSocket() {
   );
 
   const sendReactToMessage = useCallback(
-    (messageId: string, emoji: string, conversationId: string): Promise<{ success: boolean; error?: string }> => {
+    (
+      messageId: string,
+      emoji: string,
+      conversationId: string,
+    ): Promise<{ success: boolean; error?: string }> => {
       return new Promise((resolve) => {
         if (!chatSocketInstance?.connected) {
           resolve({ success: false, error: 'Not connected' });
@@ -282,14 +307,23 @@ export function useChatSocket() {
         chatSocketInstance.emit(
           'message:react',
           { messageId, emoji, conversationId },
-          (result: { success: boolean; error?: string }) => { resolve(result); },
+          (result: { success: boolean; error?: string }) => {
+            resolve(result);
+          },
         );
       });
     },
     [],
   );
 
-  return { sendMessage, sendTypingStart, sendTypingStop, sendRead, sendDeleteMessage, sendReactToMessage };
+  return {
+    sendMessage,
+    sendTypingStart,
+    sendTypingStop,
+    sendRead,
+    sendDeleteMessage,
+    sendReactToMessage,
+  };
 }
 
 export function getChatSocket() {

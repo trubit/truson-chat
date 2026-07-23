@@ -19,7 +19,7 @@ export function ImageViewer({
 }) {
   const [scale, setScale] = useState(1);
 
-  const zoomIn  = useCallback(() => setScale((s) => Math.min(s + 0.25, 4)), []);
+  const zoomIn = useCallback(() => setScale((s) => Math.min(s + 0.25, 4)), []);
   const zoomOut = useCallback(() => setScale((s) => Math.max(s - 0.25, 0.25)), []);
   const fitScreen = useCallback(() => setScale(1), []);
 
@@ -111,12 +111,7 @@ export function ImageViewer({
         <Typography sx={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', fontFamily: 'monospace' }}>
           {filename}
         </Typography>
-        <IconButton
-          component="a"
-          href={src}
-          download={filename}
-          sx={{ color: '#fff' }}
-        >
+        <IconButton component="a" href={src} download={filename} sx={{ color: '#fff' }}>
           <DownloadIcon />
         </IconButton>
       </Box>

@@ -1,15 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import {
-  Dialog,
-  DialogTitle,
-  Tabs,
-  Tab,
-  Box,
-  Typography,
-  IconButton,
-  Button,
-} from '@mui/material';
+import { Dialog, DialogTitle, Tabs, Tab, Box, Typography, IconButton, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import ImageIcon from '@mui/icons-material/Image';
@@ -20,38 +11,58 @@ import PlaceIcon from '@mui/icons-material/Place';
 import GifBoxIcon from '@mui/icons-material/GifBox';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import { StickerPicker } from './StickerPicker';
-import { GifPicker }     from './GifPicker';
+import { GifPicker } from './GifPicker';
 import type { StickerItem } from '@/store/stickerStore';
-import type { GifItem }    from '@/store/gifStore';
+import type { GifItem } from '@/store/gifStore';
 
 const C = {
-  panel:    '#080C18',
+  panel: '#080C18',
   panelHdr: '#0B1022',
-  border:   'rgba(139,92,246,0.12)',
-  accent:   '#9B6DFF',
-  txt1:     '#F1F5F9',
-  txt2:     '#94A3B8',
-  txt3:     '#475569',
+  border: 'rgba(139,92,246,0.12)',
+  accent: '#9B6DFF',
+  txt1: '#F1F5F9',
+  txt2: '#94A3B8',
+  txt3: '#475569',
   searchBg: 'rgba(139,92,246,0.07)',
 } as const;
 
 type TabId = 'file' | 'image' | 'video' | 'audio' | 'document' | 'gif' | 'sticker' | 'location';
 
 interface TabConfig {
-  id:     TabId;
-  label:  string;
-  icon:   React.ReactNode;
+  id: TabId;
+  label: string;
+  icon: React.ReactNode;
   accept?: Record<string, string[]>;
 }
 
 const TABS: TabConfig[] = [
-  { id: 'file',     label: 'File',     icon: <AttachFileIcon sx={{ fontSize: 18 }} />,    accept: undefined },
-  { id: 'image',    label: 'Image',    icon: <ImageIcon sx={{ fontSize: 18 }} />,          accept: { 'image/*': [] } },
-  { id: 'video',    label: 'Video',    icon: <VideocamIcon sx={{ fontSize: 18 }} />,       accept: { 'video/*': [] } },
-  { id: 'audio',    label: 'Audio',    icon: <AudiotrackIcon sx={{ fontSize: 18 }} />,     accept: { 'audio/*': [] } },
-  { id: 'document', label: 'Document', icon: <DescriptionIcon sx={{ fontSize: 18 }} />,   accept: { 'application/*': [], 'text/*': [] } },
-  { id: 'gif',      label: 'GIF',      icon: <GifBoxIcon sx={{ fontSize: 18 }} /> },
-  { id: 'sticker',  label: 'Sticker',  icon: <EmojiEmotionsIcon sx={{ fontSize: 18 }} /> },
+  { id: 'file', label: 'File', icon: <AttachFileIcon sx={{ fontSize: 18 }} />, accept: undefined },
+  {
+    id: 'image',
+    label: 'Image',
+    icon: <ImageIcon sx={{ fontSize: 18 }} />,
+    accept: { 'image/*': [] },
+  },
+  {
+    id: 'video',
+    label: 'Video',
+    icon: <VideocamIcon sx={{ fontSize: 18 }} />,
+    accept: { 'video/*': [] },
+  },
+  {
+    id: 'audio',
+    label: 'Audio',
+    icon: <AudiotrackIcon sx={{ fontSize: 18 }} />,
+    accept: { 'audio/*': [] },
+  },
+  {
+    id: 'document',
+    label: 'Document',
+    icon: <DescriptionIcon sx={{ fontSize: 18 }} />,
+    accept: { 'application/*': [], 'text/*': [] },
+  },
+  { id: 'gif', label: 'GIF', icon: <GifBoxIcon sx={{ fontSize: 18 }} /> },
+  { id: 'sticker', label: 'Sticker', icon: <EmojiEmotionsIcon sx={{ fontSize: 18 }} /> },
   { id: 'location', label: 'Location', icon: <PlaceIcon sx={{ fontSize: 18 }} /> },
 ];
 
@@ -116,7 +127,13 @@ function DropzonePanel({
   );
 }
 
-function LocationPanel({ onLocationShare, onClose }: { onLocationShare: () => void; onClose: () => void }) {
+function LocationPanel({
+  onLocationShare,
+  onClose,
+}: {
+  onLocationShare: () => void;
+  onClose: () => void;
+}) {
   const handleShare = useCallback(() => {
     onLocationShare();
     onClose();
@@ -210,7 +227,11 @@ export function MediaPicker({
         }}
       >
         Share Media
-        <IconButton size="small" onClick={onClose} sx={{ color: C.txt3, '&:hover': { color: C.txt2 } }}>
+        <IconButton
+          size="small"
+          onClick={onClose}
+          sx={{ color: C.txt3, '&:hover': { color: C.txt2 } }}
+        >
           <CloseIcon sx={{ fontSize: 18 }} />
         </IconButton>
       </DialogTitle>
@@ -252,7 +273,11 @@ export function MediaPicker({
         ) : currentTab.id === 'location' ? (
           <LocationPanel onLocationShare={onLocationShare} onClose={onClose} />
         ) : (
-          <DropzonePanel accept={currentTab.accept} onFilesSelected={onFilesSelected} onClose={onClose} />
+          <DropzonePanel
+            accept={currentTab.accept}
+            onFilesSelected={onFilesSelected}
+            onClose={onClose}
+          />
         )}
       </Box>
     </Dialog>

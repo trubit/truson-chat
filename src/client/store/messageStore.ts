@@ -26,16 +26,9 @@ interface MessageActions {
     cursor?: string,
   ) => void;
   appendMessage: (message: Message) => void;
-  updateMessage: (
-    message: Partial<Message> & { _id: string; conversationId: string },
-  ) => void;
+  updateMessage: (message: Partial<Message> & { _id: string; conversationId: string }) => void;
   deleteMessage: (messageId: string, conversationId: string) => void;
-  addReaction: (
-    messageId: string,
-    conversationId: string,
-    emoji: string,
-    userId: string,
-  ) => void;
+  addReaction: (messageId: string, conversationId: string, emoji: string, userId: string) => void;
   removeReaction: (
     messageId: string,
     conversationId: string,

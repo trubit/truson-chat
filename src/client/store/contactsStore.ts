@@ -48,21 +48,17 @@ export const useContactsStore = create<ContactsStore>((set) => ({
 
   updateContact: (id, data) =>
     set((state) => ({
-      contacts: state.contacts.map((c) =>
-        c.id === id ? { ...c, ...data } : c,
-      ),
+      contacts: state.contacts.map((c) => (c.id === id ? { ...c, ...data } : c)),
     })),
 
   removeContact: (id) =>
     set((state) => ({
       contacts: state.contacts.filter((c) => c.id !== id),
       meta: { ...state.meta, total: Math.max(0, state.meta.total - 1) },
-      selectedContactId:
-        state.selectedContactId === id ? null : state.selectedContactId,
+      selectedContactId: state.selectedContactId === id ? null : state.selectedContactId,
     })),
 
-  setQuery: (query) =>
-    set((state) => ({ query: { ...state.query, ...query } })),
+  setQuery: (query) => set((state) => ({ query: { ...state.query, ...query } })),
 
   setSelectedContact: (selectedContactId) => set({ selectedContactId }),
 

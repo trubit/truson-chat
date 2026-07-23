@@ -2,35 +2,35 @@ import { create } from 'zustand';
 import type { GroupSummary, GroupDetail, GroupMessage, GroupMemberSummary } from '@shared/types';
 
 interface GroupState {
-  groups:          Map<string, GroupSummary>;
-  orderedIds:      string[];           // sorted by lastMessageAt desc
-  activeGroupId:   string | null;
-  groupDetails:    Map<string, GroupDetail>;
-  messages:        Map<string, GroupMessage[]>; // groupId → messages
-  members:         Map<string, GroupMemberSummary[]>; // groupId → members
-  typingUsers:     Map<string, Set<string>>;    // groupId → Set<userId>
-  unreadCounts:    Map<string, number>;
-  isLoading:       boolean;
+  groups: Map<string, GroupSummary>;
+  orderedIds: string[]; // sorted by lastMessageAt desc
+  activeGroupId: string | null;
+  groupDetails: Map<string, GroupDetail>;
+  messages: Map<string, GroupMessage[]>; // groupId → messages
+  members: Map<string, GroupMemberSummary[]>; // groupId → members
+  typingUsers: Map<string, Set<string>>; // groupId → Set<userId>
+  unreadCounts: Map<string, number>;
+  isLoading: boolean;
 }
 
 interface GroupActions {
-  setGroups:          (groups: GroupSummary[]) => void;
-  upsertGroup:        (group: GroupSummary) => void;
-  removeGroup:        (groupId: string) => void;
-  setActiveGroup:     (id: string | null) => void;
-  setGroupDetail:     (detail: GroupDetail) => void;
-  addMessages:        (groupId: string, messages: GroupMessage[], prepend?: boolean) => void;
-  upsertMessage:      (groupId: string, message: GroupMessage) => void;
-  deleteMessage:      (groupId: string, messageId: string) => void;
-  setMembers:         (groupId: string, members: GroupMemberSummary[]) => void;
-  upsertMember:       (groupId: string, member: GroupMemberSummary) => void;
-  removeMember:       (groupId: string, userId: string) => void;
-  setTyping:          (groupId: string, userId: string, isTyping: boolean) => void;
-  incrementUnread:    (groupId: string) => void;
-  resetUnread:        (groupId: string) => void;
-  updateLastMessage:  (groupId: string, lastMessageAt: string) => void;
-  setLoading:         (v: boolean) => void;
-  reset:              () => void;
+  setGroups: (groups: GroupSummary[]) => void;
+  upsertGroup: (group: GroupSummary) => void;
+  removeGroup: (groupId: string) => void;
+  setActiveGroup: (id: string | null) => void;
+  setGroupDetail: (detail: GroupDetail) => void;
+  addMessages: (groupId: string, messages: GroupMessage[], prepend?: boolean) => void;
+  upsertMessage: (groupId: string, message: GroupMessage) => void;
+  deleteMessage: (groupId: string, messageId: string) => void;
+  setMembers: (groupId: string, members: GroupMemberSummary[]) => void;
+  upsertMember: (groupId: string, member: GroupMemberSummary) => void;
+  removeMember: (groupId: string, userId: string) => void;
+  setTyping: (groupId: string, userId: string, isTyping: boolean) => void;
+  incrementUnread: (groupId: string) => void;
+  resetUnread: (groupId: string) => void;
+  updateLastMessage: (groupId: string, lastMessageAt: string) => void;
+  setLoading: (v: boolean) => void;
+  reset: () => void;
 }
 
 type GroupStore = GroupState & GroupActions;
@@ -38,23 +38,27 @@ type GroupStore = GroupState & GroupActions;
 function sortedGroupIds(map: Map<string, GroupSummary>): string[] {
   return Array.from(map.values())
     .sort((a, b) => {
-      const ta = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : new Date(a.createdAt).getTime();
-      const tb = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : new Date(b.createdAt).getTime();
+      const ta = a.lastMessageAt
+        ? new Date(a.lastMessageAt).getTime()
+        : new Date(a.createdAt).getTime();
+      const tb = b.lastMessageAt
+        ? new Date(b.lastMessageAt).getTime()
+        : new Date(b.createdAt).getTime();
       return tb - ta;
     })
     .map((g) => g._id);
 }
 
 const initial: GroupState = {
-  groups:       new Map(),
-  orderedIds:   [],
-  activeGroupId:null,
+  groups: new Map(),
+  orderedIds: [],
+  activeGroupId: null,
   groupDetails: new Map(),
-  messages:     new Map(),
-  members:      new Map(),
-  typingUsers:  new Map(),
+  messages: new Map(),
+  members: new Map(),
+  typingUsers: new Map(),
   unreadCounts: new Map(),
-  isLoading:    false,
+  isLoading: false,
 };
 
 export const useGroupStore = create<GroupStore>()((set, get) => ({
@@ -88,7 +92,7 @@ export const useGroupStore = create<GroupStore>()((set, get) => ({
   addMessages: (groupId, messages, prepend = false) => {
     const all = new Map(get().messages);
     const existing = all.get(groupId) ?? [];
-    const deduped   = prepend
+    const deduped = prepend
       ? [...messages.filter((m) => !existing.some((e) => e._id === m._id)), ...existing]
       : [...existing, ...messages.filter((m) => !existing.some((e) => e._id === m._id))];
     all.set(groupId, deduped);
@@ -111,7 +115,10 @@ export const useGroupStore = create<GroupStore>()((set, get) => ({
   deleteMessage: (groupId, messageId) => {
     const all = new Map(get().messages);
     const existing = all.get(groupId) ?? [];
-    all.set(groupId, existing.map((m) => m._id === messageId ? { ...m, status: 'deleted', content: '' } : m));
+    all.set(
+      groupId,
+      existing.map((m) => (m._id === messageId ? { ...m, status: 'deleted', content: '' } : m)),
+    );
     set({ messages: all });
   },
 
@@ -134,14 +141,18 @@ export const useGroupStore = create<GroupStore>()((set, get) => ({
   removeMember: (groupId, userId) => {
     const all = new Map(get().members);
     const existing = all.get(groupId) ?? [];
-    all.set(groupId, existing.filter((m) => m.userId !== userId));
+    all.set(
+      groupId,
+      existing.filter((m) => m.userId !== userId),
+    );
     set({ members: all });
   },
 
   setTyping: (groupId, userId, isTyping) => {
     const all = new Map(get().typingUsers);
     const set2 = new Set(all.get(groupId) ?? []);
-    if (isTyping) set2.add(userId); else set2.delete(userId);
+    if (isTyping) set2.add(userId);
+    else set2.delete(userId);
     all.set(groupId, set2);
     set({ typingUsers: all });
   },
@@ -168,5 +179,5 @@ export const useGroupStore = create<GroupStore>()((set, get) => ({
   },
 
   setLoading: (v) => set({ isLoading: v }),
-  reset:      () => set(initial),
+  reset: () => set(initial),
 }));

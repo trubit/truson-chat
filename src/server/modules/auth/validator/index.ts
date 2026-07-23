@@ -19,10 +19,7 @@ const passwordSchema = z
   .refine((v) => /[A-Z]/.test(v), 'Password must contain at least one uppercase letter')
   .refine((v) => /[a-z]/.test(v), 'Password must contain at least one lowercase letter')
   .refine((v) => /[0-9]/.test(v), 'Password must contain at least one number')
-  .refine(
-    (v) => /[^A-Za-z0-9]/.test(v),
-    'Password must contain at least one special character',
-  );
+  .refine((v) => /[^A-Za-z0-9]/.test(v), 'Password must contain at least one special character');
 
 // ---------------------------------------------------------------------------
 // Register

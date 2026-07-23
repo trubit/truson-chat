@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const nodeGlobal = globalThis as any; // Node 18+ exposes Fetch on globalThis
-const vmGlobal  = globalThis as any;  // same reference in Jest/jsdom env
+const vmGlobal = globalThis as any; // same reference in Jest/jsdom env
 
 const FETCH_NAMES = [
   'fetch',

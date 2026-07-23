@@ -1,11 +1,7 @@
 import type { RequestHandler } from 'express';
 import { securityService } from '../service/index.js';
 import type { ApiResponse } from '../../../../shared/types/api.js';
-import type {
-  AuditLogResponse,
-  SecurityLogResponse,
-  SecurityLogsQuery,
-} from '../types/index.js';
+import type { AuditLogResponse, SecurityLogResponse, SecurityLogsQuery } from '../types/index.js';
 
 export class SecurityController {
   getSecurityLogs: RequestHandler = async (req, res, next): Promise<void> => {

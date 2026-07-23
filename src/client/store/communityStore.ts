@@ -2,28 +2,28 @@ import { create } from 'zustand';
 import type { CommunitySummary, CommunityDetail } from '@shared/types';
 
 interface CommunityState {
-  communities:    Map<string, CommunitySummary>;
-  orderedIds:     string[];
-  details:        Map<string, CommunityDetail>;
-  isLoading:      boolean;
+  communities: Map<string, CommunitySummary>;
+  orderedIds: string[];
+  details: Map<string, CommunityDetail>;
+  isLoading: boolean;
 }
 
 interface CommunityActions {
-  setCommunities:  (communities: CommunitySummary[]) => void;
+  setCommunities: (communities: CommunitySummary[]) => void;
   upsertCommunity: (community: CommunitySummary) => void;
   removeCommunity: (communityId: string) => void;
   setCommunityDetail: (detail: CommunityDetail) => void;
-  setLoading:      (v: boolean) => void;
-  reset:           () => void;
+  setLoading: (v: boolean) => void;
+  reset: () => void;
 }
 
 type CommunityStore = CommunityState & CommunityActions;
 
 const initial: CommunityState = {
   communities: new Map(),
-  orderedIds:  [],
-  details:     new Map(),
-  isLoading:   false,
+  orderedIds: [],
+  details: new Map(),
+  isLoading: false,
 };
 
 function sortedIds(map: Map<string, CommunitySummary>): string[] {
@@ -59,5 +59,5 @@ export const useCommunityStore = create<CommunityStore>()((set, get) => ({
   },
 
   setLoading: (v) => set({ isLoading: v }),
-  reset:      () => set(initial),
+  reset: () => set(initial),
 }));

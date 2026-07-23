@@ -6,26 +6,21 @@ import { useTrendingGifs, useGifSearch } from '../queries/index';
 import type { GifItem } from '@/store/gifStore';
 
 const C = {
-  panel:    '#080C18',
-  border:   'rgba(139,92,246,0.12)',
-  accent:   '#9B6DFF',
+  panel: '#080C18',
+  border: 'rgba(139,92,246,0.12)',
+  accent: '#9B6DFF',
   searchBg: 'rgba(139,92,246,0.07)',
-  txt2:     '#94A3B8',
-  txt3:     '#475569',
+  txt2: '#94A3B8',
+  txt3: '#475569',
 } as const;
 
 const SEARCH_DEBOUNCE_MS = 400;
 
-export function GifPicker({
-  onSelect,
-}: {
-  onSelect: (gif: GifItem) => void;
-  onClose: () => void;
-}) {
-  const [inputVal, setInputVal]   = useState('');
-  const [query, setQuery]         = useState('');
-  const [tabIdx, setTabIdx]       = useState(0);
-  const debounceRef               = useRef<ReturnType<typeof setTimeout> | null>(null);
+export function GifPicker({ onSelect }: { onSelect: (gif: GifItem) => void; onClose: () => void }) {
+  const [inputVal, setInputVal] = useState('');
+  const [query, setQuery] = useState('');
+  const [tabIdx, setTabIdx] = useState(0);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { trending, searchResults, isSearching } = useGifStore();
 
@@ -50,7 +45,7 @@ export function GifPicker({
   }, []);
 
   const displayGifs = tabIdx === 1 && query.length >= 2 ? searchResults : trending;
-  const isLoading   = tabIdx === 0 ? loadingTrend : loadingSearch || isSearching;
+  const isLoading = tabIdx === 0 ? loadingTrend : loadingSearch || isSearching;
 
   return (
     <Box sx={{ width: 320, bgcolor: C.panel }}>

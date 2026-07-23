@@ -69,8 +69,7 @@ export const useAuthStore = create<AuthStore>()(
           isAuthenticated: user !== null,
         }),
 
-      setToken: (accessToken) =>
-        set({ accessToken }),
+      setToken: (accessToken) => set({ accessToken }),
 
       logout: () =>
         set({
@@ -87,7 +86,7 @@ export const useAuthStore = create<AuthStore>()(
       setInitialized: (isInitialized) => set({ isInitialized }),
     }),
     {
-      name: 'truson_auth',
+      name: 'linkora_auth',
       partialize: (state) => ({
         user: state.user,
         accessToken: state.accessToken,

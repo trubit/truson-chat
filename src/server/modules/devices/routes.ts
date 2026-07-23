@@ -2,11 +2,7 @@ import { Router } from 'express';
 import { authenticate } from '../../middlewares/authenticate.js';
 import { validateBody, validateParams } from '../../middlewares/validate.js';
 import { devicesController } from './controller/index.js';
-import {
-  deviceIdParamSchema,
-  registerDeviceSchema,
-  trustDeviceSchema,
-} from './validator/index.js';
+import { deviceIdParamSchema, registerDeviceSchema, trustDeviceSchema } from './validator/index.js';
 
 const router = Router();
 
@@ -31,10 +27,6 @@ router.patch(
 );
 
 // DELETE /devices/:id — remove a device
-router.delete(
-  '/:id',
-  validateParams(deviceIdParamSchema),
-  devicesController.removeDevice,
-);
+router.delete('/:id', validateParams(deviceIdParamSchema), devicesController.removeDevice);
 
 export default router;

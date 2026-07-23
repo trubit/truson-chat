@@ -62,12 +62,7 @@ async function preprocessImage(
   input: Buffer,
   options: Pick<UploadOptions, 'maxWidth' | 'maxHeight' | 'quality' | 'outputFormat'>,
 ): Promise<Buffer> {
-  const {
-    maxWidth = 2048,
-    maxHeight = 2048,
-    quality = 85,
-    outputFormat = 'webp',
-  } = options;
+  const { maxWidth = 2048, maxHeight = 2048, quality = 85, outputFormat = 'webp' } = options;
 
   let pipeline = sharp(input).rotate(); // auto-rotate based on EXIF
 
@@ -104,7 +99,7 @@ export async function uploadToCloudinary(
   options: UploadOptions = {},
 ): Promise<UploadResult> {
   const {
-    folder = 'truson-chat',
+    folder = 'linkora',
     publicId,
     resourceType = 'image',
     cloudinaryOptions = {},

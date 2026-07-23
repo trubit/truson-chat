@@ -13,19 +13,13 @@ interface TypingIndicatorProps {
   currentUserId: string;
 }
 
-export default function TypingIndicator({
-  conversationId,
-  currentUserId,
-}: TypingIndicatorProps) {
+export default function TypingIndicator({ conversationId, currentUserId }: TypingIndicatorProps) {
   const typing = useTypingStore((s) => s.typing[conversationId] ?? EMPTY_ARRAY);
   const others = typing.filter((uid) => uid !== currentUserId);
 
   if (others.length === 0) return null;
 
-  const label =
-    others.length === 1
-      ? `Someone is typing…`
-      : `${others.length} people are typing…`;
+  const label = others.length === 1 ? `Someone is typing…` : `${others.length} people are typing…`;
 
   return (
     <Box
@@ -59,9 +53,7 @@ export default function TypingIndicator({
           />
         ))}
       </Box>
-      <Typography sx={{ fontSize: 12, color: C.txt2, fontStyle: 'italic' }}>
-        {label}
-      </Typography>
+      <Typography sx={{ fontSize: 12, color: C.txt2, fontStyle: 'italic' }}>{label}</Typography>
     </Box>
   );
 }
