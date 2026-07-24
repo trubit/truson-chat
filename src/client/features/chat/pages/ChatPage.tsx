@@ -88,10 +88,7 @@ export default function ChatPage() {
 
   // With-id: wrap in a flex column so ChatWindow fills the available height.
   return (
-    <Box
-      data-testid="page-chat"
-      sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-    >
+    <Box data-testid="page-chat" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <ChatWindow
         conversationId={id}
         sendMessage={sendMessage}
