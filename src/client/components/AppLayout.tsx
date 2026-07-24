@@ -286,6 +286,7 @@ function ChatListPanel() {
 function ChatWelcome() {
   return (
     <Box
+      data-testid="page-chat"
       sx={{
         height: '100%',
         display: 'flex',

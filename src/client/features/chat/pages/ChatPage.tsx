@@ -18,6 +18,7 @@ const C = {
 function ChatWelcome() {
   return (
     <Box
+      data-testid="page-chat"
       sx={{
         height: '100%',
         display: 'flex',
@@ -83,12 +84,14 @@ export default function ChatPage() {
     sendReactToMessage,
   } = useChatSocket();
 
-  if (!id) {
-    return <ChatWelcome />;
-  }
+  if (!id) return <ChatWelcome />;
 
+  // With-id: wrap in a flex column so ChatWindow fills the available height.
   return (
-    <>
+    <Box
+      data-testid="page-chat"
+      sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+    >
       <ChatWindow
         conversationId={id}
         sendMessage={sendMessage}
@@ -99,6 +102,6 @@ export default function ChatPage() {
         sendReactToMessage={sendReactToMessage}
       />
       <UploadProgress />
-    </>
+    </Box>
   );
 }
